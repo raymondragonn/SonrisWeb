@@ -48,7 +48,8 @@ Las 17 del mapa de cableado, todas con barra final:
 | `/dra-isabel-velez/` | `src/pages/dra-isabel-velez/index.astro` |
 | `/sobre-nosotros/` | `src/pages/sobre-nosotros/index.astro` |
 | `/contacto/` | `src/pages/contacto/index.astro` |
-| `/aviso-legal/` y las otras 3 de utilidad | `src/pages/[pagina].astro` + `src/data/utilidad.ts` |
+| `/aviso-legal/` y las otras 2 legales | `src/pages/[legal].astro` + `src/data/legal.ts` |
+| `/indicaciones-post-tratamiento/` | `src/pages/indicaciones-post-tratamiento/index.astro` |
 | 404 | `src/pages/404.astro` → `dist/404.html` |
 
 Las páginas-escaparate del diseño (Sistema de Diseño, Cableado y redirecciones,
