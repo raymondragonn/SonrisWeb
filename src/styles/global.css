@@ -1,0 +1,431 @@
+/* Sistema de diseño Sonris.
+   Unión literal de los bloques <style> del helmet de las páginas de Claude Design.
+   Los estilos de composición siguen viviendo inline en el marcado, igual que en
+   el diseño; aquí solo está lo compartido: tokens, reset, estados e interacción. */
+
+:root {
+  --surface: #ffffff;
+  --gray-50: #f7f7f7;
+  --gray-100: #efefef;
+  --gray-400: #a1a1a1;
+  --ink: #000000;
+  --ink-soft: #1a1a1a;
+  --ink-muted: #6b6b6b;
+  --amber: #eb6b0a;
+  --amber-deep: #b24e00;
+  --amber-light: #ffbc7d;
+  --amber-muted: #edb992;
+  --peach: #fee1cb;
+  --navy: #16163f;
+  --error: #b3261e;
+  --border: rgba(0, 0, 0, 0.08);
+  --r-sm: 12px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 40px;
+  --r-full: 9999px;
+  --e1: 0 2px 8px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
+  --e2: 0 4px 12px rgba(0, 0, 0, 0.06), 0 24px 56px rgba(0, 0, 0, 0.1);
+  --glow: 0 12px 28px rgba(235, 107, 10, 0.3);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-display: Poppins, system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: #b24e00;
+  text-decoration: none;
+}
+a:hover {
+  color: #eb6b0a;
+}
+p {
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid #b24e00;
+  outline-offset: 2px;
+}
+[data-peach] :focus-visible {
+  outline-color: #000000;
+}
+
+img {
+  max-width: 100%;
+  transition: transform 300ms var(--ease);
+}
+
+section[id],
+div[id],
+nav[id],
+article[id] {
+  scroll-margin-top: 104px;
+}
+
+/* Lámina de vidrio */
+[data-lamina] {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(14px) saturate(1.08);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px !important;
+  box-shadow: var(--e1);
+}
+[data-lamina-xl] {
+  border-radius: 40px !important;
+}
+
+/* Grano */
+[data-grano] {
+  position: relative;
+}
+[data-grano]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Hover de tarjeta / miembro / tile */
+[data-card]:hover img,
+[data-member]:hover img,
+[data-tarjeta]:hover img {
+  transform: scale(1.04);
+}
+[data-card]:hover,
+[data-tarjeta]:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--e2);
+}
+[data-card]:hover [data-cardimg] {
+  transform: scale(1.04);
+}
+[data-card]:hover [data-tile],
+[data-tarjeta]:hover [data-tile] {
+  background: #eb6b0a;
+}
+[data-card]:hover [data-tile] [data-glyph],
+[data-tarjeta]:hover [data-tile] [data-glyph] {
+  border-color: #ffffff;
+}
+[data-member]:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--e2);
+}
+[data-member]:hover [data-portrait] {
+  transform: scale(1.04);
+}
+/* Retratos recortados en círculo con anillo verde: se amplían hasta que el
+   marco 4/5 cabe dentro del círculo interior y el anillo queda fuera. */
+[data-portrait][data-circulo] {
+  transform: scale(1.55);
+}
+[data-member]:hover [data-portrait][data-circulo] {
+  transform: scale(1.62);
+}
+[data-feat]:hover [data-featimg],
+[data-feat]:hover [data-featveil] {
+  opacity: 1;
+}
+[data-feat]:hover [data-feattxt] {
+  color: #ffffff;
+}
+
+/* Subrayado animado */
+[data-underline] {
+  position: relative;
+}
+[data-underline]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 2px;
+  width: 0;
+  background: #eb6b0a;
+  transition: width 200ms var(--ease);
+}
+[data-underline]:hover::after {
+  width: 100%;
+}
+[data-underline]:hover {
+  color: #b24e00;
+}
+
+/* Botones. En hover el relleno aclara y la etiqueta pasa a tinta:
+   blanco sobre #EB6B0A no llega a 4.5:1 a tamaño de cuerpo. */
+[data-primary]:hover {
+  background: #eb6b0a;
+  color: #000000;
+  box-shadow: var(--glow);
+}
+[data-primary]:hover [data-arrow] {
+  transform: translateX(4px);
+}
+[data-secondary]:hover {
+  background: #fee1cb;
+  border-color: #eb6b0a;
+}
+[data-input]:focus {
+  border-color: #eb6b0a;
+  box-shadow: 0 0 0 4px #fee1cb;
+  outline: none;
+}
+[data-accrow]:hover [data-q] {
+  color: #b24e00;
+}
+
+[data-burger] {
+  display: none;
+}
+[data-mobilebar] {
+  display: none;
+  transition: transform 300ms var(--ease);
+}
+
+@keyframes sonris-float {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-18px, 14px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* ---- Responsive: mismas reglas que la maqueta ---- */
+
+@media (max-width: 1120px) {
+  [data-desknav] {
+    display: none !important;
+  }
+  [data-burger] {
+    display: inline-flex !important;
+  }
+  [data-4col] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  #sonris-header-cta {
+    display: none !important;
+  }
+  [data-hero] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 40px !important;
+  }
+  [data-h1] {
+    font-size: 42px !important;
+  }
+  [data-2col] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 40px !important;
+  }
+  [data-3col] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  [data-zig] {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  [data-zig] > * {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+  [data-sec] {
+    padding-top: 80px !important;
+    padding-bottom: 80px !important;
+  }
+  [data-trust] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    padding: 8px !important;
+  }
+  [data-trust] > div {
+    border-left: none !important;
+    padding: 24px !important;
+  }
+  [data-foot] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  [data-gal] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  [data-formgrid] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  [data-steps] {
+    display: block !important;
+  }
+  [data-mobilebar] {
+    display: flex !important;
+  }
+  /* Caja del CTA final: el padding y el titular de escritorio no caben */
+  [data-cta-caja] {
+    padding: 44px 36px !important;
+    gap: 24px !important;
+  }
+  [data-cta-caja] h2 {
+    font-size: 38px !important;
+  }
+  [data-wa] {
+    display: none !important;
+  }
+  main {
+    padding-bottom: 104px;
+  }
+}
+
+/* Entre tablet y escritorio los solapes bajan de −64 a −32px */
+@media (min-width: 561px) and (max-width: 1024px) {
+  [data-overlap] {
+    margin-top: -32px !important;
+  }
+  [data-overlap-pull] {
+    margin-top: -32px !important;
+    padding-top: 152px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  [data-3col] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Nunca dos superficies tintadas seguidas al apilarse */
+  [data-band-gray] {
+    background: #ffffff !important;
+  }
+  [data-4col],
+  [data-gal],
+  [data-trust] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  header > div,
+  footer > div,
+  main > section > div,
+  main > nav[data-overlap],
+  main > section[data-overlap],
+  main > div[data-overlap] {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  [data-cta-largo] {
+    white-space: normal !important;
+    text-align: center;
+    justify-content: center;
+    padding: 14px 24px !important;
+  }
+  h1,
+  h2,
+  h3 {
+    overflow-wrap: break-word;
+  }
+  [data-h2-grande] {
+    font-size: 34px !important;
+  }
+  [data-cta-caja] {
+    padding: 32px 24px !important;
+    border-radius: 28px !important;
+  }
+  [data-cta-caja] h2 {
+    font-size: 30px !important;
+    max-width: none !important;
+  }
+  [data-cta-caja] > div {
+    width: 100%;
+  }
+  [data-cta-caja] [data-primary] {
+    width: 100%;
+    justify-content: center;
+    padding: 0 20px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utilidad de accesibilidad */
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+#sonris-foco {
+  scrollbar-width: none;
+}
+#sonris-foco::-webkit-scrollbar {
+  display: none;
+}
+
+.saltar {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 14px 22px;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: var(--e2);
+}
+.saltar:focus {
+  left: 16px;
+  top: 16px;
+}
+
+/* Aviso inferior derecho. Por encima del botón flotante de WhatsApp en
+   escritorio y por encima de la barra fija en móvil. */
+.sonris-aviso {
+  bottom: 100px;
+  animation: sonris-aviso-entra 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (max-width: 900px) {
+  .sonris-aviso {
+    bottom: 96px;
+  }
+}
+@keyframes sonris-aviso-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

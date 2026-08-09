@@ -1,0 +1,154 @@
+---
+// Las tres páginas legales del pie. Rutas de primer nivel: /aviso-legal/,
+// /politica-de-privacidad/ y /politica-de-cookies/. El texto está en
+// src/data/legal.ts.
+import Base from '../layouts/Base.astro';
+import { LEGAL, type PaginaLegal } from '../data/legal';
+import { SITE, CONTACTO, DIRECCION_MEDICA } from '../data/site';
+
+export function getStaticPaths() {
+  return LEGAL.map((p) => ({ params: { legal: p.slug }, props: { p } }));
+}
+
+const { p } = Astro.props as { p: PaginaLegal };
+const ruta = `/${p.slug}/`;
+
+// Identificación del titular (art. 10 LSSI): las líneas sin dato confirmado
+// no se imprimen. Ver PENDIENTES.md.
+const TITULAR = [
+  `${SITE.razonSocial} · CIF ${SITE.cif}`,
+  `${CONTACTO.calle}, ${CONTACTO.cp} ${CONTACTO.ciudad}`,
+  SITE.registroMercantil,
+  SITE.registroSanitario,
+  `Dirección médica: ${DIRECCION_MEDICA.nombre}, nº de colegiado ${DIRECCION_MEDICA.colegiado}`,
+].filter(Boolean) as string[];
+---
+
+<Base
+  titulo={`${SITE.nombre} | ${p.titulo}`}
+  descripcion={p.entradilla}
+  {ruta}
+  migas={[{ nombre: p.titulo, href: ruta }]}
+  headerVariante="solida"
+  noindex
+>
+  <section data-sec aria-labelledby="t" style="padding:64px 0 48px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <nav aria-label="Ruta" style="margin-bottom:28px;font-size:15px;color:#6B6B6B">
+        <a data-underline href="/" style="color:#6B6B6B">Inicio</a> · <span style="color:#1A1A1A">{p.titulo}</span>
+      </nav>
+      <p style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#B24E00">{p.eyebrow}</p>
+      <h1
+        data-h1
+        id="t"
+        style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:48px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch"
+      >
+        {p.titulo}
+      </h1>
+      <p style="margin:0 0 12px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">{p.entradilla}</p>
+      <p style="margin:0;font-size:15px;color:#6B6B6B">Última actualización: {p.actualizado}</p>
+    </div>
+  </section>
+
+  <section data-sec aria-labelledby="cuerpo-t" style="background:#F7F7F7;padding:72px 0 96px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:56px;align-items:start">
+        <div>
+          <h2
+            id="cuerpo-t"
+            style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:30px;line-height:1.2;letter-spacing:-0.02em;color:#000000"
+          >
+            {p.subtitulo}
+          </h2>
+
+          <h3 style="margin:0 0 16px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;letter-spacing:-0.02em;color:#000000">
+            Titular del sitio y responsable del tratamiento
+          </h3>
+          <ul style="margin:0 0 40px;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+            {
+              TITULAR.map((linea) => (
+                <li style="display:flex;gap:12px;font-size:17px;line-height:1.6;color:#1A1A1A">
+                  <span
+                    aria-hidden="true"
+                    style="flex:none;width:20px;height:20px;border-radius:9999px;background:#FEE1CB;color:#B24E00;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:4px"
+                  >
+                    ·
+                  </span>
+                  {linea}
+                </li>
+              ))
+            }
+            <li style="display:flex;gap:12px;font-size:17px;line-height:1.6;color:#1A1A1A">
+              <span
+                aria-hidden="true"
+                style="flex:none;width:20px;height:20px;border-radius:9999px;background:#FEE1CB;color:#B24E00;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:4px"
+              >
+                ·
+              </span>
+              <span>
+                <a data-underline href={`mailto:${CONTACTO.email}`} style="color:#1A1A1A;font-weight:500">{CONTACTO.email}</a> ·{' '}
+                <a data-underline href={`tel:${CONTACTO.telefonoE164}`} style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a>
+              </span>
+            </li>
+          </ul>
+
+          {
+            p.bloques.map((b) => (
+              <section style="margin:0 0 36px">
+                <h3 style="margin:0 0 14px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;line-height:1.3;letter-spacing:-0.02em;color:#000000">
+                  {b.h}
+                </h3>
+                {b.p?.map((t) => <p style="margin:0 0 14px;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">{t}</p>)}
+                {b.ul && (
+                  <ul style="margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+                    {b.ul.map((t) => (
+                      <li style="display:flex;gap:12px;font-size:17px;line-height:1.7;color:#1A1A1A;max-width:70ch">
+                        <span
+                          aria-hidden="true"
+                          style="flex:none;width:20px;height:20px;border-radius:9999px;background:#FEE1CB;color:#B24E00;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:5px"
+                        >
+                          ·
+                        </span>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            ))
+          }
+        </div>
+
+        <aside style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 12px 36px rgba(0,0,0,.03);position:sticky;top:120px">
+          <p style="margin:0 0 18px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
+            Información legal
+          </p>
+          <ul style="margin:0 0 24px;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px">
+            {
+              LEGAL.map((o) => (
+                <li>
+                  <a
+                    data-underline
+                    href={`/${o.slug}/`}
+                    aria-current={o.slug === p.slug ? 'page' : undefined}
+                    style={`font-size:17px;font-weight:500;color:${o.slug === p.slug ? '#B24E00' : '#1A1A1A'}`}
+                  >
+                    {o.nombre}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <div style="height:1px;background:rgba(0,0,0,0.08);margin-bottom:24px"></div>
+          <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#6B6B6B">¿Dudas sobre tu tratamiento? La consulta es lo más rápido.</p>
+          <a
+            data-primary
+            href="/contacto/#formulario"
+            style="display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+            >Pide tu cita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+          >
+        </aside>
+      </div>
+    </div>
+  </section>
+</Base>

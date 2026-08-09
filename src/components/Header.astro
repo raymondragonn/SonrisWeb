@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import { NAV, CONTACTO } from '../data/site';
+import logo from '../assets/sonris/logos/logo-sonris.png';
+import MenuMovil from '../islands/MenuMovil';
+
+interface Props {
+  /** «transparente» arranca sobre el hero y se rellena al hacer scroll;
+   *  «solida» nace ya opaca (páginas sin hero a sangre). */
+  variante?: 'transparente' | 'solida';
+  actual?: string;
+}
+const { variante = 'transparente', actual = '' } = Astro.props;
+const solida = variante === 'solida';
+const hrefCita = '/contacto/#formulario';
+---
+
+<header
+  id="sonris-header"
+  data-variante={variante}
+  style={
+    solida
+      ? 'position:sticky;top:0;z-index:60;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.04)'
+      : 'position:sticky;top:0;z-index:60;background:transparent;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)'
+  }
+>
+  <div style="max-width:1240px;margin:0 auto;padding:20px 40px;display:flex;align-items:center;gap:36px;min-width:0">
+    <a
+      href="/"
+      aria-label="Sonris, ir al inicio"
+      style="flex:none;display:inline-flex;align-items:center"
+    >
+      <Image src={logo} alt="" width={68} height={68} loading="eager" style="display:block;width:68px;height:68px" />
+    </a>
+    <nav
+      data-desknav
+      aria-label="Navegación principal"
+      style="display:flex;align-items:center;gap:26px;margin-left:auto;flex-wrap:nowrap;white-space:nowrap;min-width:0"
+    >
+      {
+        NAV.map((e) => (
+          <a
+            data-underline
+            href={e.href}
+            aria-current={e.href === actual ? 'page' : undefined}
+            style={`font-size:16px;font-weight:500;color:${e.href === actual ? '#B24E00' : '#1A1A1A'}`}
+          >
+            {e.nombre}
+          </a>
+        ))
+      }
+    </nav>
+
+    <MenuMovil
+      client:idle
+      enlaces={[...NAV]}
+      actual={actual}
+      hrefCita={hrefCita}
+      telefono={CONTACTO.telefono}
+      telefonoE164={CONTACTO.telefonoE164}
+    />
+
+    <a
+      id="sonris-header-cta"
+      data-secondary={solida ? undefined : true}
+      data-primary={solida ? true : undefined}
+      href={hrefCita}
+      style={
+        solida
+          ? 'display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:10px;min-height:48px;padding:0 26px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)'
+          : 'display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:10px;min-height:48px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),color 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)'
+      }
+      >Pide tu cita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
+        >→</span
+      ></a
+    >
+  </div>
+</header>

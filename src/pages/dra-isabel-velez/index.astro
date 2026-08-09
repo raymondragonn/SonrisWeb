@@ -1,0 +1,292 @@
+---
+import Base from '../../layouts/Base.astro';
+import CtaFinal from '../../components/CtaFinal.astro';
+import AntesDespues from '../../islands/AntesDespues';
+import { CONTACTO, DIRECCION_MEDICA } from '../../data/site';
+
+const ruta = '/dra-isabel-velez/';
+
+const FORMACION = [
+  ['Grado en Odontología', 'Universidad Popular Autónoma del Estado de Puebla, México.'],
+  ['MSD Orthodontics and Dentofacial Orthopedics', 'Boston University, Estados Unidos.'],
+  ['Especialidad en Ortodoncia y Ciencias Dentales', 'UNITEC, México.'],
+  ['Homologación en España del título de Odontología', 'Ejercicio en España desde entonces.'],
+  ['Lingual Orthodontics', 'Universidad de Ferrara, Italia.'],
+  ['Directora de Radiodiagnóstico', 'Certificación vigente.'],
+];
+
+const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
+---
+
+<Base
+  titulo="Sonris | Dra. Isabel Vélez"
+  descripcion="La Dra. Isabel Vélez, directora médica de Sonris, lleva más de 25 años dedicada en exclusiva a la ortodoncia y tiene la máxima categoría de proveedor de ortodoncia invisible. Reserva tu valoración en Sanchinarro, Madrid."
+  {ruta}
+  migas={[{ nombre: DIRECCION_MEDICA.nombre, href: ruta }]}
+  tipoOg="profile"
+  conDireccionMedicaEnFooter
+>
+  <section
+    id="inicio"
+    aria-labelledby="hero-t"
+    style="position:relative;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%,rgba(254,225,203,0.5) 100%);padding:56px 0 112px"
+  >
+    <div
+      aria-hidden="true"
+      style="position:absolute;top:-180px;left:-160px;width:620px;height:500px;border-radius:9999px;background:#FEE1CB;filter:blur(80px);opacity:0.6;animation:sonris-float 22s ease-in-out infinite"
+    >
+    </div>
+    <div
+      aria-hidden="true"
+      style="position:absolute;bottom:-220px;right:-140px;width:560px;height:460px;border-radius:9999px;background:#FFBC7D;filter:blur(90px);opacity:0.35;animation:sonris-float 28s ease-in-out infinite"
+    >
+    </div>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-hero style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center">
+        <figure style="margin:0">
+          <div
+            style="position:relative;aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)"
+          >
+            <img
+              src="/img/placeholder-liso-4x5.png"
+              sizes="(max-width:900px) 100vw, 50vw"
+              width="1024"
+              height="1280"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              alt="Dra. Isabel Vélez, directora médica de Sonris"
+              style="width:100%;height:100%;object-fit:cover;display:block"
+            />
+            <div
+              data-lamina
+              data-lamina-xl
+              style="position:absolute;left:24px;right:24px;bottom:0;padding:20px 24px;border-bottom-left-radius:0 !important;border-bottom-right-radius:0 !important;border-bottom:0"
+            >
+              <p
+                style="margin:0 0 4px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:18px;line-height:1.3;letter-spacing:-0.02em;color:#000000"
+              >
+                Especialista en ortodoncia invisible
+              </p>
+              <p style="margin:0 0 8px;font-size:15px;line-height:1.5;color:#1A1A1A">Nº de colegiado {DIRECCION_MEDICA.colegiado}</p>
+            </div>
+          </div>
+        </figure>
+        <div>
+          <h1
+            data-h1
+            id="hero-t"
+            style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:64px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:16ch"
+          >
+            Dra. Isabel <span style="color:#EB6B0A">Vélez</span>
+          </h1>
+          <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:#1A1A1A;max-width:52ch">
+            Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.
+          </p>
+          <p style="margin:0 0 36px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:56ch">
+            Valoro tu caso, firmo tu plan de tratamiento y formo a otros ortodoncistas en los casos que se salen de lo sencillo.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+            <a
+              data-primary
+              data-cta-largo
+              href="#formulario"
+              style="display:inline-flex;flex:0 1 auto;max-width:100%;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+              >Reserva tu valoración con la Dra. Vélez<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
+                >→</span
+              ></a
+            >
+          </div>
+          <p style="margin:20px 0 0;font-size:16px;color:#6B6B6B">
+            Primera visita gratuita. O llámanos al{' '}
+            <a href={`tel:${CONTACTO.telefonoE164}`} data-underline style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-sec aria-labelledby="bio-t" style="padding:128px 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
+        <div>
+          <h2
+            id="bio-t"
+            style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
+          >
+            Mi carrera entera en una sola especialidad
+          </h2>
+        </div>
+        <div>
+          <p style="margin:0 0 20px;font-size:19px;line-height:1.7;color:#1A1A1A;max-width:65ch">
+            Soy licenciada en Odontología y especializada en ortodoncia, y llevo más de 25 años dedicada a la práctica exclusiva de la
+            ortodoncia.
+          </p>
+          <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
+            Tengo la máxima categoría de proveedor de ortodoncia invisible por la cantidad de casos terminados con éxito. Es un reconocimiento al volumen
+            de tratamientos completados; cada caso se valora individualmente y ningún resultado clínico se puede garantizar por adelantado.
+          </p>
+          <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
+            Dirijo Sonris, en Sanchinarro, donde solo hacemos ortodoncia invisible.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-sec aria-labelledby="form-t" style="background:#F7F7F7;padding:128px 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:64px;align-items:start">
+        <div>
+          <h2
+            id="form-t"
+            style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
+          >
+            De Puebla a Boston, y de Ferrara a Madrid
+          </h2>
+          <p style="margin:0;font-size:16px;line-height:1.7;color:#6B6B6B;max-width:40ch">
+            Nº de colegiado {DIRECCION_MEDICA.colegiado}.
+          </p>
+        </div>
+        <ol style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column">
+          {
+            FORMACION.map(([titulo, texto], i) => {
+              const ultimo = i === FORMACION.length - 1;
+              return (
+                <li style="display:grid;grid-template-columns:auto 1fr;gap:24px">
+                  <span aria-hidden="true" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                    <span
+                      style={`width:20px;height:20px;border-radius:9999px;border:2px solid #B24E00;background:${ultimo ? '#EB6B0A' : '#FEE1CB'};flex:none`}
+                    />
+                    {!ultimo && <span style="flex:1;width:2px;background:#EDB992" />}
+                  </span>
+                  <div style={ultimo ? '' : 'padding-bottom:32px'}>
+                    <h3 style="margin:0 0 6px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
+                      {titulo}
+                    </h3>
+                    <p style="margin:0;font-size:17px;line-height:1.7;color:#6B6B6B">{texto}</p>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section data-sec data-peach aria-labelledby="rec-t" style="background:#FEE1CB;padding:104px 0 128px;border-radius:40px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
+        <div>
+          <h2
+            id="rec-t"
+            style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
+          >
+            Diamond Provider y trabajo multimarca
+          </h2>
+          <div style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
+            <span
+              style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:16px"
+              >◆ Diamond provider</span
+            >
+            <p style="margin:0 0 12px;font-size:17px;line-height:1.7;color:#1A1A1A">
+              Máxima categoría de proveedor de ortodoncia invisible, otorgada por el número de casos completados.
+            </p>
+          </div>
+        </div>
+        <div>
+          <h3 style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
+            Especialista en alineadores en exclusiva
+          </h3>
+          <p style="margin:0 0 24px;font-size:17px;line-height:1.7;color:#1A1A1A;max-width:44ch">
+            Trabaja únicamente con alineadores transparentes, y elige para cada caso el sistema que mejor se ajusta a lo que necesita esa
+            boca.
+          </p>
+          <h3 style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
+            Membresías
+          </h3>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            {
+              MEMBRESIAS.map((m) => (
+                <span style="display:inline-flex;align-items:center;height:56px;padding:0 22px;border-radius:12px;background:#FFFFFF;border:1px solid #EDB992;font-size:16px;font-weight:500;color:#1A1A1A">
+                  {m}
+                </span>
+              ))
+            }
+          </div>        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-sec aria-labelledby="doc-t" style="padding:112px 0 128px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:center">
+        <div>
+          <h2
+            id="doc-t"
+            style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
+          >
+            Mi público no son solo pacientes: son doctores
+          </h2>
+          <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">
+            Imparto conferencias nacionales e internacionales a doctores de todo el mundo. Cuando otros ortodoncistas quieren aprender a
+            llevar con alineadores los casos difíciles, me escuchan a mí.
+          </p>
+          <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
+            Para ti eso significa una cosa práctica: el criterio con el que valoro tu caso es el mismo que enseño en esas salas.
+          </p>
+        </div>
+        <figure style="margin:0">
+          <div
+            style="position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
+          >
+            <img
+              src="/img/placeholder-liso-4x3.png"
+              sizes="(max-width:900px) 100vw, 50vw"
+              width="1024"
+              height="768"
+              loading="lazy"
+              decoding="async"
+              alt="La Dra. Isabel Vélez impartiendo una conferencia a otros ortodoncistas"
+              style="width:100%;height:100%;object-fit:cover;display:block"
+            />
+          </div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section data-sec aria-labelledby="casos-t" style="background:#F7F7F7;padding:128px 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between;margin-bottom:40px">
+        <h2
+          id="casos-t"
+          style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
+        >
+          Antes y después, arrastrando
+        </h2>
+        <p style="margin:0;font-size:17px;line-height:1.7;color:#6B6B6B;max-width:44ch">
+          Arrastra el tirador para comparar. Cada caso es individual: lo que ves aquí no anticipa tu resultado.
+        </p>
+      </div>
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:start">
+        <AntesDespues client:visible casos={6} />
+        <aside style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
+          <h3 style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
+            Cada boca es distinta
+          </h3>
+          <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#6B6B6B">
+            Los casos que ves aquí se publican con el consentimiento firmado de cada paciente. Ninguno anticipa tu resultado: el tuyo se
+            valora en la primera visita, con las pruebas delante.
+          </p>
+          <a data-underline href="/sobre-nosotros/" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:500;color:#1A1A1A"
+            >Conoce el resto del equipo <span>→</span></a
+          >
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <CtaFinal />
+</Base>

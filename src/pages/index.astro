@@ -1,0 +1,255 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import FocoTratamientos from '../islands/FocoTratamientos';
+import { CONTACTO, DIRECCION_MEDICA } from '../data/site';
+import { TRATAMIENTOS } from '../data/tratamientos';
+
+import heroImg from '../assets/sonris/equipo/Isa-Escaneando9.webp';
+import alineadorImg from '../assets/sonris/tratamientos/Ortodoncia-Invisible-Hero.webp';
+import doctoraImg from '../assets/sonris/equipo/Isabel-Velez.webp';
+import esteticaImg from '../assets/sonris/tratamientos/Estetica-dental.webp';
+import implantesImg from '../assets/sonris/tratamientos/Implantes-Dentales-2.webp';
+import ortognaticaImg from '../assets/sonris/tratamientos/Cirugia-Ortognatica-1.webp';
+import endodonciaImg from '../assets/sonris/tratamientos/Endodoncia-2.webp';
+import cirugiaOralImg from '../assets/sonris/tratamientos/Cirugia-Oral-4.webp';
+import periodonciaImg from '../assets/sonris/tratamientos/Periodoncia-img.webp';
+import odontologiaImg from '../assets/sonris/tratamientos/Odontologia-general.webp';
+
+// Una foto por tratamiento, indexada por slug. El carrusel es una isla de
+// React y recibe URLs, así que aquí se optimizan con getImage.
+const FOTOS: Record<string, ImageMetadata> = {
+  'estetica-dental': esteticaImg,
+  'implantes-dentales': implantesImg,
+  'cirugia-ortognatica': ortognaticaImg,
+  endodoncia: endodonciaImg,
+  'cirugia-oral': cirugiaOralImg,
+  periodoncia: periodonciaImg,
+  'odontologia-general': odontologiaImg,
+};
+
+const foco = await Promise.all(
+  TRATAMIENTOS.map(async (t) => ({
+    nombre: t.nombre,
+    href: `/tratamientos/${t.slug}/`,
+    alt: `${t.nombre} en Sonris`,
+    img: (await getImage({ src: FOTOS[t.slug], width: 720, format: 'webp' })).src,
+  }))
+);
+---
+
+<Base
+  titulo="Sonris | Inicio"
+  descripcion="Alineadores transparentes con dirección médica de la Dra. Isabel Vélez, con la máxima categoría de proveedor de ortodoncia invisible. Primera visita gratuita en Avenida Isabel de Valois 55, Madrid."
+  ruta="/"
+>
+  <section id="inicio" aria-labelledby="hero-t" style="position:relative;overflow:hidden;background:#000000">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;max-height:88vh;overflow:hidden">
+      <Image
+        src={heroImg}
+        alt="La Dra. Isabel Vélez escaneando la boca de un paciente con iTero en el gabinete de Sonris"
+        widths={[900, 1400]}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+      />
+      <div
+        aria-hidden="true"
+        style="position:absolute;inset:0;background:rgba(0,0,0,0.62);background-image:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.25) 55%,rgba(0,0,0,0.55) 100%)"
+      >
+      </div>
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:0 40px 96px">
+        <div style="max-width:1240px;width:100%;margin:0 auto">
+          <h1
+            data-h1
+            id="hero-t"
+            style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:68px;line-height:1.05;letter-spacing:-0.02em;color:#FFFFFF;max-width:14ch"
+          >
+            Sonríe sin <span style="color:#EB6B0A">notarlo</span>
+          </h1>
+          <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:rgba(255,255,255,0.88);max-width:40ch">
+            Ortodoncia invisible en Sanchinarro. Primera visita gratuita.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+            <a
+              data-primary
+              href="#formulario"
+              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+              >Pide tu cita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+            >
+            <a
+              href={CONTACTO.whatsappUrl}
+              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.7);color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1)"
+              >WhatsApp</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-overlap aria-label="Sonris en cifras" style="position:relative;z-index:5;max-width:1240px;margin:-64px auto 0;padding:0 40px">
+    <div
+      data-trust
+      data-lamina
+      data-lamina-xl
+      style="background:#FFFFFF;border-radius:40px;box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10);padding:40px 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))"
+    >
+      <div style="padding:0 28px">
+        <p
+          data-count-to="25"
+          data-count-prefix="+"
+          style="margin:0 0 6px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#EB6B0A"
+        >
+          +25
+        </p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">años de trayectoria dedicados a la ortodoncia</p>
+      </div>
+      <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
+        <p
+          style="margin:0 0 6px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:24px;line-height:1.2;letter-spacing:-0.02em;color:#000000"
+        >
+          Solo alineadores
+        </p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">dedicación exclusiva a la ortodoncia invisible</p>
+      </div>
+      <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
+        <span
+          style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px"
+          >◆ Diamond provider</span
+        >
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">
+          Máxima categoría de proveedor de ortodoncia invisible
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section data-sec id="ortodoncia" aria-labelledby="orto-t" style="padding:128px 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:72px;align-items:center">
+        <figure style="margin:0">
+          <div
+            style="position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
+          >
+            <Image
+              data-cardimg
+              src={alineadorImg}
+              widths={[600, 1000]}
+              sizes="(max-width:900px) 100vw, 50vw"
+              loading="lazy"
+              decoding="async"
+              alt="Paciente colocándose un alineador transparente"
+              style="width:100%;height:100%;object-fit:cover;display:block"
+            />
+          </div>
+        </figure>
+        <div>
+          <h2
+            id="orto-t"
+            style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
+          >
+            Alineadores que te puedes quitar
+          </h2>
+          <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:60ch">
+            Son férulas transparentes hechas a medida que vas cambiando según tu plan. Te las quitas para comer y para lavarte los dientes,
+            así que tu rutina apenas cambia.
+          </p>
+          <p style="margin:0 0 36px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
+            En la página del tratamiento te contamos las opciones, cómo se planifica tu caso y qué marcas de alineador trabajamos.
+          </p>
+          <a
+            data-primary
+            href="/ortodoncia-invisible/"
+            style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:48px;padding:0 28px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+            >Ver el tratamiento completo<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
+              >→</span
+            ></a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-sec id="tratamientos" data-peach aria-labelledby="trat-t" style="background:#FEE1CB;padding:104px 0 112px;border-radius:40px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <h2
+        id="trat-t"
+        style="margin:0 auto 48px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch;text-align:center"
+      >
+        Lo demás que tu boca puede necesitar
+      </h2>
+    </div>
+
+    <FocoTratamientos client:visible items={foco} />
+
+    <div style="display:flex;justify-content:center">
+      <a
+        data-secondary
+        href="/tratamientos/"
+        style="display:inline-flex;white-space:nowrap;align-items:center;gap:10px;min-height:48px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
+        >Ver todos los tratamientos<span>→</span></a
+      >
+    </div>
+  </section>
+
+  <section data-sec id="doctora" aria-labelledby="dra-t" style="padding:112px 0 128px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:72px;align-items:center">
+        <figure style="margin:0">
+          <div
+            style="position:relative;aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
+          >
+            <Image
+              data-portrait
+              src={doctoraImg}
+              widths={[400, 669]}
+              sizes="(max-width:900px) 100vw, 40vw"
+              loading="lazy"
+              decoding="async"
+              alt={`${DIRECCION_MEDICA.nombre}, directora médica de Sonris`}
+              style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.28);transform-origin:center 30%"
+            />
+            <div
+              data-lamina
+              data-lamina-xl
+              style="position:absolute;left:24px;right:24px;bottom:0;padding:20px 24px;border-bottom-left-radius:0 !important;border-bottom-right-radius:0 !important;border-bottom:0"
+            >
+              <p
+                style="margin:0 0 4px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:18px;line-height:1.3;letter-spacing:-0.02em;color:#000000"
+              >
+                {DIRECCION_MEDICA.nombre}
+              </p>
+              <p style="margin:0 0 8px;font-size:15px;line-height:1.5;color:#1A1A1A">Directora médica · Ortodoncia invisible</p>
+            </div>
+          </div>
+        </figure>
+        <div>
+          <h2
+            id="dra-t"
+            style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
+          >
+            {DIRECCION_MEDICA.nombre}
+          </h2>
+          <p style="margin:0 0 28px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:56ch">
+            Directora médica · Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.
+          </p>
+          <p style="margin:0 0 36px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
+            Ella valora tu caso en la primera visita y firma tu plan de tratamiento.
+          </p>
+          <a
+            data-underline
+            href="/dra-isabel-velez/"
+            style="display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:500;color:#1A1A1A"
+            >Conoce su trayectoria <span>→</span></a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaFinal />
+</Base>

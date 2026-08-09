@@ -1,0 +1,94 @@
+---
+// Página de cuidados posteriores. No forma parte del bloque legal del pie:
+// se entra desde Tratamientos. El texto clínico definitivo (una hoja por
+// intervención, firmada por la dirección médica) sigue pendiente: ver
+// PENDIENTES.md. Hasta entonces, noindex.
+import Base from '../../layouts/Base.astro';
+import { SITE, CONTACTO, DIRECCION_MEDICA } from '../../data/site';
+
+const ruta = '/indicaciones-post-tratamiento/';
+---
+
+<Base
+  titulo={`${SITE.nombre} | Indicaciones post-tratamiento`}
+  descripcion="Lo que conviene hacer en casa después de cada intervención, por escrito y por tratamiento."
+  {ruta}
+  migas={[
+    { nombre: 'Tratamientos', href: '/tratamientos/' },
+    { nombre: 'Indicaciones post-tratamiento', href: ruta },
+  ]}
+  headerVariante="solida"
+  noindex
+>
+  <section data-sec aria-labelledby="t" style="padding:64px 0 48px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <nav aria-label="Ruta" style="margin-bottom:28px;font-size:15px;color:#6B6B6B">
+        <a data-underline href="/" style="color:#6B6B6B">Inicio</a> ·
+        <a data-underline href="/tratamientos/" style="color:#6B6B6B">Tratamientos</a> ·
+        <span style="color:#1A1A1A">Indicaciones post-tratamiento</span>
+      </nav>
+      <p style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#B24E00">Después de la consulta</p>
+      <h1
+        data-h1
+        id="t"
+        style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:48px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch"
+      >
+        Indicaciones post-tratamiento
+      </h1>
+      <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
+        Lo que conviene hacer en casa después de cada intervención, por escrito y por tratamiento.
+      </p>
+    </div>
+  </section>
+
+  <section data-sec aria-labelledby="cuerpo-t" style="background:#F7F7F7;padding:72px 0 96px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:56px;align-items:start">
+        <div>
+          <h2
+            id="cuerpo-t"
+            style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:30px;line-height:1.2;letter-spacing:-0.02em;color:#000000"
+          >
+            Instrucciones por tipo de intervención
+          </h2>
+          <p style="margin:0 0 16px;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">
+            Cada intervención tiene sus propios cuidados. Al terminar la consulta te entregamos la hoja que corresponde a
+            tu caso, firmada por {DIRECCION_MEDICA.nombre} y fechada, con las pautas de higiene, alimentación y medicación
+            que debes seguir en los días siguientes.
+          </p>
+          <p style="margin:0 0 16px;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">
+            Estas indicaciones son individuales: dependen de la intervención, de tu estado de salud y de la medicación que
+            tomes. Por eso no sustituyen a las que te hayamos dado en consulta. Si has perdido tu hoja, pídenos otra copia.
+          </p>
+          <p style="margin:0;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">
+            Si notas dolor que no cede con la pauta indicada, sangrado que no se detiene, fiebre o hinchazón que va a más,
+            llámanos al <a data-underline href={`tel:${CONTACTO.telefonoE164}`} style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a>
+            en horario de clínica.
+          </p>
+        </div>
+
+        <aside style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 12px 36px rgba(0,0,0,.03)">
+          <p style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
+            ¿Una duda después del tratamiento?
+          </p>
+          <p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#6B6B6B">
+            {CONTACTO.horario}. Escríbenos por WhatsApp y te contestamos con tu historia delante.
+          </p>
+          <a
+            data-primary
+            href={CONTACTO.whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style="display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+            >Escríbenos<span class="vh"> por WhatsApp (se abre en una pestaña nueva)</span><span
+              data-arrow
+              style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span
+            ></a
+          >
+          <div style="height:1px;background:rgba(0,0,0,0.08);margin:24px 0"></div>
+          <a data-underline href="/tratamientos/" style="font-size:17px;font-weight:500;color:#1A1A1A">Ver todos los tratamientos</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+</Base>

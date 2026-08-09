@@ -1,0 +1,39 @@
+# Generado por scripts/generar-redirecciones.mjs. No editar a mano.
+# Fuente: src/data/redirecciones.js
+# 32 reglas 301 + 1 regla 410, más normalización de barra final y www.
+https://www.sonris.es/*  https://sonris.es/:splat  301!
+http://sonris.es/*       https://sonris.es/:splat  301!
+
+/como-ponerse-el-alineador/                      /ortodoncia-invisalign/#como-funciona  301!
+/primera-consulta-gratuita/                      /ortodoncia-invisalign/#primera-visita  301!
+/ventajas-ortodoncia-invisible/                  /ortodoncia-invisalign/#tecnologia  301!
+/tecnologia/                                     /ortodoncia-invisalign/#tecnologia  301!
+/centro-ortodoncia-invisible-madrid/             /sobre-nosotros/  301!
+/equipo/                                         /sobre-nosotros/#equipo  301!
+/blanqueamiento-dental/                          /tratamientos/estetica-dental/#blanqueamiento  301!
+/carillas-dentales/                              /tratamientos/estetica-dental/#carillas  301!
+/estetica-dental-2/                              /tratamientos/estetica-dental/  301!
+/endodoncia-2/                                   /tratamientos/endodoncia/  301!
+/odontologia-general-2/                          /tratamientos/odontologia-general/  301!
+/implantes-dentales/                             /tratamientos/implantes-dentales/  301!
+/cirugia-ortognatica/                            /tratamientos/cirugia-ortognatica/  301!
+/cirugia-oral/                                   /tratamientos/cirugia-oral/  301!
+/periodoncia/                                    /tratamientos/periodoncia/  301!
+/contacto-sonris/                                /contacto/  301!
+/politica-privacidad/                            /politica-de-privacidad/  301!
+/financiacion-ortodoncia-invisible-madrid/       /contacto/  301!
+/blog/                                           /  301!
+/blog/ortodoncia-invisible-precio/               /contacto/  301!
+/blog/cuanto-dura-la-ortodoncia-invisible/       /ortodoncia-invisalign/#tipos  301!
+/blog/invisalign-o-brackets/                     /ortodoncia-invisalign/#que-es  301!
+/blog/como-limpiar-los-alineadores/              /ortodoncia-invisalign/#faq  301!
+/blog/ortodoncia-invisible-en-adultos/           /ortodoncia-invisalign/  301!
+/blog/ortodoncia-invisible-para-ninos/           /ortodoncia-invisalign/#tipos  301!
+/blog/que-son-los-ataches/                       /ortodoncia-invisalign/#faq  301!
+/blog/retenedores-despues-de-la-ortodoncia/      /ortodoncia-invisalign/#faq  301!
+/blog/escaner-itero-que-es/                      /ortodoncia-invisalign/#tecnologia  301!
+/blog/dental-monitoring-como-funciona/           /ortodoncia-invisalign/#tecnologia  301!
+/blog/apinamiento-dental/                        /ortodoncia-invisalign/#tipos  301!
+/blog/mordida-cruzada-tratamiento/               /tratamientos/cirugia-ortognatica/  301!
+/blog/blanqueamiento-en-casa-o-en-clinica/       /tratamientos/estetica-dental/#blanqueamiento  301!
+/identifica-tu-caso/                             /404  410!

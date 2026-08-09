@@ -1,0 +1,74 @@
+---
+import '../styles/global.css';
+import Seo, { type Miga } from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BarrasFijas from '../components/BarrasFijas.astro';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  ruta: string;
+  migas?: Miga[];
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+  tipoOg?: 'website' | 'article' | 'profile';
+  headerVariante?: 'transparente' | 'solida';
+  /** Ancla del CTA de header, footer y barra móvil. */
+  hrefCita?: string;
+  conWhatsAppEnBarra?: boolean;
+  conDireccionMedicaEnFooter?: boolean;
+}
+
+const {
+  titulo,
+  descripcion,
+  ruta,
+  migas = [],
+  jsonLd = [],
+  noindex = false,
+  tipoOg = 'website',
+  headerVariante = 'transparente',
+  hrefCita = '/contacto/#formulario',
+  conWhatsAppEnBarra = false,
+  conDireccionMedicaEnFooter = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es-ES">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#FFFFFF" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap"
+      rel="stylesheet"
+    />
+
+    <Seo {titulo} {descripcion} {ruta} {migas} {jsonLd} {noindex} {tipoOg} />
+  </head>
+
+  <body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+    <div style="font-family:'DM Sans',system-ui,sans-serif;color:#1A1A1A;background:#FFFFFF">
+      <Header variante={headerVariante} actual={ruta} />
+      <main id="contenido">
+        <slot />
+      </main>
+      <Footer {hrefCita} conDireccionMedica={conDireccionMedicaEnFooter} />
+      <BarrasFijas {hrefCita} {conWhatsAppEnBarra} />
+    </div>
+
+    <script>
+      import '../scripts/ui';
+    </script>
+  </body>
+</html>

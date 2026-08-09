@@ -1,0 +1,155 @@
+---
+import { SITE, CONTACTO, DIRECCION_MEDICA, REDES } from '../data/site';
+
+export type Miga = { nombre: string; href: string };
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  /** Ruta canónica con barra final, p. ej. "/contacto/" */
+  ruta: string;
+  migas?: Miga[];
+  /** Schema.org adicional de la página (FAQPage, Person, MedicalProcedure…) */
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+  tipoOg?: 'website' | 'article' | 'profile';
+}
+
+const { titulo, descripcion, ruta, migas = [], jsonLd = [], noindex = false, tipoOg = 'website' } =
+  Astro.props;
+
+const canonical = new URL(ruta, SITE.url).href;
+const ogImagen = new URL('/og/sonris-og.png', SITE.url).href;
+
+const direccion = {
+  '@type': 'PostalAddress',
+  streetAddress: CONTACTO.calle,
+  addressLocality: CONTACTO.ciudad,
+  addressRegion: 'Comunidad de Madrid',
+  postalCode: CONTACTO.cp,
+  addressCountry: 'ES',
+};
+
+// Entidad principal del sitio. Dentist hereda de MedicalBusiness y LocalBusiness:
+// es el tipo que Google entiende para una clínica dental.
+const clinica = {
+  '@type': ['Dentist', 'MedicalClinic'],
+  '@id': `${SITE.url}/#clinica`,
+  name: SITE.nombre,
+  legalName: SITE.razonSocial,
+  vatID: SITE.cif,
+  url: `${SITE.url}/`,
+  description: SITE.descripcion,
+  telephone: CONTACTO.telefonoE164,
+  email: CONTACTO.email,
+  address: direccion,
+  geo: { '@type': 'GeoCoordinates', latitude: CONTACTO.lat, longitude: CONTACTO.lng },
+  hasMap: CONTACTO.mapsUrl,
+  areaServed: [
+    'Sanchinarro',
+    'Las Tablas',
+    'La Moraleja',
+    'Valdebebas',
+    'Hortaleza',
+    'Alcobendas',
+    'San Sebastián de los Reyes',
+    'Madrid',
+  ].map((name) => ({ '@type': 'Place', name })),
+  medicalSpecialty: 'Dentistry',
+  availableService: [
+    { '@type': 'MedicalTherapy', name: 'Ortodoncia invisible con alineadores' },
+    { '@type': 'MedicalTherapy', name: 'Estética dental' },
+    { '@type': 'MedicalTherapy', name: 'Implantes dentales' },
+    { '@type': 'MedicalTherapy', name: 'Cirugía ortognática' },
+    { '@type': 'MedicalTherapy', name: 'Endodoncia' },
+    { '@type': 'MedicalTherapy', name: 'Cirugía oral' },
+    { '@type': 'MedicalTherapy', name: 'Periodoncia' },
+    { '@type': 'MedicalTherapy', name: 'Odontología general' },
+  ],
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '12:00',
+      closes: '20:00',
+    },
+  ],
+  employee: { '@id': `${SITE.url}/dra-isabel-velez/#persona` },
+  sameAs: REDES.map((r) => r.url),
+};
+
+const doctora = {
+  '@type': ['Person', 'Physician'],
+  '@id': `${SITE.url}/dra-isabel-velez/#persona`,
+  name: DIRECCION_MEDICA.nombre,
+  givenName: 'Isabel',
+  familyName: 'Vélez',
+  jobTitle: DIRECCION_MEDICA.cargo,
+  identifier: { '@type': 'PropertyValue', name: 'Nº de colegiado', value: DIRECCION_MEDICA.colegiado },
+  medicalSpecialty: 'Orthodontics',
+  worksFor: { '@id': `${SITE.url}/#clinica` },
+  url: `${SITE.url}/dra-isabel-velez/`,
+};
+
+const web = {
+  '@type': 'WebSite',
+  '@id': `${SITE.url}/#web`,
+  url: `${SITE.url}/`,
+  name: SITE.nombre,
+  inLanguage: SITE.lang,
+  publisher: { '@id': `${SITE.url}/#clinica` },
+};
+
+const pagina = {
+  '@type': 'WebPage',
+  '@id': `${canonical}#pagina`,
+  url: canonical,
+  name: titulo,
+  description: descripcion,
+  isPartOf: { '@id': `${SITE.url}/#web` },
+  about: { '@id': `${SITE.url}/#clinica` },
+  inLanguage: SITE.lang,
+  ...(migas.length
+    ? {
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [{ nombre: 'Inicio', href: '/' }, ...migas].map((m, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: m.nombre,
+            item: new URL(m.href, SITE.url).href,
+          })),
+        },
+      }
+    : {}),
+};
+
+const grafo = { '@context': 'https://schema.org', '@graph': [clinica, doctora, web, pagina, ...jsonLd] };
+---
+
+<title>{titulo}</title>
+<meta name="description" content={descripcion} />
+<link rel="canonical" href={canonical} />
+<link rel="alternate" hreflang="es-ES" href={canonical} />
+<link rel="alternate" hreflang="x-default" href={canonical} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+{!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
+
+<meta property="og:type" content={tipoOg} />
+<meta property="og:site_name" content={SITE.nombre} />
+<meta property="og:locale" content="es_ES" />
+<meta property="og:title" content={titulo} />
+<meta property="og:description" content={descripcion} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImagen} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={titulo} />
+<meta name="twitter:description" content={descripcion} />
+<meta name="twitter:image" content={ogImagen} />
+
+<meta name="geo.region" content="ES-MD" />
+<meta name="geo.placename" content={`${CONTACTO.barrio}, ${CONTACTO.ciudad}`} />
+<meta name="geo.position" content={`${CONTACTO.lat};${CONTACTO.lng}`} />
+<meta name="ICBM" content={`${CONTACTO.lat}, ${CONTACTO.lng}`} />
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(grafo)} />

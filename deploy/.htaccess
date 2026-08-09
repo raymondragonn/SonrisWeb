@@ -1,0 +1,49 @@
+# Generado por scripts/generar-redirecciones.mjs. No editar a mano.
+# Fuente: src/data/redirecciones.js
+# 32 reglas 301 + 1 regla 410, más normalización de barra final y www.
+RewriteEngine On
+
+# https y sin www.
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^(.*)$ https://sonris.es/$1 [R=301,L]
+
+# Barra final obligatoria.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*[^/])$ /$1/ [R=301,L]
+
+Redirect 301 /como-ponerse-el-alineador/ /ortodoncia-invisalign/#como-funciona
+Redirect 301 /primera-consulta-gratuita/ /ortodoncia-invisalign/#primera-visita
+Redirect 301 /ventajas-ortodoncia-invisible/ /ortodoncia-invisalign/#tecnologia
+Redirect 301 /tecnologia/ /ortodoncia-invisalign/#tecnologia
+Redirect 301 /centro-ortodoncia-invisible-madrid/ /sobre-nosotros/
+Redirect 301 /equipo/ /sobre-nosotros/#equipo
+Redirect 301 /blanqueamiento-dental/ /tratamientos/estetica-dental/#blanqueamiento
+Redirect 301 /carillas-dentales/ /tratamientos/estetica-dental/#carillas
+Redirect 301 /estetica-dental-2/ /tratamientos/estetica-dental/
+Redirect 301 /endodoncia-2/ /tratamientos/endodoncia/
+Redirect 301 /odontologia-general-2/ /tratamientos/odontologia-general/
+Redirect 301 /implantes-dentales/ /tratamientos/implantes-dentales/
+Redirect 301 /cirugia-ortognatica/ /tratamientos/cirugia-ortognatica/
+Redirect 301 /cirugia-oral/ /tratamientos/cirugia-oral/
+Redirect 301 /periodoncia/ /tratamientos/periodoncia/
+Redirect 301 /contacto-sonris/ /contacto/
+Redirect 301 /politica-privacidad/ /politica-de-privacidad/
+Redirect 301 /financiacion-ortodoncia-invisible-madrid/ /contacto/
+Redirect 301 /blog/ /
+Redirect 301 /blog/ortodoncia-invisible-precio/ /contacto/
+Redirect 301 /blog/cuanto-dura-la-ortodoncia-invisible/ /ortodoncia-invisalign/#tipos
+Redirect 301 /blog/invisalign-o-brackets/ /ortodoncia-invisalign/#que-es
+Redirect 301 /blog/como-limpiar-los-alineadores/ /ortodoncia-invisalign/#faq
+Redirect 301 /blog/ortodoncia-invisible-en-adultos/ /ortodoncia-invisalign/
+Redirect 301 /blog/ortodoncia-invisible-para-ninos/ /ortodoncia-invisalign/#tipos
+Redirect 301 /blog/que-son-los-ataches/ /ortodoncia-invisalign/#faq
+Redirect 301 /blog/retenedores-despues-de-la-ortodoncia/ /ortodoncia-invisalign/#faq
+Redirect 301 /blog/escaner-itero-que-es/ /ortodoncia-invisalign/#tecnologia
+Redirect 301 /blog/dental-monitoring-como-funciona/ /ortodoncia-invisalign/#tecnologia
+Redirect 301 /blog/apinamiento-dental/ /ortodoncia-invisalign/#tipos
+Redirect 301 /blog/mordida-cruzada-tratamiento/ /tratamientos/cirugia-ortognatica/
+Redirect 301 /blog/blanqueamiento-en-casa-o-en-clinica/ /tratamientos/estetica-dental/#blanqueamiento
+Redirect 410 /identifica-tu-caso/
+
+ErrorDocument 404 /404.html

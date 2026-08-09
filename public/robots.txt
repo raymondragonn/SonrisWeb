@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Páginas de utilidad y 404: sin contenido definitivo, van con noindex en el <head>.
+Disallow: /404/
+
+Sitemap: https://sonris.es/sitemap-index.xml

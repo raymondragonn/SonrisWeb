@@ -42,7 +42,7 @@ Las 17 del mapa de cableado, todas con barra final:
 | Ruta | Archivo |
 | --- | --- |
 | `/` | `src/pages/index.astro` |
-| `/ortodoncia-invisalign/` | `src/pages/ortodoncia-invisalign/index.astro` |
+| `/ortodoncia-invisible/` | `src/pages/ortodoncia-invisible/index.astro` |
 | `/tratamientos/` | `src/pages/tratamientos/index.astro` |
 | `/tratamientos/<7 slugs>/` | `src/pages/tratamientos/[slug].astro` + `src/data/tratamientos.ts` |
 | `/dra-isabel-velez/` | `src/pages/dra-isabel-velez/index.astro` |

@@ -1,0 +1,327 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": true,
+  "cleanUrls": false,
+  "redirects": [
+    {
+      "source": "/como-ponerse-el-alineador",
+      "destination": "/ortodoncia-invisalign/#como-funciona",
+      "permanent": true
+    },
+    {
+      "source": "/primera-consulta-gratuita",
+      "destination": "/ortodoncia-invisalign/#primera-visita",
+      "permanent": true
+    },
+    {
+      "source": "/ventajas-ortodoncia-invisible",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/tecnologia",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/centro-ortodoncia-invisible-madrid",
+      "destination": "/sobre-nosotros/",
+      "permanent": true
+    },
+    {
+      "source": "/equipo",
+      "destination": "/sobre-nosotros/#equipo",
+      "permanent": true
+    },
+    {
+      "source": "/blanqueamiento-dental",
+      "destination": "/tratamientos/estetica-dental/#blanqueamiento",
+      "permanent": true
+    },
+    {
+      "source": "/carillas-dentales",
+      "destination": "/tratamientos/estetica-dental/#carillas",
+      "permanent": true
+    },
+    {
+      "source": "/estetica-dental-2",
+      "destination": "/tratamientos/estetica-dental/",
+      "permanent": true
+    },
+    {
+      "source": "/endodoncia-2",
+      "destination": "/tratamientos/endodoncia/",
+      "permanent": true
+    },
+    {
+      "source": "/odontologia-general-2",
+      "destination": "/tratamientos/odontologia-general/",
+      "permanent": true
+    },
+    {
+      "source": "/implantes-dentales",
+      "destination": "/tratamientos/implantes-dentales/",
+      "permanent": true
+    },
+    {
+      "source": "/cirugia-ortognatica",
+      "destination": "/tratamientos/cirugia-ortognatica/",
+      "permanent": true
+    },
+    {
+      "source": "/cirugia-oral",
+      "destination": "/tratamientos/cirugia-oral/",
+      "permanent": true
+    },
+    {
+      "source": "/periodoncia",
+      "destination": "/tratamientos/periodoncia/",
+      "permanent": true
+    },
+    {
+      "source": "/contacto-sonris",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/politica-privacidad",
+      "destination": "/politica-de-privacidad/",
+      "permanent": true
+    },
+    {
+      "source": "/financiacion-ortodoncia-invisible-madrid",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ortodoncia-invisible-precio",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/cuanto-dura-la-ortodoncia-invisible",
+      "destination": "/ortodoncia-invisalign/#tipos",
+      "permanent": true
+    },
+    {
+      "source": "/blog/invisalign-o-brackets",
+      "destination": "/ortodoncia-invisalign/#que-es",
+      "permanent": true
+    },
+    {
+      "source": "/blog/como-limpiar-los-alineadores",
+      "destination": "/ortodoncia-invisalign/#faq",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ortodoncia-invisible-en-adultos",
+      "destination": "/ortodoncia-invisalign/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ortodoncia-invisible-para-ninos",
+      "destination": "/ortodoncia-invisalign/#tipos",
+      "permanent": true
+    },
+    {
+      "source": "/blog/que-son-los-ataches",
+      "destination": "/ortodoncia-invisalign/#faq",
+      "permanent": true
+    },
+    {
+      "source": "/blog/retenedores-despues-de-la-ortodoncia",
+      "destination": "/ortodoncia-invisalign/#faq",
+      "permanent": true
+    },
+    {
+      "source": "/blog/escaner-itero-que-es",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/blog/dental-monitoring-como-funciona",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/blog/apinamiento-dental",
+      "destination": "/ortodoncia-invisalign/#tipos",
+      "permanent": true
+    },
+    {
+      "source": "/blog/mordida-cruzada-tratamiento",
+      "destination": "/tratamientos/cirugia-ortognatica/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/blanqueamiento-en-casa-o-en-clinica",
+      "destination": "/tratamientos/estetica-dental/#blanqueamiento",
+      "permanent": true
+    },
+    {
+      "source": "/como-ponerse-el-alineador/",
+      "destination": "/ortodoncia-invisalign/#como-funciona",
+      "permanent": true
+    },
+    {
+      "source": "/primera-consulta-gratuita/",
+      "destination": "/ortodoncia-invisalign/#primera-visita",
+      "permanent": true
+    },
+    {
+      "source": "/ventajas-ortodoncia-invisible/",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/tecnologia/",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/centro-ortodoncia-invisible-madrid/",
+      "destination": "/sobre-nosotros/",
+      "permanent": true
+    },
+    {
+      "source": "/equipo/",
+      "destination": "/sobre-nosotros/#equipo",
+      "permanent": true
+    },
+    {
+      "source": "/blanqueamiento-dental/",
+      "destination": "/tratamientos/estetica-dental/#blanqueamiento",
+      "permanent": true
+    },
+    {
+      "source": "/carillas-dentales/",
+      "destination": "/tratamientos/estetica-dental/#carillas",
+      "permanent": true
+    },
+    {
+      "source": "/estetica-dental-2/",
+      "destination": "/tratamientos/estetica-dental/",
+      "permanent": true
+    },
+    {
+      "source": "/endodoncia-2/",
+      "destination": "/tratamientos/endodoncia/",
+      "permanent": true
+    },
+    {
+      "source": "/odontologia-general-2/",
+      "destination": "/tratamientos/odontologia-general/",
+      "permanent": true
+    },
+    {
+      "source": "/implantes-dentales/",
+      "destination": "/tratamientos/implantes-dentales/",
+      "permanent": true
+    },
+    {
+      "source": "/cirugia-ortognatica/",
+      "destination": "/tratamientos/cirugia-ortognatica/",
+      "permanent": true
+    },
+    {
+      "source": "/cirugia-oral/",
+      "destination": "/tratamientos/cirugia-oral/",
+      "permanent": true
+    },
+    {
+      "source": "/periodoncia/",
+      "destination": "/tratamientos/periodoncia/",
+      "permanent": true
+    },
+    {
+      "source": "/contacto-sonris/",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/politica-privacidad/",
+      "destination": "/politica-de-privacidad/",
+      "permanent": true
+    },
+    {
+      "source": "/financiacion-ortodoncia-invisible-madrid/",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ortodoncia-invisible-precio/",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/cuanto-dura-la-ortodoncia-invisible/",
+      "destination": "/ortodoncia-invisalign/#tipos",
+      "permanent": true
+    },
+    {
+      "source": "/blog/invisalign-o-brackets/",
+      "destination": "/ortodoncia-invisalign/#que-es",
+      "permanent": true
+    },
+    {
+      "source": "/blog/como-limpiar-los-alineadores/",
+      "destination": "/ortodoncia-invisalign/#faq",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ortodoncia-invisible-en-adultos/",
+      "destination": "/ortodoncia-invisalign/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ortodoncia-invisible-para-ninos/",
+      "destination": "/ortodoncia-invisalign/#tipos",
+      "permanent": true
+    },
+    {
+      "source": "/blog/que-son-los-ataches/",
+      "destination": "/ortodoncia-invisalign/#faq",
+      "permanent": true
+    },
+    {
+      "source": "/blog/retenedores-despues-de-la-ortodoncia/",
+      "destination": "/ortodoncia-invisalign/#faq",
+      "permanent": true
+    },
+    {
+      "source": "/blog/escaner-itero-que-es/",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/blog/dental-monitoring-como-funciona/",
+      "destination": "/ortodoncia-invisalign/#tecnologia",
+      "permanent": true
+    },
+    {
+      "source": "/blog/apinamiento-dental/",
+      "destination": "/ortodoncia-invisalign/#tipos",
+      "permanent": true
+    },
+    {
+      "source": "/blog/mordida-cruzada-tratamiento/",
+      "destination": "/tratamientos/cirugia-ortognatica/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/blanqueamiento-en-casa-o-en-clinica/",
+      "destination": "/tratamientos/estetica-dental/#blanqueamiento",
+      "permanent": true
+    }
+  ]
+}
