@@ -1,4 +1,7 @@
 // Contenido de /ortodoncia-invisible/. Literal de «Sonris - Ortodoncia invisible».
+import type { ImageMetadata } from 'astro';
+import dentalMonitoring from '../assets/sonris/tratamientos/Dental-Monitoring.webp';
+import acelerador from '../assets/sonris/tratamientos/Acelerador.webp';
 
 export const VENTAJAS = [
   ['Estética.', 'Casi nadie nota que los llevas puestos.'],
@@ -94,7 +97,9 @@ export const PASOS_CLINICOS = [
   },
 ];
 
-export const TECNOLOGIA = [
+// `imagen` es opcional: la tarjeta sin ella se queda con el placeholder al pasar
+// el cursor.
+export const TECNOLOGIA: { titulo: string; texto: string; video: string; imagen?: ImageMetadata }[] = [
   {
     titulo: 'Escáner intraoral 3D iTero',
     texto: 'Escanea tu boca sin moldes y genera la simulación virtual del punto de partida y del resultado.',
@@ -104,11 +109,13 @@ export const TECNOLOGIA = [
     titulo: 'Dental Monitoring',
     texto: 'Una app en tu móvil que monitoriza el tratamiento cada semana y minimiza el número de visitas.',
     video: 'https://youtu.be/eOVLFONmDng',
+    imagen: dentalMonitoring,
   },
   {
     titulo: 'Acelerador',
     texto: 'Reduce el tiempo de tratamiento hasta un 40 %. Está especialmente indicado en pacientes con problemas periodontales.',
     video: 'https://www.youtube.com/watch?v=kDc9r9gz2V8',
+    imagen: acelerador,
   },
 ];
 

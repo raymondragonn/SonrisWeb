@@ -9,23 +9,44 @@ const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function iniciarHeader() {
   const h = document.getElementById('sonris-header');
   if (!h || h.dataset.variante === 'solida') return;
-  const cta = document.getElementById('sonris-header-cta');
   const barra = document.querySelector<HTMLElement>('[data-mobilebar]');
 
+  // El aspecto lo pone global.css a partir de estos dos interruptores. El
+  // script solo decide cuándo, nunca cómo.
+  let fijo = false;
+  let subida = false;
+  let encolado = false;
+
   const aplicar = () => {
+    encolado = false;
     const y = window.scrollY || document.documentElement.scrollTop || 0;
-    const fijo = y > 80;
-    h.style.background = fijo ? 'rgba(255,255,255,0.88)' : 'transparent';
-    h.style.backdropFilter = fijo ? 'blur(12px)' : 'none';
-    h.style.boxShadow = fijo ? '0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)' : 'none';
-    if (barra) barra.style.transform = y > 420 ? 'none' : 'translateY(120%)';
-    if (cta) {
-      cta.style.background = fijo ? '#B24E00' : '#FFFFFF';
-      cta.style.color = fijo ? '#FFFFFF' : '#1A1A1A';
-      cta.style.borderColor = fijo ? '#B24E00' : 'rgba(0,0,0,0.08)';
+    // El relleno entra al primer píxel de scroll: si esperaba a los 80px, el
+    // navbar viajaba transparente sobre contenido ya desplazado. Umbrales
+    // distintos al entrar y salir para que el rebote no lo encienda en bucle.
+    const ahoraFijo = fijo ? y > 4 : y > 8;
+    if (ahoraFijo !== fijo) {
+      fijo = ahoraFijo;
+      h.toggleAttribute('data-fijo', fijo);
+    }
+    const ahoraSubida = y > 420;
+    if (barra && ahoraSubida !== subida) {
+      subida = ahoraSubida;
+      barra.style.transform = subida ? 'none' : 'translateY(120%)';
     }
   };
-  window.addEventListener('scroll', aplicar, { passive: true });
+
+  // Un solo repintado por fotograma: el evento de scroll llega muchas más
+  // veces que eso y escribir en cada uno provocaba tirones.
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (encolado) return;
+      encolado = true;
+      requestAnimationFrame(aplicar);
+    },
+    { passive: true }
+  );
+  if (barra) barra.style.transform = 'translateY(120%)';
   aplicar();
 }
 

@@ -1,5 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import doctoraImg from '../../assets/sonris/equipo/Isabel-Velez.webp';
+import libroImg from '../../assets/sonris/blog/libro-ortodoncia-con-alineadores.png';
+import qrLibroImg from '../../assets/sonris/blog/qr-pre-orden-libro.png';
 import CtaFinal from '../../components/CtaFinal.astro';
 import AntesDespues from '../../islands/AntesDespues';
 import { CONTACTO, DIRECCION_MEDICA } from '../../data/site';
@@ -47,16 +51,15 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
           <div
             style="position:relative;aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)"
           >
-            <img
-              src="/img/placeholder-liso-4x5.png"
+            <Image
+              src={doctoraImg}
+              widths={[400, 669]}
               sizes="(max-width:900px) 100vw, 50vw"
-              width="1024"
-              height="1280"
               loading="eager"
               fetchpriority="high"
               decoding="async"
               alt="Dra. Isabel Vélez, directora médica de Sonris"
-              style="width:100%;height:100%;object-fit:cover;display:block"
+              style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.28);transform-origin:center 30%"
             />
             <div
               data-lamina
@@ -78,7 +81,20 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
             id="hero-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:64px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:16ch"
           >
-            Dra. Isabel <span style="color:#EB6B0A">Vélez</span>
+            Dra. Isabel <span style="color:#EB6B0A">Vélez</span><a
+              data-ig
+              href="https://www.instagram.com/sonris.spain/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram de Sonris, @sonris.spain"
+              style="display:inline-flex;vertical-align:baseline;margin-left:0.18em;color:#EB6B0A"
+            >
+              <!-- El icono se mide en em: sigue al h1 cuando encoge en móvil. -->
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" style="width:0.34em;height:0.34em;display:block">
+                <path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.06 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.35 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.06 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.35-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.06-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.35-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.06-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.35 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56-.79.3-1.46.72-2.13 1.38S.93 3.35.63 4.14c-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.67 1.34 1.08 2.13 1.38.76.3 1.63.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56.79-.3 1.46-.71 2.13-1.38.67-.67 1.08-1.34 1.38-2.13.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91-.3-.79-.71-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.63-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm7.85-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z" />
+              </svg>
+              <span class="vh"> (se abre en una pestaña nueva)</span></a
+            >
           </h1>
           <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:#1A1A1A;max-width:52ch">
             Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.
@@ -90,7 +106,7 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
             <a
               data-primary
               data-cta-largo
-              href="#formulario"
+              href="/contacto/#formulario"
               style="display:inline-flex;flex:0 1 auto;max-width:100%;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
               >Reserva tu valoración con la Dra. Vélez<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
                 >→</span
@@ -111,6 +127,7 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
         <div>
           <h2
+            data-h2-grande
             id="bio-t"
             style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
@@ -139,10 +156,11 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
       <div data-2col style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:64px;align-items:start">
         <div>
           <h2
+            data-h2-grande
             id="form-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
-            De Puebla a Boston, y de Ferrara a Madrid
+            De México a Boston, y de Italia a Madrid
           </h2>
           <p style="margin:0;font-size:16px;line-height:1.7;color:#6B6B6B;max-width:40ch">
             Nº de colegiado {DIRECCION_MEDICA.colegiado}.
@@ -175,11 +193,12 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
     </div>
   </section>
 
-  <section data-sec data-peach aria-labelledby="rec-t" style="background:#FEE1CB;padding:104px 0 128px;border-radius:40px">
+  <section data-sec data-peach data-textura aria-labelledby="rec-t" style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);padding:104px 0 128px;border-radius:40px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
         <div>
           <h2
+            data-h2-grande
             id="rec-t"
             style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
@@ -224,6 +243,7 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
       <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:center">
         <div>
           <h2
+            data-h2-grande
             id="doc-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
           >
@@ -257,34 +277,82 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
     </div>
   </section>
 
+  <section
+    data-sec
+    data-peach
+    data-textura
+    id="libro"
+    aria-labelledby="libro-t"
+    style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);padding:112px 0;border-radius:40px"
+  >
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center">
+        <figure style="margin:0">
+          <div
+            style="position:relative;border-radius:40px;overflow:hidden;background:#FFFFFF;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)"
+          >
+            <Image
+              src={libroImg}
+              widths={[520, 1040]}
+              sizes="(max-width:900px) 100vw, 42vw"
+              loading="lazy"
+              decoding="async"
+              alt="Portada y contraportada del libro Ortodoncia con alineadores, de la Dra. Isabel Vélez"
+              style="width:100%;height:auto;display:block"
+            />
+            {/* El QR se apoya en la esquina, dentro del padding de la tarjeta: así
+                nunca pisa el borde redondeado ni se recorta. */}
+            <Image
+              src={qrLibroImg}
+              width={110}
+              loading="lazy"
+              decoding="async"
+              alt="Código QR para pre-ordenar el libro"
+              style="position:absolute;left:24px;bottom:24px;width:clamp(72px,14%,110px);height:auto;display:block;border-radius:12px;background:#FFFFFF;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.10)"
+            />
+          </div>
+        </figure>
+        <div>
+          <h2
+            data-h2-grande
+            id="libro-t"
+            style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
+          >
+            He escrito el libro que me habría gustado tener
+          </h2>
+          <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:60ch">
+            <em>Ortodoncia con alineadores</em> recoge más de veinticinco años de consulta en una guía práctica: biomecánica,
+            protocolos clínicos y las soluciones S1 a S20, con códigos QR para ver la planificación digital de cada caso.
+          </p>
+          <p style="margin:0 0 28px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
+            No es un manual teórico. Es lo que hago cada día, escrito para que otro ortodoncista pueda repetirlo, porque la
+            predictibilidad no es casualidad: es biomecánica aplicada con criterio clínico.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+            <a
+              data-primary
+              href="https://jsj.top/f/OLppJ8"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms var(--ease),box-shadow 300ms var(--ease)"
+              >Pre-ordenar el libro<span data-arrow style="display:inline-block;transition:transform 300ms var(--ease)">→</span
+              ><span class="vh"> (se abre en una pestaña nueva)</span></a
+            >
+            <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B;max-width:34ch">
+              Con el Prof. Gang Shen y el Dr. Xingxing Wang. Editado por Smartee.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section data-sec aria-labelledby="casos-t" style="background:#F7F7F7;padding:128px 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between;margin-bottom:40px">
-        <h2
-          id="casos-t"
-          style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
-        >
-          Antes y después, arrastrando
-        </h2>
-        <p style="margin:0;font-size:17px;line-height:1.7;color:#6B6B6B;max-width:44ch">
-          Arrastra el tirador para comparar. Cada caso es individual: lo que ves aquí no anticipa tu resultado.
-        </p>
-      </div>
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:start">
-        <AntesDespues client:visible casos={6} />
-        <aside style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
-          <h3 style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
-            Cada boca es distinta
-          </h3>
-          <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#6B6B6B">
-            Los casos que ves aquí se publican con el consentimiento firmado de cada paciente. Ninguno anticipa tu resultado: el tuyo se
-            valora en la primera visita, con las pruebas delante.
-          </p>
-          <a data-underline href="/sobre-nosotros/" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:500;color:#1A1A1A"
-            >Conoce el resto del equipo <span>→</span></a
-          >
-        </aside>
-      </div>
+      {/* Título y tarjeta lateral viven dentro de la isla: el selector de casos
+          va junto al título y la tarjeta cuenta el caso visible, así que ambos
+          necesitan el mismo estado que el comparador. */}
+      <AntesDespues client:visible />
     </div>
   </section>
 

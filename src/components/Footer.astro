@@ -32,6 +32,7 @@ const ICONOS: Record<string, string> = {
     >
       <div>
         <h3
+          data-h2-grande
           style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:44px;line-height:1.05;letter-spacing:-0.02em;color:#FFFFFF"
         >
           Reserva tu primera visita
@@ -86,7 +87,7 @@ const ICONOS: Record<string, string> = {
       </div>
     </div>
 
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;padding:28px 0">
+    <div data-foot-meta style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;padding:28px 0">
       <Image src={logo} alt="Sonris" width={40} height={40} loading="lazy" style="display:block;width:40px;height:40px" />
       <nav aria-label="Utilidad y legal" style="display:flex;flex-wrap:wrap;gap:24px">
         {
@@ -96,6 +97,13 @@ const ICONOS: Record<string, string> = {
             </a>
           ))
         }
+        <!-- Retirar o cambiar el consentimiento tiene que ser tan fácil como darlo. -->
+        <button
+          type="button"
+          data-abrir-cookies
+          style="padding:0;border:0;background:none;font-family:inherit;font-size:14px;color:rgba(255,255,255,0.55);cursor:pointer"
+          >Preferencias de cookies</button
+        >
       </nav>
     </div>
 

@@ -26,7 +26,7 @@ export type Tratamiento = {
 const CRUCE_POR_DEFECTO = {
   titulo: 'Nuestra especialidad sigue siendo otra',
   texto: 'Si lo que buscas es alinearte los dientes, empieza por aquí.',
-  etiqueta: 'Ver ortodoncia invisible',
+  etiqueta: 'Ortodoncia invisible',
   href: '/ortodoncia-invisible/',
 };
 
@@ -48,7 +48,7 @@ export const TRATAMIENTOS: Tratamiento[] = [
     tiposEyebrow: 'Variantes',
     tiposTitulo: 'Blanqueamiento y carillas',
     tiposEntradilla:
-      'Antes eran dos páginas distintas; su contenido es corto y funciona mejor junto. Cada pestaña conserva su enlace directo.',
+      'Antes eran dos páginas distintas; su contenido es corto y funciona mejor junto. Cada uno conserva su enlace directo.',
     pestanas: [
       {
         id: 'blanqueamiento',
@@ -66,7 +66,7 @@ export const TRATAMIENTOS: Tratamiento[] = [
     cruce: {
       titulo: 'El color, después de la posición',
       texto: 'Blanqueamiento y carillas se plantean cuando los dientes ya están donde toca.',
-      etiqueta: 'Ver ortodoncia invisible',
+      etiqueta: 'Ortodoncia invisible',
       href: '/ortodoncia-invisible/',
     },
     destacadoEnHome: true,
@@ -113,7 +113,7 @@ export const TRATAMIENTOS: Tratamiento[] = [
     cruce: {
       titulo: 'Primero el hueco, luego el movimiento',
       texto: 'Reponer el diente que falta suele ser el paso previo al tratamiento con alineadores.',
-      etiqueta: 'Ver ortodoncia invisible',
+      etiqueta: 'Ortodoncia invisible',
       href: '/ortodoncia-invisible/',
     },
     destacadoEnHome: true,
@@ -150,7 +150,7 @@ export const TRATAMIENTOS: Tratamiento[] = [
       titulo: 'Puede que no haga falta operar',
       texto:
         'El plan SONRIS GS trata con alineadores maloclusiones que antes exigían cirugía ortognática: asimetrías, apnea y avances mandibulares.',
-      etiqueta: 'Ver los tipos de tratamiento',
+      etiqueta: 'Ver los tipos',
       href: '/ortodoncia-invisible/#tipos',
     },
     destacadoEnHome: false,
@@ -239,7 +239,7 @@ export const TRATAMIENTOS: Tratamiento[] = [
       titulo: 'La encía va antes que el movimiento',
       texto:
         'Si hay gingivitis o periodontitis, se trata primero: la ortodoncia espera a que la base esté sana.',
-      etiqueta: 'Ver cómo funciona la ortodoncia',
+      etiqueta: 'Cómo funciona',
       href: '/ortodoncia-invisible/#como-funciona',
     },
     destacadoEnHome: true,
@@ -259,7 +259,8 @@ export const TRATAMIENTOS: Tratamiento[] = [
     queEs2: 'Tener la boca sana es el punto de partida de cualquier tratamiento de ortodoncia.',
     tiposEyebrow: 'Técnicas',
     tiposTitulo: 'Empastes y endodoncias',
-    tiposEntradilla: 'Dos tratamientos habituales; el segundo tiene además su propia página.',
+    tiposEntradilla:
+      'Los dos arreglos que más salen en una revisión: uno repara el diente por fuera, el otro lo trata por dentro.',
     pestanas: [],
     variantes: [
       { id: 'empastes', nombre: 'Empastes', texto: 'Reponen la parte del diente afectada por una caries.' },

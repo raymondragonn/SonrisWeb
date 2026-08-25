@@ -87,10 +87,11 @@ export const LEGAL: PaginaLegal[] = [
         ],
       },
       {
-        h: 'El formulario no nos envía nada por sí solo',
+        h: 'Por dónde viaja el formulario',
         p: [
-          'Al enviarlo, tu dispositivo abre WhatsApp o tu programa de correo con el mensaje ya escrito, y eres tú quien decide mandarlo. Hasta ese momento los datos no salen de tu equipo.',
-          'Si eliges WhatsApp, el mensaje viaja por WhatsApp Ireland Limited (grupo Meta), que aplica su propia política de privacidad.',
+          'Al enviarlo, los datos llegan a nuestro correo a través de Formspree, Inc. (Estados Unidos), que actúa como encargado del tratamiento: solo nos hace de cartero y no usa tus datos para nada más.',
+          'La transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea.',
+          'El canal que elijas —WhatsApp o correo— nos dice por dónde contestarte; si te escribimos por WhatsApp, esa conversación viaja por WhatsApp Ireland Limited (grupo Meta), que aplica su propia política de privacidad.',
         ],
       },
       {

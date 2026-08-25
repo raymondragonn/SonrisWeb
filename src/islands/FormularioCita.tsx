@@ -1,19 +1,34 @@
-import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
+import { useEffect, useId, useState, type CSSProperties, type FormEvent } from 'react';
 import Aviso, { type AvisoDatos } from './Aviso';
 
 type Canal = 'whatsapp' | 'correo';
-type Campo = 'nombre' | 'telefono' | 'email' | 'rgpd';
+type Campo = 'nombre' | 'contacto' | 'motivo' | 'rgpd';
 
-const PASOS: { titulo: string; campos: Campo[] }[] = [
-  { titulo: 'Cómo te llamas', campos: ['nombre', 'telefono'] },
-  { titulo: 'Cómo te escribimos', campos: ['email'] },
-  { titulo: 'Permiso para tratar tus datos', campos: ['rgpd'] },
+/** Endpoint de Formspree. Es público por diseño (va en el HTML), pero sin él el
+ *  formulario no entrega: el envío avisa y ofrece teléfono y correo. */
+const FORMSPREE = import.meta.env.PUBLIC_FORMSPREE_ID as string | undefined;
+
+/** Por dónde quiere que le contestemos. Decide qué dato de contacto se pide:
+ *  uno, no los dos. */
+const CANALES: { valor: Canal; etiqueta: string; ayuda: string }[] = [
+  { valor: 'whatsapp', etiqueta: 'WhatsApp', ayuda: 'Te escribimos al número que nos dejes.' },
+  { valor: 'correo', etiqueta: 'Correo', ayuda: 'Te contestamos al email que nos dejes.' },
+];
+
+/** La pregunta que de verdad ordena la primera visita: con qué viene el
+ *  paciente. Va en botones porque escribirlo cuesta y elegirlo no. */
+const MOTIVOS = [
+  'Alinearme los dientes',
+  'Corregirme la mordida',
+  'El color o la forma',
+  'Una revisión o una molestia',
+  'Otra cosa',
 ];
 
 const ERRORES: Record<Campo, string> = {
-  nombre: '⚠ Escribe tu nombre y apellidos para que sepamos con quién hablamos.',
-  telefono: '⚠ Necesitamos un teléfono de 9 cifras para poder llamarte.',
-  email: '⚠ Revisa el email: falta la arroba o el dominio.',
+  nombre: '⚠ Escribe tu nombre para que sepamos con quién hablamos.',
+  contacto: '⚠ Revisa el dato: necesitamos por dónde contestarte.',
+  motivo: '⚠ Elige con qué vienes: es lo que nos sirve para prepararte la visita.',
   rgpd: '⚠ Marca la casilla para que podamos tratar tus datos y contestarte.',
 };
 
@@ -38,6 +53,15 @@ const ESTILO_ETIQUETA: CSSProperties = {
   color: '#6B6B6B',
 };
 
+/** Asterisco decorativo: quien usa lector de pantalla ya oye «obligatorio» por
+ *  el required del campo, así que no se lee dos veces. */
+const Obligatorio = () => (
+  <span aria-hidden="true" style={{ color: '#B24E00' }}>
+    {' '}
+    *
+  </span>
+);
+
 const ESTILO_ERROR: CSSProperties = {
   margin: '8px 0 0',
   fontSize: 14,
@@ -45,48 +69,66 @@ const ESTILO_ERROR: CSSProperties = {
   color: '#B3261E',
 };
 
+/** Píldora de elección: la comparten el canal y los motivos. */
+const ESTILO_PILDORA = (marcada: boolean): CSSProperties => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 10,
+  minHeight: 48,
+  padding: '0 22px',
+  borderRadius: 9999,
+  background: marcada ? '#FEE1CB' : '#FFFFFF',
+  border: marcada ? '2px solid #EB6B0A' : '1px solid rgba(0,0,0,0.08)',
+  color: '#1A1A1A',
+  fontFamily: "'DM Sans', system-ui, sans-serif",
+  fontSize: 16,
+  fontWeight: 600,
+  cursor: 'pointer',
+});
+
+const VACIO = { nombre: '', contacto: '', motivo: '', mensaje: '', rgpd: false };
+
 export default function FormularioCita({
-  whatsappE164,
   email,
   telefono,
   telefonoE164,
   origen,
 }: {
-  whatsappE164: string;
   email: string;
   telefono: string;
   telefonoE164: string;
-  /** Página desde la que se envía: entra en el mensaje para que en clínica
+  /** Página desde la que se envía: viaja con el aviso para que en clínica
    *  sepan de qué venía la consulta. */
   origen: string;
 }) {
   const uid = useId().replace(/:/g, '');
   const id = (n: string) => `${uid}-${n}`;
 
-  const [valores, setValores] = useState({ nombre: '', telefono: '', email: '', mensaje: '', rgpd: false });
+  const [valores, setValores] = useState(VACIO);
   const [errores, setErrores] = useState<Partial<Record<Campo, boolean>>>({});
   const [canal, setCanal] = useState<Canal>('whatsapp');
-  const [paso, setPaso] = useState(1);
-  const [movil, setMovil] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState<AvisoDatos | null>(null);
-  const form = useRef<HTMLFormElement>(null);
 
+  const porWhatsApp = canal === 'whatsapp';
+
+  // El carrusel de planes enlaza aquí con ?plan=… El texto se recorta y se
+  // aplana antes de entrar: acaba en un mensaje que el usuario ve y revisa.
   useEffect(() => {
-    const mq = matchMedia('(max-width:900px)');
-    const aplicar = () => setMovil(mq.matches);
-    aplicar();
-    mq.addEventListener('change', aplicar);
-    return () => mq.removeEventListener('change', aplicar);
+    const plan = new URLSearchParams(location.search).get('plan')?.replace(/\s+/g, ' ').trim().slice(0, 60);
+    if (plan) {
+      setValores((v) => ({ ...v, motivo: MOTIVOS[0], mensaje: `Me interesa el plan ${plan}.` }));
+    }
   }, []);
 
   const valida = (c: Campo): boolean => {
     switch (c) {
       case 'nombre':
-        return valores.nombre.trim().length > 2;
-      case 'telefono':
-        return valores.telefono.replace(/\D/g, '').length >= 9;
-      case 'email':
-        return /.+@.+\..+/.test(valores.email);
+        return valores.nombre.trim().length > 1;
+      case 'contacto':
+        return porWhatsApp ? valores.contacto.replace(/\D/g, '').length >= 9 : /.+@.+\..+/.test(valores.contacto);
+      case 'motivo':
+        return valores.motivo !== '';
       case 'rgpd':
         return valores.rgpd;
     }
@@ -105,33 +147,32 @@ export default function FormularioCita({
     return primero;
   };
 
+  // Corregir un campo marcado lo desmarca al momento: no hay que reenviar para
+  // ver que ya está bien. Solo toca los que están en rojo, nunca marca de nuevo.
+  useEffect(() => {
+    setErrores((e) => {
+      const n = { ...e };
+      let cambia = false;
+      (Object.keys(n) as Campo[]).forEach((c) => {
+        if (n[c] && valida(c)) {
+          n[c] = false;
+          cambia = true;
+        }
+      });
+      return cambia ? n : e;
+    });
+  }, [valores, canal]);
+
   const enfocar = (c: Campo) => {
     requestAnimationFrame(() => document.getElementById(id(c))?.focus());
   };
 
-  const mensaje = () =>
-    [
-      `Hola, quiero pedir cita en Sonris.`,
-      ``,
-      `Nombre: ${valores.nombre.trim()}`,
-      `Teléfono: ${valores.telefono.trim()}`,
-      `Email: ${valores.email.trim()}`,
-      valores.mensaje.trim() ? `Mensaje: ${valores.mensaje.trim()}` : null,
-      ``,
-      `Enviado desde ${origen} · sonris.es`,
-    ]
-      .filter((l) => l !== null)
-      .join('\n');
-
-  const alEnviar = (e: FormEvent<HTMLFormElement>) => {
+  const alEnviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const primero = revisar(['nombre', 'telefono', 'email', 'rgpd']);
+    if (enviando) return;
 
+    const primero = revisar(['nombre', 'contacto', 'motivo', 'rgpd']);
     if (primero) {
-      if (movil) {
-        const i = PASOS.findIndex((p) => p.campos.includes(primero!));
-        if (i > -1) setPaso(i + 1);
-      }
       enfocar(primero);
       setAviso({
         id: Date.now(),
@@ -142,369 +183,272 @@ export default function FormularioCita({
       return;
     }
 
-    const texto = mensaje();
+    if (!FORMSPREE) {
+      setAviso({
+        id: Date.now(),
+        tono: 'error',
+        titulo: 'El formulario no está configurado',
+        texto: `No podemos recoger tu mensaje ahora mismo. Escríbenos a ${email} o llámanos al ${telefono} y te atendemos igual.`,
+      });
+      return;
+    }
 
-    if (canal === 'whatsapp') {
-      const ventana = window.open(
-        `https://wa.me/${whatsappE164}?text=${encodeURIComponent(texto)}`,
-        '_blank',
-        'noopener,noreferrer'
-      );
-      setAviso(
-        ventana
-          ? {
-              id: Date.now(),
-              tono: 'ok',
-              titulo: 'WhatsApp abierto con tus datos',
-              texto: 'Revisa el mensaje y pulsa enviar en WhatsApp. Te contestamos en horario de clínica, de 12:00 a 20:00.',
-            }
-          : {
-              id: Date.now(),
-              tono: 'error',
-              titulo: 'No hemos podido abrir WhatsApp',
-              texto: `El navegador ha bloqueado la ventana. Escríbenos directamente al ${whatsappE164.replace('34', '')} o llámanos al ${telefono}.`,
-            }
-      );
-    } else {
-      const asunto = `Cita en Sonris · ${valores.nombre.trim()}`;
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(texto)}`;
+    setEnviando(true);
+    try {
+      const respuesta = await fetch(`https://formspree.io/f/${FORMSPREE}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          // Formspree usa el campo `email` como Reply-To del aviso; cuando el
+          // canal es WhatsApp no hay email que responder y va solo el número.
+          nombre: valores.nombre.trim(),
+          [porWhatsApp ? 'telefono' : 'email']: valores.contacto.trim(),
+          responder_por: porWhatsApp ? 'WhatsApp' : 'Correo',
+          vengo_por: valores.motivo,
+          mensaje: valores.mensaje.trim(),
+          origen,
+          _subject: `Cita en Sonris · ${valores.nombre.trim()}`,
+        }),
+      });
+      if (!respuesta.ok) throw new Error(String(respuesta.status));
+
+      setValores(VACIO);
       setAviso({
         id: Date.now(),
         tono: 'ok',
-        titulo: 'Correo preparado con tus datos',
-        texto: `Te hemos abierto tu gestor de correo con el mensaje escrito: revísalo y pulsa enviar. Si no se ha abierto, escríbenos a ${email}.`,
+        titulo: 'Mensaje enviado',
+        texto: porWhatsApp
+          ? 'Ya nos ha llegado. Te escribimos por WhatsApp en horario de clínica, de 12:00 a 20:00.'
+          : 'Ya nos ha llegado. Te contestamos por correo en horario de clínica, de 12:00 a 20:00.',
       });
+    } catch {
+      setAviso({
+        id: Date.now(),
+        tono: 'error',
+        titulo: 'No hemos podido enviarlo',
+        texto: `Ha fallado la conexión y tu mensaje no ha salido. Vuelve a intentarlo, escríbenos a ${email} o llámanos al ${telefono}.`,
+      });
+    } finally {
+      setEnviando(false);
     }
   };
-
-  const alSiguiente = () => {
-    const primero = revisar(PASOS[paso - 1].campos);
-    if (primero) {
-      enfocar(primero);
-      return;
-    }
-    const siguiente = Math.min(3, paso + 1);
-    setPaso(siguiente);
-    requestAnimationFrame(() => {
-      document.getElementById(`${uid}-grupo-${siguiente}`)?.querySelector<HTMLElement>('input, textarea')?.focus();
-    });
-  };
-
-  const visible = (n: number) => !movil || n === paso;
 
   return (
     <>
       <form
-        ref={form}
         id="formulario-cita"
         noValidate
         onSubmit={alEnviar}
         data-peach
+        data-caja
         style={{ background: '#FEE1CB', borderRadius: 40, padding: 44 }}
       >
-        {movil && (
-          <div data-steps style={{ marginBottom: 28 }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, marginBottom: 12 }}>
-              <p id={id('paso-label')} style={{ margin: 0, fontSize: 15, fontWeight: 500, color: '#1A1A1A' }}>
-                Paso {paso} de 3 · {PASOS[paso - 1].titulo}
-              </p>
-              <p style={{ margin: 0, font: '400 13px ui-monospace, Menlo, monospace', color: '#B24E00' }}>{paso}/3</p>
-            </div>
-            <div
-              role="progressbar"
-              aria-labelledby={id('paso-label')}
-              aria-valuemin={1}
-              aria-valuemax={3}
-              aria-valuenow={paso}
-              style={{ height: 8, borderRadius: 9999, background: '#EFEFEF', overflow: 'hidden' }}
-            >
-              <div
-                style={{
-                  height: '100%',
-                  width: `${(paso / 3) * 100}%`,
-                  background: '#EB6B0A',
-                  borderRadius: 9999,
-                  transition: 'width 300ms cubic-bezier(0.22,1,0.36,1)',
-                }}
-              />
-            </div>
-          </div>
-        )}
+        {/* Cepo de Formspree: sin CSS que lo esconda, un bot lo rellena y el
+            envío se descarta. Fuera del orden de tabulación. */}
+        <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
 
-        <div data-formgrid style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 24 }}>
-          <div
-            id={`${uid}-grupo-1`}
-            style={{ gridColumn: '1 / -1', display: visible(1) ? 'grid' : 'none', gridTemplateColumns: 'inherit', gap: 24 }}
-          >
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label htmlFor={id('nombre')} style={ESTILO_ETIQUETA}>
-                Nombre y apellidos
+        <fieldset style={{ border: 'none', margin: '0 0 24px', padding: 0 }}>
+          <legend style={{ ...ESTILO_ETIQUETA, padding: 0 }}>¿Por dónde te contestamos?</legend>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+            {CANALES.map((c) => (
+              <label key={c.valor} style={ESTILO_PILDORA(canal === c.valor)}>
+                <input
+                  type="radio"
+                  name={id('canal')}
+                  value={c.valor}
+                  checked={canal === c.valor}
+                  onChange={() => setCanal(c.valor)}
+                  style={{ width: 20, height: 20, accentColor: '#B24E00', margin: 0 }}
+                />
+                {c.etiqueta}
+                <span className="vh">. {c.ayuda}</span>
               </label>
-              <input
-                data-input
-                id={id('nombre')}
-                name="nombre"
-                type="text"
-                required
-                autoComplete="name"
-                placeholder="Nombre y apellidos"
-                value={valores.nombre}
-                onChange={(e) => setValores((v) => ({ ...v, nombre: e.target.value }))}
-                aria-invalid={errores.nombre ? 'true' : 'false'}
-                aria-describedby={errores.nombre ? id('e-nombre') : undefined}
-                style={ESTILO_INPUT(!!errores.nombre)}
-              />
-              {errores.nombre && (
-                <p id={id('e-nombre')} style={ESTILO_ERROR}>
-                  {ERRORES.nombre}
-                </p>
-              )}
-            </div>
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label htmlFor={id('telefono')} style={ESTILO_ETIQUETA}>
-                Teléfono
-              </label>
-              <input
-                data-input
-                id={id('telefono')}
-                name="telefono"
-                type="tel"
-                required
-                autoComplete="tel"
-                placeholder="600 000 000"
-                value={valores.telefono}
-                onChange={(e) => setValores((v) => ({ ...v, telefono: e.target.value }))}
-                aria-invalid={errores.telefono ? 'true' : 'false'}
-                aria-describedby={errores.telefono ? id('e-telefono') : undefined}
-                style={ESTILO_INPUT(!!errores.telefono)}
-              />
-              {errores.telefono && (
-                <p id={id('e-telefono')} style={ESTILO_ERROR}>
-                  {ERRORES.telefono}
-                </p>
-              )}
-            </div>
+            ))}
           </div>
+        </fieldset>
 
-          <div
-            id={`${uid}-grupo-2`}
-            style={{ gridColumn: '1 / -1', display: visible(2) ? 'grid' : 'none', gridTemplateColumns: 'inherit', gap: 24 }}
-          >
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label htmlFor={id('email')} style={ESTILO_ETIQUETA}>
-                Email
-              </label>
-              <input
-                data-input
-                id={id('email')}
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="tu@email.com"
-                value={valores.email}
-                onChange={(e) => setValores((v) => ({ ...v, email: e.target.value }))}
-                aria-invalid={errores.email ? 'true' : 'false'}
-                aria-describedby={errores.email ? id('e-email') : undefined}
-                style={ESTILO_INPUT(!!errores.email)}
-              />
-              {errores.email && (
-                <p id={id('e-email')} style={ESTILO_ERROR}>
-                  {ERRORES.email}
-                </p>
-              )}
-            </div>
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label htmlFor={id('mensaje')} style={ESTILO_ETIQUETA}>
-                Mensaje <span style={{ color: '#6B6B6B' }}>(opcional)</span>
-              </label>
-              <textarea
-                data-input
-                id={id('mensaje')}
-                name="mensaje"
-                rows={4}
-                placeholder="Cuéntanos qué te preocupa de tu sonrisa."
-                value={valores.mensaje}
-                onChange={(e) => setValores((v) => ({ ...v, mensaje: e.target.value }))}
-                style={{
-                  width: '100%',
-                  borderRadius: 20,
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  padding: '16px 20px',
-                  fontFamily: "'DM Sans', system-ui, sans-serif",
-                  fontSize: 17,
-                  lineHeight: 1.7,
-                  color: '#1A1A1A',
-                  resize: 'vertical',
-                }}
-              />
-            </div>
-          </div>
-
-          <div id={`${uid}-grupo-3`} style={{ gridColumn: '1 / -1', display: visible(3) ? 'block' : 'none' }}>
-            <fieldset style={{ border: 'none', margin: '0 0 24px', padding: 0 }}>
-              <legend style={{ ...ESTILO_ETIQUETA, padding: 0 }}>¿Por dónde te contestamos?</legend>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                {(
-                  [
-                    ['whatsapp', 'WhatsApp', 'Se abre WhatsApp con el mensaje escrito.'],
-                    ['correo', 'Correo', 'Se abre tu gestor de correo y lo envías tú.'],
-                  ] as const
-                ).map(([valor, etiqueta, ayuda]) => (
-                  <label
-                    key={valor}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      minHeight: 48,
-                      padding: '0 22px',
-                      borderRadius: 9999,
-                      background: canal === valor ? '#FEE1CB' : '#FFFFFF',
-                      border: canal === valor ? '2px solid #EB6B0A' : '1px solid rgba(0,0,0,0.08)',
-                      color: '#1A1A1A',
-                      fontSize: 16,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name={id('canal')}
-                      value={valor}
-                      checked={canal === valor}
-                      onChange={() => setCanal(valor)}
-                      style={{ width: 20, height: 20, accentColor: '#B24E00', margin: 0 }}
-                    />
-                    {etiqueta}
-                    <span className="vh">. {ayuda}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-
-            <label
-              htmlFor={id('rgpd')}
-              style={{ display: 'flex', gap: 14, alignItems: 'flex-start', fontSize: 15, lineHeight: 1.6, color: '#1A1A1A', cursor: 'pointer' }}
-            >
-              <input
-                data-input
-                id={id('rgpd')}
-                name="rgpd"
-                type="checkbox"
-                required
-                checked={valores.rgpd}
-                onChange={(e) => setValores((v) => ({ ...v, rgpd: e.target.checked }))}
-                aria-invalid={errores.rgpd ? 'true' : 'false'}
-                aria-describedby={errores.rgpd ? id('e-rgpd') : undefined}
-                style={{
-                  flex: 'none',
-                  width: 24,
-                  height: 24,
-                  marginTop: 2,
-                  accentColor: '#B24E00',
-                  ...(errores.rgpd ? { outline: '2px solid #B3261E', outlineOffset: 2 } : {}),
-                }}
-              />
-              <span>
-                He leído y acepto la{' '}
-                <a href="/politica-de-privacidad/" style={{ color: '#B24E00', fontWeight: 500, textDecoration: 'underline' }}>
-                  Política de Privacidad
-                </a>{' '}
-                y el{' '}
-                <a href="/aviso-legal/" style={{ color: '#B24E00', fontWeight: 500, textDecoration: 'underline' }}>
-                  Aviso Legal
-                </a>
-                . Tus datos los trata MASTER SMILE S.L. solo para responderte.
-              </span>
-            </label>
-            {errores.rgpd && (
-              <p id={id('e-rgpd')} style={ESTILO_ERROR}>
-                {ERRORES.rgpd}
-              </p>
-            )}
-          </div>
+        <div style={{ marginBottom: 24 }}>
+          <label htmlFor={id('nombre')} style={ESTILO_ETIQUETA}>
+            ¿Cómo te llamas?
+            <Obligatorio />
+          </label>
+          <input
+            data-input
+            id={id('nombre')}
+            name="nombre"
+            type="text"
+            required
+            autoComplete="name"
+            placeholder="Tu nombre"
+            value={valores.nombre}
+            onChange={(e) => setValores((v) => ({ ...v, nombre: e.target.value }))}
+            onBlur={() => revisar(['nombre'])}
+            aria-invalid={errores.nombre ? 'true' : 'false'}
+            aria-describedby={errores.nombre ? id('e-nombre') : undefined}
+            style={ESTILO_INPUT(!!errores.nombre)}
+          />
+          {errores.nombre && (
+            <p id={id('e-nombre')} style={ESTILO_ERROR}>
+              {ERRORES.nombre}
+            </p>
+          )}
         </div>
 
+        {/* Un solo dato de contacto: el del canal elegido. */}
+        <div style={{ marginBottom: 24 }}>
+          <label htmlFor={id('contacto')} style={ESTILO_ETIQUETA}>
+            {porWhatsApp ? '¿A qué número te escribimos?' : '¿A qué correo te contestamos?'}
+            <Obligatorio />
+          </label>
+          <input
+            data-input
+            id={id('contacto')}
+            name={porWhatsApp ? 'telefono' : 'email'}
+            type={porWhatsApp ? 'tel' : 'email'}
+            required
+            autoComplete={porWhatsApp ? 'tel' : 'email'}
+            placeholder={porWhatsApp ? '600 000 000' : 'tu@email.com'}
+            value={valores.contacto}
+            onChange={(e) => setValores((v) => ({ ...v, contacto: e.target.value }))}
+            onBlur={() => valores.contacto && revisar(['contacto'])}
+            aria-invalid={errores.contacto ? 'true' : 'false'}
+            aria-describedby={errores.contacto ? id('e-contacto') : undefined}
+            style={ESTILO_INPUT(!!errores.contacto)}
+          />
+          {errores.contacto && (
+            <p id={id('e-contacto')} style={ESTILO_ERROR}>
+              {ERRORES.contacto}
+            </p>
+          )}
+        </div>
+
+        <fieldset style={{ border: 'none', margin: '0 0 24px', padding: 0 }}>
+          <legend style={{ ...ESTILO_ETIQUETA, padding: 0 }}>
+            ¿Con qué vienes?
+            <Obligatorio />
+          </legend>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+            {MOTIVOS.map((m, i) => (
+              <label key={m} style={ESTILO_PILDORA(valores.motivo === m)}>
+                <input
+                  // El id va en el primero para que el foco del error caiga aquí.
+                  id={i === 0 ? id('motivo') : undefined}
+                  type="radio"
+                  name={id('motivo-grupo')}
+                  value={m}
+                  checked={valores.motivo === m}
+                  onChange={() => setValores((v) => ({ ...v, motivo: m }))}
+                  aria-invalid={errores.motivo ? 'true' : 'false'}
+                  aria-describedby={errores.motivo ? id('e-motivo') : undefined}
+                  style={{ width: 20, height: 20, accentColor: '#B24E00', margin: 0 }}
+                />
+                {m}
+              </label>
+            ))}
+          </div>
+          {errores.motivo && (
+            <p id={id('e-motivo')} style={ESTILO_ERROR}>
+              {ERRORES.motivo}
+            </p>
+          )}
+        </fieldset>
+
+        <div style={{ marginBottom: 24 }}>
+          <label htmlFor={id('mensaje')} style={ESTILO_ETIQUETA}>
+            ¿Algo más que debamos saber? <span style={{ color: '#6B6B6B' }}>(opcional)</span>
+          </label>
+          <textarea
+            data-input
+            id={id('mensaje')}
+            name="mensaje"
+            rows={3}
+            placeholder="Si has llevado ortodoncia antes, si te corre prisa, si vienes por alguien de la familia…"
+            value={valores.mensaje}
+            onChange={(e) => setValores((v) => ({ ...v, mensaje: e.target.value }))}
+            style={{
+              width: '100%',
+              borderRadius: 20,
+              background: '#FFFFFF',
+              border: '1px solid rgba(0,0,0,0.08)',
+              padding: '16px 20px',
+              fontFamily: "'DM Sans', system-ui, sans-serif",
+              fontSize: 17,
+              lineHeight: 1.7,
+              color: '#1A1A1A',
+              resize: 'vertical',
+            }}
+          />
+        </div>
+
+        <label
+          htmlFor={id('rgpd')}
+          style={{ display: 'flex', gap: 14, alignItems: 'flex-start', fontSize: 15, lineHeight: 1.6, color: '#1A1A1A', cursor: 'pointer' }}
+        >
+          <input
+            data-input
+            id={id('rgpd')}
+            name="rgpd"
+            type="checkbox"
+            required
+            checked={valores.rgpd}
+            onChange={(e) => setValores((v) => ({ ...v, rgpd: e.target.checked }))}
+            aria-invalid={errores.rgpd ? 'true' : 'false'}
+            aria-describedby={errores.rgpd ? id('e-rgpd') : undefined}
+            style={{
+              flex: 'none',
+              width: 24,
+              height: 24,
+              marginTop: 2,
+              accentColor: '#B24E00',
+              ...(errores.rgpd ? { outline: '2px solid #B3261E', outlineOffset: 2 } : {}),
+            }}
+          />
+          <span>
+            He leído y acepto la{' '}
+            <a href="/politica-de-privacidad/" style={{ color: '#B24E00', fontWeight: 500, textDecoration: 'underline' }}>
+              Política de Privacidad
+            </a>{' '}
+            y el{' '}
+            <a href="/aviso-legal/" style={{ color: '#B24E00', fontWeight: 500, textDecoration: 'underline' }}>
+              Aviso Legal
+            </a>
+            . Tus datos los trata MASTER SMILE S.L. solo para responderte.
+            <Obligatorio />
+          </span>
+        </label>
+        {errores.rgpd && (
+          <p id={id('e-rgpd')} style={ESTILO_ERROR}>
+            {ERRORES.rgpd}
+          </p>
+        )}
+
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 32 }}>
-          {movil && paso > 1 && (
-            <button
-              type="button"
-              data-secondary
-              onClick={() => setPaso((p) => Math.max(1, p - 1))}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 10,
-                minHeight: 56,
-                padding: '0 26px',
-                borderRadius: 9999,
-                background: '#FFFFFF',
-                border: '1px solid rgba(0,0,0,0.08)',
-                color: '#1A1A1A',
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                fontSize: 17,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              Atrás
-            </button>
-          )}
-          {movil && paso < 3 && (
-            <button
-              type="button"
-              data-primary
-              onClick={alSiguiente}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 12,
-                minHeight: 56,
-                padding: '0 32px',
-                borderRadius: 9999,
-                background: '#B24E00',
-                border: 'none',
-                color: '#FFFFFF',
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                fontSize: 17,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              Siguiente
-              <span data-arrow style={{ display: 'inline-block', transition: 'transform 300ms cubic-bezier(0.22,1,0.36,1)' }}>
-                →
-              </span>
-            </button>
-          )}
-          {(!movil || paso === 3) && (
-            <button
-              type="submit"
-              data-primary
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 12,
-                minHeight: 56,
-                padding: '0 32px',
-                borderRadius: 9999,
-                background: '#B24E00',
-                border: 'none',
-                color: '#FFFFFF',
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                fontSize: 17,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              {canal === 'whatsapp' ? 'Enviar por WhatsApp' : 'Enviar por correo'}
-              <span data-arrow style={{ display: 'inline-block', transition: 'transform 300ms cubic-bezier(0.22,1,0.36,1)' }}>
-                →
-              </span>
-            </button>
-          )}
+          <button
+            type="submit"
+            data-primary
+            disabled={enviando}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 12,
+              minHeight: 56,
+              padding: '0 32px',
+              borderRadius: 9999,
+              background: '#B24E00',
+              border: 'none',
+              color: '#FFFFFF',
+              fontFamily: "'DM Sans', system-ui, sans-serif",
+              fontSize: 17,
+              fontWeight: 600,
+              cursor: enviando ? 'progress' : 'pointer',
+              opacity: enviando ? 0.7 : 1,
+            }}
+          >
+            {enviando ? 'Enviando…' : 'Enviar'}
+            <span data-arrow style={{ display: 'inline-block', transition: 'transform 300ms cubic-bezier(0.22,1,0.36,1)' }}>
+              →
+            </span>
+          </button>
           <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: '#1A1A1A' }}>
             Primera visita gratuita, sin compromiso.
             <br />o llámanos al{' '}

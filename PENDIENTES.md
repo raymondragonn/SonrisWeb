@@ -179,7 +179,9 @@ Por orden de bloqueo para publicar:
 8. **Sello Diamond Provider** vectorial y los 12 logos de marca y membresía.
 9. **Nota de aparcamiento** y líneas de transporte público con distancias.
 10. **Imagen Open Graph** real: `public/og/sonris-og.png` es un marcador liso.
-11. **Reseñas de Google**: valoración media, número y fecha, o el widget por API.
+11. **Reseñas de Google**: la sección de la home ya está montada y se alimenta de
+    la Places API en el build. Falta la **clave** `GOOGLE_PLACES_API_KEY` en `.env`;
+    hasta entonces la sección no se pinta.
 12. **Trayectorias** de los cuatro miembros del equipo.
 
 ## 4. Tres decisiones que no son nuestras

@@ -6,24 +6,30 @@ import { CONTACTO, REDES_CONTACTO } from '../../data/site';
 const ruta = '/contacto/';
 
 const TARJETAS = [
-  { etiqueta: 'Llámanos', valor: CONTACTO.telefono, href: `tel:${CONTACTO.telefonoE164}`, glifo: 'cuadrado', tam: 24, externo: false },
-  { etiqueta: 'WhatsApp', valor: CONTACTO.whatsapp, href: CONTACTO.whatsappUrl, glifo: 'redondo', tam: 24, externo: false },
-  { etiqueta: 'Email', valor: CONTACTO.email, href: `mailto:${CONTACTO.email}`, glifo: 'rombo', tam: 22, externo: false },
+  { etiqueta: 'Llámanos', valor: CONTACTO.telefono, href: `tel:${CONTACTO.telefonoE164}`, glifo: 'telefono', tam: 24, externo: false },
+  { etiqueta: 'WhatsApp', valor: CONTACTO.whatsapp, href: CONTACTO.whatsappUrl, glifo: 'whatsapp', tam: 24, externo: false },
+  { etiqueta: 'Email', valor: CONTACTO.email, href: `mailto:${CONTACTO.email}`, glifo: 'email', tam: 22, externo: false },
   {
     etiqueta: 'Dónde estamos',
     valor: `${CONTACTO.calle}, ${CONTACTO.cp} ${CONTACTO.ciudad}`,
     href: CONTACTO.mapsUrl,
-    glifo: 'suave',
+    glifo: 'ubicacion',
     tam: 20,
     externo: true,
   },
 ];
 
 const glifos: Record<string, string> = {
-  redondo: 'width:20px;height:20px;border:2px solid #B24E00;border-radius:9999px;display:block',
-  cuadrado: 'width:18px;height:18px;border:2px solid #B24E00;border-radius:4px;display:block',
-  rombo: 'width:16px;height:16px;border:2px solid #B24E00;transform:rotate(45deg);display:block',
-  suave: 'width:20px;height:20px;border:2px solid #B24E00;border-radius:6px;display:block',
+  telefono:
+    'M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z',
+  whatsapp:
+    'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.2 13.9c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.5-2.6-1.1-4.3-3.8-4.5-4-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.6-.3h.5c.2 0 .4 0 .6.4l.8 2c.1.2 0 .4-.1.5l-.3.4c-.1.2-.3.3-.1.6.1.3.6 1.1 1.4 1.8 1 .9 1.8 1.1 2 1.3.3.1.4.1.6-.1l.8-1c.2-.2.4-.2.6-.1l1.8.9c.2.1.4.2.5.3.1.2.1.7-.1 1.2z',
+  email: 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z',
+  ubicacion: 'M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z',
+  coche:
+    'M18.9 6.1C18.7 5.4 18.1 5 17.4 5H6.6c-.7 0-1.3.4-1.5 1.1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-5.9zM6.6 7h10.8l1.4 4H5.2l1.4-4zM6.5 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z',
+  bus:
+    'M12 2c-4.4 0-8 .5-8 4v9.5c0 1 .4 1.8 1 2.4V20c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h8v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-2.1c.6-.6 1-1.4 1-2.4V6c0-3.5-3.6-4-8-4zM7.5 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM11 11H6V7h5v4zm2 0V7h5v4h-5zm3.5 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z',
 };
 ---
 
@@ -62,7 +68,18 @@ const glifos: Record<string, string> = {
                 data-tile
                 style="width:56px;height:56px;border-radius:20px;background:#FEE1CB;display:flex;align-items:center;justify-content:center;margin-bottom:20px;transition:background 300ms cubic-bezier(0.22,1,0.36,1)"
               >
-                <span data-glyph style={`${glifos[c.glifo]};transition:border-color 300ms cubic-bezier(0.22,1,0.36,1)`} />
+                <svg
+                  data-glyph
+                  aria-hidden="true"
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="#B24E00"
+                  fill-rule="evenodd"
+                  style="display:block;transition:fill 300ms cubic-bezier(0.22,1,0.36,1)"
+                >
+                  <path d={glifos[c.glifo]} />
+                </svg>
               </span>
               <span style="display:block;font-size:15px;color:#6B6B6B;margin-bottom:6px">{c.etiqueta}</span>
               <span
@@ -91,6 +108,7 @@ const glifos: Record<string, string> = {
       <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:56px;align-items:start">
         <div>
           <h2
+            data-h2-grande
             id="mapa-t"
             style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
@@ -101,7 +119,8 @@ const glifos: Record<string, string> = {
           >
             <iframe
               title="Mapa de Sonris, Avenida Isabel de Valois 55, Madrid"
-              src={CONTACTO.mapsEmbed}
+              data-src={CONTACTO.mapsEmbed}
+              data-proveedor="Google Maps"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block"></iframe>
@@ -119,7 +138,17 @@ const glifos: Record<string, string> = {
         <div style="display:flex;flex-direction:column;gap:20px">
           <article style="background:#FFFFFF;border-radius:28px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
             <div style="width:56px;height:56px;border-radius:20px;background:#FEE1CB;display:flex;align-items:center;justify-content:center;margin-bottom:18px">
-              <span aria-hidden="true" style="width:20px;height:20px;border:2px solid #B24E00;border-radius:6px;display:block"></span>
+              <svg
+                aria-hidden="true"
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="#B24E00"
+                fill-rule="evenodd"
+                style="display:block"
+              >
+                <path d={glifos.coche} />
+              </svg>
             </div>
             <h3 style="margin:0 0 10px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
               En coche
@@ -130,7 +159,17 @@ const glifos: Record<string, string> = {
           </article>
           <article style="background:#FFFFFF;border-radius:28px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
             <div style="width:56px;height:56px;border-radius:20px;background:#FEE1CB;display:flex;align-items:center;justify-content:center;margin-bottom:18px">
-              <span aria-hidden="true" style="width:22px;height:14px;border:2px solid #B24E00;border-radius:9999px;display:block"></span>
+              <svg
+                aria-hidden="true"
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="#B24E00"
+                fill-rule="evenodd"
+                style="display:block"
+              >
+                <path d={glifos.bus} />
+              </svg>
             </div>
             <h3 style="margin:0 0 10px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
               En transporte público
@@ -149,14 +188,14 @@ const glifos: Record<string, string> = {
       <div data-2col style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:56px;align-items:start">
         <div>
           <h2
+            data-h2-grande
             id="form-t"
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
             Déjanos tus datos y te llamamos
           </h2>
           <p style="margin:0 0 24px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:44ch">
-            Primera visita gratuita, sin compromiso. Elige si prefieres mandárnoslo por WhatsApp o por correo: tú das el último clic y ves
-            exactamente qué se envía.
+            Primera visita gratuita, sin compromiso.
           </p>
           <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A">
             Si lo prefieres, <a href={`tel:${CONTACTO.telefonoE164}`} data-underline style="color:#1A1A1A;font-weight:500"
@@ -166,7 +205,6 @@ const glifos: Record<string, string> = {
         </div>
         <FormularioCita
           client:load
-          whatsappE164={CONTACTO.whatsappE164}
           email={CONTACTO.email}
           telefono={CONTACTO.telefono}
           telefonoE164={CONTACTO.telefonoE164}
@@ -176,11 +214,12 @@ const glifos: Record<string, string> = {
     </div>
   </section>
 
-  <section data-sec data-peach aria-labelledby="redes-t" style="background:#FEE1CB;padding:104px 0 112px;border-radius:40px">
+  <section data-sec data-peach data-textura aria-labelledby="redes-t" style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);padding:104px 0 112px;border-radius:40px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:center">
         <div>
           <h2
+            data-h2-grande
             id="redes-t"
             style="margin:0 0 16px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >

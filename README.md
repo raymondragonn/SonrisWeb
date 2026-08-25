@@ -98,6 +98,24 @@ cae en la 404 de marca.
 La normalización de barra final y de `www` se resuelve en el host, antes que la
 tabla, para que un origen sin barra no encadene dos saltos.
 
+## Reseñas de Google
+
+La sección de reseñas de la home se resuelve **en el build** (`src/lib/resenas.ts`),
+con la Places API (New). El visitante recibe HTML plano: ni una llamada a Google
+desde su navegador, ni cookies de terceros.
+
+```bash
+cp .env.example .env   # y rellena GOOGLE_PLACES_API_KEY
+```
+
+Sin clave, `obtenerResenas()` devuelve `null` y la sección no se pinta: el build
+no falla. Un error de red o de cuota se registra en consola y tiene el mismo
+efecto. `GOOGLE_PLACE_ID` es opcional; si falta, la ficha se localiza por nombre
+y dirección.
+
+Google entrega **hasta cinco reseñas** y no permite conservarlas más de 30 días,
+así que hay que reconstruir el sitio dentro de ese plazo para mantenerlas al día.
+
 ## SEO y GEO
 
 - Canónica, `hreflang es-ES`, Open Graph y Twitter Card en `src/components/Seo.astro`.

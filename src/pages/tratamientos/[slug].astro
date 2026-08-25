@@ -1,7 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
 import CtaFinal from '../../components/CtaFinal.astro';
-import PestanasVariantes from '../../islands/PestanasVariantes';
 import { SITE } from '../../data/site';
 import { TRATAMIENTOS, type Tratamiento } from '../../data/tratamientos';
 
@@ -11,6 +10,10 @@ export function getStaticPaths() {
 
 const { t } = Astro.props as { t: Tratamiento };
 const ruta = `/tratamientos/${t.slug}/`;
+
+// Pestañas y variantes se pintan igual, uno debajo de otro. Ningún tratamiento
+// llena las dos listas; concatenar evita tener que elegir.
+const bloques = [...t.pestanas, ...t.variantes];
 
 const procedimientoLd = {
   '@type': 'MedicalProcedure',
@@ -33,7 +36,7 @@ const procedimientoLd = {
   jsonLd={[procedimientoLd]}
 >
   <section id="inicio" aria-labelledby="hero-t" style="position:relative;overflow:hidden;background:#000000">
-    <div style="position:relative;width:100%;aspect-ratio:16/9;max-height:88vh;overflow:hidden">
+    <div data-herobox style="position:relative;width:100%;aspect-ratio:16/9;max-height:88vh;overflow:hidden">
       <img
         src="/img/placeholder-liso-16x9.png"
         alt={`${t.nombre} en la clínica Sonris`}
@@ -48,7 +51,10 @@ const procedimientoLd = {
         style="position:absolute;inset:0;background:rgba(0,0,0,0.62);background-image:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.25) 55%,rgba(0,0,0,0.55) 100%)"
       >
       </div>
-      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:0 40px 96px">
+      <div
+        data-herotexto
+        style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:0 40px 96px"
+      >
         <div style="max-width:1240px;width:100%;margin:0 auto">
           <h1
             data-h1
@@ -61,14 +67,9 @@ const procedimientoLd = {
           <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
             <a
               data-primary
-              href="#formulario"
+              href="/contacto/#formulario"
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
               >Pide tu cita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
-            >
-            <a
-              href="#que-es"
-              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.7);color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Qué es</a
             >
           </div>
         </div>
@@ -110,6 +111,7 @@ const procedimientoLd = {
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
         <div>
           <h2
+            data-h2-grande
             id="que-t"
             style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
@@ -124,9 +126,16 @@ const procedimientoLd = {
     </div>
   </section>
 
-  <section data-sec id="tipos" aria-labelledby="tipos-t" style="padding:128px 0">
+  <section
+    data-sec
+    data-textura
+    id="tipos"
+    aria-labelledby="tipos-t"
+    style="background-color:#FFFFFF;--velo:rgba(255,255,255,0.88);padding:128px 0"
+  >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <h2
+        data-h2-grande
         id="tipos-t"
         style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch"
       >
@@ -134,34 +143,31 @@ const procedimientoLd = {
       </h2>
       <p style="margin:0 0 48px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">{t.tiposEntradilla}</p>
 
-      {t.pestanas.length > 0 && <PestanasVariantes client:visible pestanas={t.pestanas} />}
-
-      {
-        t.variantes.length > 0 && (
-          <div data-3col style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px">
-            {t.variantes.map((v) => (
-              <article
-                id={v.id}
-                style="background:#FFFFFF;border-radius:40px;border:1px solid rgba(0,0,0,0.08);padding:36px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
-              >
-                <div style="width:56px;height:56px;border-radius:20px;background:#FEE1CB;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-                  <span aria-hidden="true" style="width:20px;height:20px;border:2px solid #B24E00;border-radius:9999px;display:block" />
-                </div>
-                <h3 style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;line-height:1.3;letter-spacing:-0.02em;color:#000000">
-                  {v.nombre}
-                </h3>
-                <p style="margin:0;font-size:16px;line-height:1.7;color:#6B6B6B">{v.texto}</p>
-              </article>
-            ))}
-          </div>
-        )
-      }
+      {/* Zigzag: cada panel deja aire a un lado, alternando. En móvil el ancho
+          vuelve al 100% desde global.css. */}
+      <div data-cascada style="display:flex;flex-direction:column;gap:24px">
+        {
+          bloques.map((v, i) => (
+            <article
+              data-caja
+              id={v.id}
+              style={`background:#F7F7F7;border-radius:40px;padding:44px;scroll-margin-top:120px;width:88%;align-self:${i % 2 === 0 ? 'flex-start' : 'flex-end'}`}
+            >
+              <h3 style="margin:0 0 16px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:28px;line-height:1.2;letter-spacing:-0.02em;color:#000000">
+                {v.nombre}
+              </h3>
+              <p style="margin:0;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">{v.texto}</p>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </section>
 
   <section data-sec id="beneficios" data-peach aria-labelledby="ben-t" style="background:#FEE1CB;padding:104px 0 128px;border-radius:40px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <h2
+        data-h2-grande
         id="ben-t"
         style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
       >
@@ -170,26 +176,16 @@ const procedimientoLd = {
       <p style="margin:0 0 48px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">
         Tres cosas que valen para cualquier tratamiento que hagas con nosotros.
       </p>
-      <div data-3col style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-bottom:40px">
+      <div data-3col style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px">
         {
+          /* Sin icono: los 76px extra de padding superior (56 del cuadro + 20 de
+             su margen) mantienen la card a la altura y el texto en el sitio de antes. */
           [
-            ['Primera visita gratuita', 'Valoramos tu caso sin compromiso, y decides después.', 'redondo'],
-            ['Plan y presupuesto por escrito', 'Sabes qué se va a hacer y qué cuesta antes de empezar.', 'cuadrado'],
-            ['Todo en la misma clínica', 'En Avenida Isabel de Valois 55, con el mismo equipo de siempre.', 'rombo'],
-          ].map(([titulo, texto, glifo]) => (
-            <article style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
-              <div style="width:56px;height:56px;border-radius:20px;background:#FEE1CB;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-                <span
-                  aria-hidden="true"
-                  style={
-                    glifo === 'redondo'
-                      ? 'width:20px;height:20px;border:2px solid #B24E00;border-radius:9999px;display:block'
-                      : glifo === 'cuadrado'
-                        ? 'width:18px;height:18px;border:2px solid #B24E00;border-radius:4px;display:block'
-                        : 'width:16px;height:16px;border:2px solid #B24E00;transform:rotate(45deg);display:block'
-                  }
-                />
-              </div>
+            ['Primera visita gratuita', 'Valoramos tu caso sin compromiso, y decides después.'],
+            ['Plan y presupuesto por escrito', 'Sabes qué se va a hacer y qué cuesta antes de empezar.'],
+            ['Todo en la misma clínica', 'En Avenida Isabel de Valois 55, con el mismo equipo de siempre.'],
+          ].map(([titulo, texto]) => (
+            <article style="background:#FFFFFF;border-radius:40px;padding:108px 32px 32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
               <h3 style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
                 {titulo}
               </h3>
@@ -198,23 +194,37 @@ const procedimientoLd = {
           ))
         }
       </div>
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px;align-items:start">
-        <aside style="background:#FFFFFF;border-radius:28px;padding:28px">
-          <h3 style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
+    </div>
+  </section>
+
+  <section data-sec id="cruce" aria-labelledby="cruce-t" style="padding:112px 0 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div
+        data-2col
+        data-caja style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:center;background:#F7F7F7;border-radius:40px;padding:56px"
+      >
+        <div>
+          <h2
+            id="cruce-t"
+            style="margin:0 0 14px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:36px;line-height:1.15;letter-spacing:-0.02em;color:#000000;max-width:20ch"
+          >
             {t.cruce.titulo}
-          </h3>
-          <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#6B6B6B">{t.cruce.texto}</p>
+          </h2>
+          <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:52ch">{t.cruce.texto}</p>
+        </div>
+        <!-- Los dos enlaces comparten fila; envuelven solos si la etiqueta del
+             cruce es larga o la caja se estrecha. -->
+        <div style="display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center">
           <a
-            data-underline
+            data-primary
             href={t.cruce.href}
-            style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:500;color:#1A1A1A"
-            >{t.cruce.etiqueta} <span>→</span></a
+            style="display:inline-flex;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+            >{t.cruce.etiqueta}<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
           >
-          <div style="height:1px;background:rgba(0,0,0,0.08);margin:20px 0"></div>
           <a data-underline href="/tratamientos/" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:500;color:#1A1A1A"
-            >Volver a todos los tratamientos <span>→</span></a
+            >Ver todos<span class="vh"> los tratamientos</span> <span>→</span></a
           >
-        </aside>
+        </div>
       </div>
     </div>
   </section>

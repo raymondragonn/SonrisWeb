@@ -61,10 +61,17 @@ const listaLd = {
         <div>
           <h1
             data-h1
+            id="hero-h1"
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:60px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
             Todo lo que tu boca puede <span style="color:#EB6B0A">necesitar</span>
           </h1>
+          <script is:inline>
+            // Alterna el titular en cada visita.
+            if (Math.random() < 0.5)
+              document.getElementById('hero-h1').innerHTML =
+                'Siete tratamientos, una sola <span style="color:#EB6B0A">clínica</span>';
+          </script>
           <p id="hero-t" style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
             Nuestra especialidad es la ortodoncia invisible, y a su alrededor tratamos lo que hace falta para que el tratamiento salga bien.
             Entra en cada uno para ver cómo trabajamos.
@@ -73,7 +80,7 @@ const listaLd = {
         <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
           <a
             data-primary
-            href="#formulario"
+            href="/contacto/#formulario"
             style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 30px;border-radius:9999px;background:#B24E00;color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
             >Pide tu primera visita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
           >
@@ -83,15 +90,8 @@ const listaLd = {
     </div>
   </section>
 
-  <section data-sec aria-labelledby="rejilla-t" style="background:#F7F7F7;padding:112px 0">
+  <section data-sec aria-label="Nuestros tratamientos" style="background:#F7F7F7;padding:112px 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <h2
-        id="rejilla-t"
-        style="margin:0 0 64px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
-      >
-        Siete tratamientos, una sola clínica
-      </h2>
-
       {
         TRATAMIENTOS.map((t, i) => {
           const textoIzquierda = i % 2 === 0;
@@ -112,7 +112,7 @@ const listaLd = {
           );
           const texto = (
             <div style={`grid-column:${textoIzquierda ? 1 : 2};grid-row:1`}>
-              <h3 style="margin:0 0 18px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:16ch">
+              <h3 data-h2-grande style="margin:0 0 18px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:16ch">
                 {t.nombre}
               </h3>
               <p style="margin:0 0 14px;font-size:20px;line-height:1.4;color:#1A1A1A;max-width:34ch">{t.claim}</p>
@@ -146,10 +146,12 @@ const listaLd = {
       <div
         data-peach
         data-cta-caja
-        style="background:#FEE1CB;border-radius:40px;padding:56px;display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between"
+        data-textura
+        style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);border-radius:40px;padding:56px;display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between"
       >
         <div>
           <h2
+            data-h2-grande
             id="cta-t"
             style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
           >

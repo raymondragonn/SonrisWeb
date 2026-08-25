@@ -1,26 +1,45 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Plan } from '../data/ortodoncia';
 
 /** Misma curva y duración que el carrusel de la home (FocoTratamientos). */
 const EASE = 'cubic-bezier(0.16,1,0.3,1)';
 const DUR = 620;
 
-/** Los cinco planes. El activo crece y recupera opacidad; el recomendado
- *  conserva siempre su borde ámbar de 2px y el badge «El más elegido». */
+/** Ancho de tarjeta. En una pantalla de 360 los 380px de escritorio no dejan
+ *  hueco a los lados y la tarjeta en foco no llega a centrarse nunca. */
+const ANCHO = { ancha: 380, estrecha: 268 };
+const ESTRECHA = '(max-width: 560px)';
+
+/** Los cinco planes. El activo recupera opacidad y lleva el borde ámbar de 2px;
+ *  el recomendado se distingue por el badge «El más elegido». */
 export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
   const inicial = Math.max(0, planes.findIndex((p) => p.recomendado));
   const [foco, setFoco] = useState(inicial);
+  // El servidor no tiene matchMedia: se pinta la versión ancha y se corrige al
+  // hidratar, antes de que el usuario llegue a ver el carrusel.
+  const [ancho, setAncho] = useState(ANCHO.ancha);
   const caja = useRef<HTMLDivElement>(null);
   const tarjetas = useRef<(HTMLElement | null)[]>([]);
 
-  const ir = (i: number, desplazar = true) => {
+  const ir = (i: number, behavior: ScrollBehavior = 'smooth') => {
     const n = Math.max(0, Math.min(planes.length - 1, i));
     setFoco(n);
-    if (!desplazar) return;
     const el = tarjetas.current[n];
     const box = caja.current;
-    if (el && box) box.scrollTo({ left: el.offsetLeft - (box.clientWidth - el.offsetWidth) / 2, behavior: 'smooth' });
+    if (el && box) box.scrollTo({ left: el.offsetLeft - (box.clientWidth - el.offsetWidth) / 2, behavior });
   };
+
+  useEffect(() => {
+    const mq = matchMedia(ESTRECHA);
+    const aplicar = () => setAncho(mq.matches ? ANCHO.estrecha : ANCHO.ancha);
+    aplicar();
+    mq.addEventListener('change', aplicar);
+    return () => mq.removeEventListener('change', aplicar);
+  }, []);
+
+  // El plan de partida ya tiene que aparecer centrado, sin la animación.
+  // Al cambiar de ancho hay que recentrarlo: la medida de todo ha cambiado.
+  useEffect(() => ir(foco, 'instant'), [ancho]);
 
   return (
     <>
@@ -31,7 +50,18 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
           gap: 28,
           alignItems: 'stretch',
           overflowX: 'auto',
-          padding: '20px 4px 8px',
+          // offsetLeft de las tarjetas se mide contra esta caja, que es lo que
+          // espera scrollTo.
+          position: 'relative',
+          // overflow-x:auto obliga al eje Y a recortar también, así que lo que
+          // sale de la tarjeta (el badge en top:-14, el -16 del recomendado y
+          // las sombras) necesita hueco dentro de la caja de scroll. El margen
+          // negativo lo devuelve al sitio para que nada se mueva de posición.
+          // Medio hueco de tarjeta a cada lado para que la primera y la última
+          // también puedan quedar centradas; el mínimo de 32px es para las
+          // pantallas donde no cabe ni una tarjeta entera.
+          padding: `48px max(24px, calc(50% - ${ancho / 2}px)) 56px`,
+          margin: '-48px -24px -56px',
           scrollbarWidth: 'none',
           scrollBehavior: 'smooth',
         }}
@@ -41,6 +71,7 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
           return (
             <article
               key={p.nombre}
+              data-plan
               ref={(el) => {
                 tarjetas.current[i] = el;
               }}
@@ -53,14 +84,14 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
               style={{
                 flex: 'none',
                 cursor: activo ? 'default' : 'pointer',
-                width: 380,
+                width: ancho,
                 opacity: activo ? 1 : 0.45,
                 position: 'relative',
                 marginTop: p.recomendado ? -16 : 0,
                 background: '#FFFFFF',
                 borderRadius: 40,
-                border: p.recomendado ? '2px solid #EB6B0A' : '1px solid rgba(0,0,0,0.08)',
-                padding: 36,
+                border: activo ? '2px solid #EB6B0A' : '1px solid rgba(0,0,0,0.08)',
+                padding: ancho === ANCHO.ancha ? 36 : 28,
                 boxShadow: activo ? '0 20px 52px rgba(0,0,0,.055)' : '0 12px 36px rgba(0,0,0,.03)',
                 transition: ['opacity', 'box-shadow'].map((pr) => `${pr} ${DUR}ms ${EASE}`).join(', '),
               }}
@@ -128,31 +159,36 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                   </li>
                 ))}
               </ul>
-              {p.recomendado && (
-                <a
-                  data-primary
-                  href="#formulario"
-                  style={{
-                    marginTop: 28,
-                    display: 'inline-flex',
-                    whiteSpace: 'nowrap',
-                    alignItems: 'center',
-                    gap: 10,
-                    minHeight: 48,
-                    padding: '0 26px',
-                    borderRadius: 9999,
-                    background: '#B24E00',
-                    color: '#FFFFFF',
-                    fontSize: 16,
-                    fontWeight: 600,
-                  }}
-                >
-                  Consúltanos tu caso
-                  <span data-arrow style={{ display: 'inline-block', transition: `transform ${DUR}ms ${EASE}` }}>
-                    →
-                  </span>
-                </a>
-              )}
+              {/* Solo se ve en la tarjeta en foco, pero se pinta siempre: con
+                  alignItems stretch, montarlo y desmontarlo cambiaba la altura
+                  de toda la fila al pasar de un plan a otro. Oculto no es
+                  tabulable ni lo ve un lector de pantalla. */}
+              <a
+                data-primary
+                href={`/contacto/?plan=${encodeURIComponent(p.nombre)}#formulario`}
+                aria-hidden={activo ? undefined : true}
+                tabIndex={activo ? undefined : -1}
+                style={{
+                  marginTop: 28,
+                  display: 'inline-flex',
+                  whiteSpace: 'nowrap',
+                  alignItems: 'center',
+                  gap: 10,
+                  minHeight: 48,
+                  padding: '0 26px',
+                  borderRadius: 9999,
+                  background: '#B24E00',
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                  fontWeight: 600,
+                  visibility: activo ? 'visible' : 'hidden',
+                }}
+              >
+                Consúltanos tu caso
+                <span data-arrow style={{ display: 'inline-block', transition: `transform ${DUR}ms ${EASE}` }}>
+                  →
+                </span>
+              </a>
             </article>
           );
         })}

@@ -126,7 +126,7 @@ article[id] {
 }
 [data-card]:hover [data-tile] [data-glyph],
 [data-tarjeta]:hover [data-tile] [data-glyph] {
-  border-color: #ffffff;
+  fill: #ffffff;
 }
 [data-member]:hover {
   transform: translateY(-4px);
@@ -165,11 +165,16 @@ article[id] {
   background: #eb6b0a;
   transition: width 200ms var(--ease);
 }
-[data-underline]:hover::after {
+[data-underline][aria-current='page']::after {
   width: 100%;
 }
-[data-underline]:hover {
-  color: #b24e00;
+@media (hover: hover) and (pointer: fine) {
+  [data-underline]:hover::after {
+    width: 100%;
+  }
+  [data-underline]:hover {
+    color: #b24e00;
+  }
 }
 
 /* Botones. En hover el relleno aclara y la etiqueta pasa a tinta:
@@ -182,6 +187,11 @@ article[id] {
 [data-primary]:hover [data-arrow] {
   transform: translateX(4px);
 }
+/* Flotante de WhatsApp: al ser sólo icono, el hover crece en vez de cambiar etiqueta. */
+[data-wa]:hover,
+[data-wa]:focus-visible {
+  transform: scale(1.12);
+}
 [data-secondary]:hover {
   background: #fee1cb;
   border-color: #eb6b0a;
@@ -190,6 +200,25 @@ article[id] {
   border-color: #eb6b0a;
   box-shadow: 0 0 0 4px #fee1cb;
   outline: none;
+}
+
+/* Header transparente que se rellena al pasar el hero. El estado vive aquí y
+   el script solo marca [data-fijo] al primer píxel de scroll. */
+#sonris-header[data-variante='transparente'] {
+  background-color: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(0px);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  /* Sin fade en el relleno: interpolar de rgba(255,255,255,0) a 0.88 deja el
+     navbar medio traslúcido durante 300ms y el texto flota sobre el contenido
+     que pasa detrás. El fondo entra en un fotograma; solo la sombra se funde. */
+  transition: box-shadow 200ms var(--ease);
+}
+#sonris-header[data-fijo] {
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 12px 32px rgba(0, 0, 0, 0.06);
 }
 [data-accrow]:hover [data-q] {
   color: #b24e00;
@@ -240,12 +269,32 @@ article[id] {
   [data-h1] {
     font-size: 42px !important;
   }
+  [data-h2-grande] {
+    font-size: 36px !important;
+  }
+  /* El hero a 16/9 deja 220px de alto en un móvil: el titular, la entradilla y
+     los dos botones no caben y se recortaban por arriba. Aquí manda el alto de
+     pantalla, no la proporción: en vertical 4/5 daría un hero de 960px en una
+     tablet. svh cuenta la barra del navegador móvil; vh queda de reserva. */
+  [data-herobox] {
+    aspect-ratio: auto !important;
+    max-height: none !important;
+    min-height: 78vh;
+    min-height: 78svh;
+  }
+  [data-herotexto] {
+    padding: 0 24px 56px !important;
+  }
   [data-2col] {
     grid-template-columns: minmax(0, 1fr) !important;
     gap: 40px !important;
   }
   [data-3col] {
     grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* El zigzag de los tratamientos solo tiene sentido con sitio para el aire. */
+  [data-cascada] > article {
+    width: 100% !important;
   }
   [data-zig] {
     grid-template-columns: 1fr !important;
@@ -267,17 +316,8 @@ article[id] {
     border-left: none !important;
     padding: 24px !important;
   }
-  [data-foot] {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
   [data-gal] {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  [data-formgrid] {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-  [data-steps] {
-    display: block !important;
   }
   [data-mobilebar] {
     display: flex !important;
@@ -346,7 +386,56 @@ article[id] {
     overflow-wrap: break-word;
   }
   [data-h2-grande] {
-    font-size: 34px !important;
+    font-size: 30px !important;
+  }
+  /* Los dos botones del hero, a media pantalla cada uno en vez de sueltos. */
+  [data-herotexto] a {
+    flex: 1 1 auto !important;
+    justify-content: center;
+  }
+  /* 80px de aire arriba y abajo en una pantalla de 360 es media pantalla. */
+  [data-sec] {
+    padding-top: 64px !important;
+    padding-bottom: 64px !important;
+  }
+  /* 44 y 56px de acolchado dejan sin sitio al texto en una caja de 312px. */
+  [data-caja] {
+    padding: 28px 22px !important;
+    border-radius: 28px !important;
+  }
+  /* Red de seguridad: ningún botón puede ser más ancho que su columna, por
+     larga que sea la etiqueta. */
+  [data-primary],
+  [data-secondary] {
+    max-width: 100%;
+  }
+  /* El logo a 68px se come una quinta parte del ancho de un móvil. */
+  #sonris-header img {
+    width: 52px !important;
+    height: 52px !important;
+  }
+  /* El pie ocupaba casi una pantalla entera de scroll: se aprieta el aire, no
+     el contenido. Los iconos de redes se quedan en 44px, que es el mínimo
+     táctil. */
+  footer#legal {
+    padding: 56px 0 24px !important;
+  }
+  footer#legal [data-2col] {
+    gap: 28px !important;
+    padding-bottom: 32px !important;
+  }
+  footer#legal [data-h2-grande] {
+    margin-bottom: 20px !important;
+  }
+  footer#legal [data-foot-meta] {
+    padding: 20px 0 !important;
+    gap: 16px !important;
+  }
+  footer#legal nav {
+    gap: 12px 18px !important;
+  }
+  footer#legal > div > p:last-child {
+    margin-bottom: 8px !important;
   }
   [data-cta-caja] {
     padding: 32px 24px !important;
@@ -428,4 +517,140 @@ article[id] {
     opacity: 1;
     transform: none;
   }
+}
+
+/* Modal de vídeo. El <dialog> es solo el marco: el ancho lo pone el hueco. */
+[data-dlg-video] {
+  width: min(92vw, 900px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+[data-dlg-video]::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+/* Aviso de cookies: mismo velo que el modal de vídeo, algo más suave porque
+   detrás hay contenido que se está leyendo, no un reproductor. */
+#sonris-cookies::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+[data-dlg-slot] {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #000000;
+  box-shadow: var(--e2);
+}
+/* El vídeo propio es vertical: manda su proporción, con el alto acotado a la
+   ventana. El 16/9 de arriba es para los iframes, que no tienen tamaño propio. */
+[data-dlg-slot]:has(video) {
+  aspect-ratio: auto;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+}
+[data-dlg-slot] video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 82vh;
+  margin: 0 auto;
+  border-radius: 28px;
+  background: #000000;
+  box-shadow: var(--e2);
+}
+[data-dlg-slot] iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+[data-dlg-cerrar] {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Textura de marca por debajo del color de la sección. El velo --velo va casi
+   opaco a propósito: la textura solo tiene que insinuarse, si sube se lleva por
+   delante el contraste del texto. */
+[data-textura] {
+  background-image: linear-gradient(var(--velo), var(--velo)), url('../assets/sonris/iconos/fondo-sonris.webp');
+  /* 600px en todas las secciones: con `cover` el dibujo cambiaba de escala
+     según el alto de cada una. El velo ocupa el área entera. */
+  background-size: auto, 600px auto;
+  background-position: center;
+  background-repeat: repeat;
+}
+
+/* Paneles de tipos de tratamiento: al pasar por encima se agitan y se despegan
+   del fondo. Dos vaivenes que van perdiendo amplitud, para que frene solo en
+   vez de cortarse; el bloque global de prefers-reduced-motion ya lo apaga. */
+[data-cascada] > article {
+  transition: box-shadow 300ms var(--ease);
+}
+[data-cascada] > article:hover {
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 24px 56px rgba(0, 0, 0, 0.1);
+}
+/* El mismo meneo en las demás superficies del sistema: carrusel de tratamientos
+   de la home, planes, tecnología y la caja de cierre. Sin sombra añadida en
+   ellas: su transición va en línea y no incluye box-shadow, así que entraría de
+   golpe. */
+[data-cascada] > article:hover,
+[data-foco]:hover,
+[data-plan]:hover,
+[data-feat]:hover,
+[data-cta-caja]:hover {
+  animation: sonris-agita 760ms var(--ease);
+}
+@keyframes sonris-agita {
+  0%,
+  100% {
+    transform: none;
+  }
+  15% {
+    transform: rotate(calc(-1.2deg * var(--agita, 1))) translateY(calc(-6px * var(--agita, 1)));
+  }
+  40% {
+    transform: rotate(calc(1deg * var(--agita, 1))) translateY(calc(-6px * var(--agita, 1)));
+  }
+  65% {
+    transform: rotate(calc(-0.6deg * var(--agita, 1))) translateY(calc(-4px * var(--agita, 1)));
+  }
+  85% {
+    transform: rotate(calc(0.3deg * var(--agita, 1))) translateY(calc(-2px * var(--agita, 1)));
+  }
+}
+
+/* Instagram junto al nombre de la Dra. Vélez. El área que responde al ratón es
+   el enlace, que no se mueve; lo que baila es el icono de dentro, y a escala de
+   icono: con la amplitud entera se salía del cursor y volvía a empezar. */
+[data-ig] {
+  transition: color 300ms var(--ease);
+  padding: 0.06em;
+}
+[data-ig] svg {
+  --agita: 0.4;
+}
+[data-ig]:hover,
+[data-ig]:focus-visible {
+  color: #b24e00;
+}
+[data-ig]:hover svg,
+[data-ig]:focus-visible svg {
+  animation: sonris-agita 760ms var(--ease);
 }
