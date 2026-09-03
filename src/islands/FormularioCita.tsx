@@ -56,7 +56,7 @@ const ESTILO_ETIQUETA: CSSProperties = {
 /** Asterisco decorativo: quien usa lector de pantalla ya oye «obligatorio» por
  *  el required del campo, así que no se lee dos veces. */
 const Obligatorio = () => (
-  <span aria-hidden="true" style={{ color: '#B24E00' }}>
+  <span aria-hidden="true" style={{ color: '#E76B0B' }}>
     {' '}
     *
   </span>
@@ -78,7 +78,7 @@ const ESTILO_PILDORA = (marcada: boolean): CSSProperties => ({
   padding: '0 22px',
   borderRadius: 9999,
   background: marcada ? '#FEE1CB' : '#FFFFFF',
-  border: marcada ? '2px solid #EB6B0A' : '1px solid rgba(0,0,0,0.08)',
+  border: marcada ? '2px solid #E76B0B' : '1px solid rgba(0,0,0,0.08)',
   color: '#1A1A1A',
   fontFamily: "'DM Sans', system-ui, sans-serif",
   fontSize: 16,
@@ -258,7 +258,7 @@ export default function FormularioCita({
                   value={c.valor}
                   checked={canal === c.valor}
                   onChange={() => setCanal(c.valor)}
-                  style={{ width: 20, height: 20, accentColor: '#B24E00', margin: 0 }}
+                  style={{ width: 20, height: 20, accentColor: '#E76B0B', margin: 0 }}
                 />
                 {c.etiqueta}
                 <span className="vh">. {c.ayuda}</span>
@@ -340,7 +340,7 @@ export default function FormularioCita({
                   onChange={() => setValores((v) => ({ ...v, motivo: m }))}
                   aria-invalid={errores.motivo ? 'true' : 'false'}
                   aria-describedby={errores.motivo ? id('e-motivo') : undefined}
-                  style={{ width: 20, height: 20, accentColor: '#B24E00', margin: 0 }}
+                  style={{ width: 20, height: 20, accentColor: '#E76B0B', margin: 0 }}
                 />
                 {m}
               </label>
@@ -399,17 +399,17 @@ export default function FormularioCita({
               width: 24,
               height: 24,
               marginTop: 2,
-              accentColor: '#B24E00',
+              accentColor: '#E76B0B',
               ...(errores.rgpd ? { outline: '2px solid #B3261E', outlineOffset: 2 } : {}),
             }}
           />
           <span>
             He leído y acepto la{' '}
-            <a href="/politica-de-privacidad/" style={{ color: '#B24E00', fontWeight: 500, textDecoration: 'underline' }}>
+            <a href="/politica-de-privacidad/" style={{ color: '#E76B0B', fontWeight: 500, textDecoration: 'underline' }}>
               Política de Privacidad
             </a>{' '}
             y el{' '}
-            <a href="/aviso-legal/" style={{ color: '#B24E00', fontWeight: 500, textDecoration: 'underline' }}>
+            <a href="/aviso-legal/" style={{ color: '#E76B0B', fontWeight: 500, textDecoration: 'underline' }}>
               Aviso Legal
             </a>
             . Tus datos los trata MASTER SMILE S.L. solo para responderte.
@@ -434,11 +434,11 @@ export default function FormularioCita({
               minHeight: 56,
               padding: '0 32px',
               borderRadius: 9999,
-              background: '#B24E00',
+              background: '#E76B0B',
               border: 'none',
               color: '#FFFFFF',
               fontFamily: "'DM Sans', system-ui, sans-serif",
-              fontSize: 17,
+              fontSize: 18.66,
               fontWeight: 600,
               cursor: enviando ? 'progress' : 'pointer',
               opacity: enviando ? 0.7 : 1,
@@ -452,7 +452,7 @@ export default function FormularioCita({
           <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: '#1A1A1A' }}>
             Primera visita gratuita, sin compromiso.
             <br />o llámanos al{' '}
-            <a href={`tel:${telefonoE164}`} style={{ color: '#B24E00', fontWeight: 500 }}>
+            <a href={`tel:${telefonoE164}`} style={{ color: '#E76B0B', fontWeight: 500 }}>
               {telefono}
             </a>
           </p>

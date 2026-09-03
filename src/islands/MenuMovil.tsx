@@ -128,7 +128,7 @@ export default function MenuMovil({
                         fontWeight: 600,
                         fontSize: 20,
                         letterSpacing: '-0.02em',
-                        color: e.href === actual ? '#B24E00' : '#1A1A1A',
+                        color: e.href === actual ? '#E76B0B' : '#1A1A1A',
                       }}
                     >
                       {e.nombre}
@@ -149,7 +149,7 @@ export default function MenuMovil({
                       fontWeight: 600,
                       fontSize: 20,
                       letterSpacing: '-0.02em',
-                      color: actual === '/contacto/' ? '#B24E00' : '#1A1A1A',
+                      color: actual === '/contacto/' ? '#E76B0B' : '#1A1A1A',
                     }}
                   >
                     Contacto
@@ -170,9 +170,9 @@ export default function MenuMovil({
                 width: '100%',
                 minHeight: 56,
                 borderRadius: 9999,
-                background: '#B24E00',
+                background: '#E76B0B',
                 color: '#FFFFFF',
-                fontSize: 17,
+                fontSize: 18.66,
                 fontWeight: 600,
               }}
             >
@@ -183,7 +183,7 @@ export default function MenuMovil({
             </a>
             <p style={{ margin: '14px 0 0', fontSize: 16, color: '#6B6B6B' }}>
               o llámanos al{' '}
-              <a href={`tel:${telefonoE164}`} style={{ color: '#B24E00', fontWeight: 500 }}>
+              <a href={`tel:${telefonoE164}`} style={{ color: '#E76B0B', fontWeight: 500 }}>
                 {telefono}
               </a>
             </p>

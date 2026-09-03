@@ -38,7 +38,7 @@ export default function Acordeon({ filas }: { filas: Fila[] }) {
                   fontWeight: 600,
                   fontSize: 19,
                   letterSpacing: '-0.02em',
-                  color: abierto ? '#B24E00' : '#000000',
+                  color: abierto ? '#E76B0B' : '#000000',
                   transition: 'color 200ms cubic-bezier(0.22,1,0.36,1)',
                 }}
               >
@@ -52,8 +52,8 @@ export default function Acordeon({ filas }: { filas: Fila[] }) {
                   width: 32,
                   height: 32,
                   borderRadius: 9999,
-                  background: abierto ? '#EB6B0A' : '#FEE1CB',
-                  color: abierto ? '#FFFFFF' : '#B24E00',
+                  background: abierto ? '#E76B0B' : '#FEE1CB',
+                  color: abierto ? '#FFFFFF' : '#E76B0B',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

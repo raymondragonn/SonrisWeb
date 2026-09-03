@@ -201,7 +201,7 @@ export default function FocoTratamientos({ items }: { items: Item[] }) {
                   width: 10,
                   height: 10,
                   borderRadius: 9999,
-                  background: i === foco ? '#B24E00' : 'rgba(0,0,0,0.25)',
+                  background: i === foco ? '#E76B0B' : 'rgba(0,0,0,0.25)',
                   display: 'block',
                 }}
               />

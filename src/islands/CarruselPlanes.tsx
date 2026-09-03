@@ -90,7 +90,7 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                 marginTop: p.recomendado ? -16 : 0,
                 background: '#FFFFFF',
                 borderRadius: 40,
-                border: activo ? '2px solid #EB6B0A' : '1px solid rgba(0,0,0,0.08)',
+                border: activo ? '2px solid #E76B0B' : '1px solid rgba(0,0,0,0.08)',
                 padding: ancho === ANCHO.ancha ? 36 : 28,
                 boxShadow: activo ? '0 20px 52px rgba(0,0,0,.055)' : '0 12px 36px rgba(0,0,0,.03)',
                 transition: ['opacity', 'box-shadow'].map((pr) => `${pr} ${DUR}ms ${EASE}`).join(', '),
@@ -130,7 +130,7 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
               >
                 {p.nombre}
               </h3>
-              {p.recomendado && <p style={{ margin: '0 0 20px', fontSize: 15, fontWeight: 500, color: '#B24E00' }}>Recomendado</p>}
+              {p.recomendado && <p style={{ margin: '0 0 20px', fontSize: 15, fontWeight: 500, color: '#E76B0B' }}>Recomendado</p>}
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {p.puntos.map((pt) => (
                   <li
@@ -145,7 +145,7 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                         height: 20,
                         borderRadius: 9999,
                         background: pt.incluido ? '#FEE1CB' : '#EFEFEF',
-                        color: pt.incluido ? '#B24E00' : '#6B6B6B',
+                        color: pt.incluido ? '#E76B0B' : '#6B6B6B',
                         fontSize: 12,
                         display: 'flex',
                         alignItems: 'center',
@@ -177,9 +177,9 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                   minHeight: 48,
                   padding: '0 26px',
                   borderRadius: 9999,
-                  background: '#B24E00',
+                  background: '#E76B0B',
                   color: '#FFFFFF',
-                  fontSize: 16,
+                  fontSize: 18.66,
                   fontWeight: 600,
                   visibility: activo ? 'visible' : 'hidden',
                 }}
@@ -235,7 +235,7 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
               }}
             >
               <span
-                style={{ width: 10, height: 10, borderRadius: 9999, background: i === foco ? '#B24E00' : 'rgba(0,0,0,0.25)', display: 'block' }}
+                style={{ width: 10, height: 10, borderRadius: 9999, background: i === foco ? '#E76B0B' : 'rgba(0,0,0,0.25)', display: 'block' }}
               />
             </button>
           ))}

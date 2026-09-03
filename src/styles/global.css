@@ -11,8 +11,7 @@
   --ink: #000000;
   --ink-soft: #1a1a1a;
   --ink-muted: #6b6b6b;
-  --amber: #eb6b0a;
-  --amber-deep: #b24e00;
+  --amber: #E76B0B;
   --amber-light: #ffbc7d;
   --amber-muted: #edb992;
   --peach: #fee1cb;
@@ -51,18 +50,18 @@ body {
 }
 
 a {
-  color: #b24e00;
+  color: #E76B0B;
   text-decoration: none;
 }
 a:hover {
-  color: #eb6b0a;
+  color: #E76B0B;
 }
 p {
   text-wrap: pretty;
 }
 
 :focus-visible {
-  outline: 2px solid #b24e00;
+  outline: 2px solid #E76B0B;
   outline-offset: 2px;
 }
 [data-peach] :focus-visible {
@@ -122,7 +121,7 @@ article[id] {
 }
 [data-card]:hover [data-tile],
 [data-tarjeta]:hover [data-tile] {
-  background: #eb6b0a;
+  background: #E76B0B;
 }
 [data-card]:hover [data-tile] [data-glyph],
 [data-tarjeta]:hover [data-tile] [data-glyph] {
@@ -162,7 +161,7 @@ article[id] {
   bottom: -4px;
   height: 2px;
   width: 0;
-  background: #eb6b0a;
+  background: #E76B0B;
   transition: width 200ms var(--ease);
 }
 [data-underline][aria-current='page']::after {
@@ -173,15 +172,16 @@ article[id] {
     width: 100%;
   }
   [data-underline]:hover {
-    color: #b24e00;
+    color: #E76B0B;
   }
 }
 
-/* Botones. En hover el relleno aclara y la etiqueta pasa a tinta:
-   blanco sobre #EB6B0A no llega a 4.5:1 a tamaño de cuerpo. */
+/* Botones. El relleno se queda en el naranja del logo: aclararlo en hover
+   bajaría el contraste con el blanco por debajo de 3:1, así que el hover lo
+   marcan el glow y la flecha. La etiqueta va a 18.66px sin engordar el peso:
+   blanco sobre #E76B0B da 3.23:1, por debajo del 4.5:1 que AA pide a texto
+   normal. Subirla a 24px la metería en el umbral de texto grande, donde basta 3:1. */
 [data-primary]:hover {
-  background: #eb6b0a;
-  color: #000000;
   box-shadow: var(--glow);
 }
 [data-primary]:hover [data-arrow] {
@@ -194,10 +194,10 @@ article[id] {
 }
 [data-secondary]:hover {
   background: #fee1cb;
-  border-color: #eb6b0a;
+  border-color: #E76B0B;
 }
 [data-input]:focus {
-  border-color: #eb6b0a;
+  border-color: #E76B0B;
   box-shadow: 0 0 0 4px #fee1cb;
   outline: none;
 }
@@ -221,7 +221,7 @@ article[id] {
     0 12px 32px rgba(0, 0, 0, 0.06);
 }
 [data-accrow]:hover [data-q] {
-  color: #b24e00;
+  color: #E76B0B;
 }
 
 [data-burger] {
@@ -648,7 +648,7 @@ article[id] {
 }
 [data-ig]:hover,
 [data-ig]:focus-visible {
-  color: #b24e00;
+  color: #E76B0B;
 }
 [data-ig]:hover svg,
 [data-ig]:focus-visible svg {

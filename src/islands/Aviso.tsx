@@ -43,7 +43,7 @@ export default function Aviso({ aviso, alCerrar }: { aviso: AvisoDatos; alCerrar
           borderRadius: 20,
           background: ok ? '#FEE1CB' : '#FFFFFF',
           border: ok ? 'none' : '2px solid #B3261E',
-          color: ok ? '#B24E00' : '#B3261E',
+          color: ok ? '#E76B0B' : '#B3261E',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

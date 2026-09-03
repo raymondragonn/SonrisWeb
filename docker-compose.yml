@@ -1,3 +1,4 @@
+name: sonris
 # Desarrollo: el servidor de Astro corre dentro del contenedor con el código montado,
 # así que los cambios en src/ se ven en http://localhost:8080 sin reconstruir la imagen.
 #   docker compose up dev
