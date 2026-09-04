@@ -272,3 +272,19 @@ export const TRATAMIENTOS: Tratamiento[] = [
 ];
 
 export const porSlug = (slug: string) => TRATAMIENTOS.find((t) => t.slug === slug);
+
+/** Preguntas de la página de tratamientos. Misma regla que en `ortodoncia.ts`:
+ *  solo entran las que tienen respuesta redactada y firmada por la clínica. Las
+ *  dos de aquí se sostienen en datos ya publicados en el sitio (la gratuidad de
+ *  la primera visita y el horario); el resto está en PENDIENTES.md. */
+export const FAQ = [
+  {
+    pregunta: '¿La primera visita también es gratuita para estos tratamientos?',
+    respuesta:
+      'Sí. La primera visita es gratuita y sin compromiso, sea cual sea el tratamiento por el que vengas. En ella te exploramos, valoramos tu caso y te damos un plan.',
+  },
+  {
+    pregunta: '¿Qué horario tenéis?',
+    respuesta: 'Abrimos de lunes a viernes, de 12:00 a 20:00 h. Sábados y domingos permanecemos cerrados.',
+  },
+];

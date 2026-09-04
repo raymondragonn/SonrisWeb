@@ -1,0 +1,217 @@
+---
+// Bloque de reseñas de Google, con la estructura del widget de Elfsight
+// (cabecera de resumen + carrusel de tarjetas) y la paleta de Sonris.
+//
+// Los datos son estáticos: se editan en src/data/resenas.ts. Sin script de
+// terceros, sin cookies y sin clave de API, así que las ve todo el mundo,
+// también quien rechace las cookies.
+import { RESENAS, RESUMEN } from '../data/resenas';
+
+// La inicial y su color hacen de avatar: las fotos de Google no se pueden
+// enlazar desde aquí y no merecen una copia local.
+const COLORES = ['#E76B0B', '#16163F', '#B5541F', '#2F5D50', '#7A4E9E', '#1F6F8B'];
+const avatar = (nombre: string) => ({
+  inicial: nombre.trim().charAt(0).toUpperCase(),
+  color: COLORES[nombre.length % COLORES.length],
+});
+
+/** Con textos largos la tarjeta recorta y ofrece abrir el resto. */
+const LARGO = 150;
+const media = RESUMEN.media.toFixed(1).replace('.', ',');
+---
+
+{
+  RESENAS.length > 0 && (
+    <section data-sec data-band-gray id="resenas" aria-labelledby="res-t" style="background:#F7F7F7;padding:112px 0">
+      <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+        <h2
+          data-h2-grande
+          id="res-t"
+          style="margin:0 0 40px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;text-align:center"
+        >
+          Lo que dicen nuestros pacientes
+        </h2>
+
+        {/* Resumen: media, estrellas y acceso a la ficha. */}
+        <div
+          data-resumen
+          style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;background:#FFFFFF;border-radius:40px;padding:28px 32px;margin-bottom:32px;box-shadow:0 12px 36px rgba(0,0,0,.03)"
+        >
+          <div>
+            <p style="margin:0 0 6px;display:flex;align-items:center;gap:8px;font-size:19px;font-weight:600;color:#1A1A1A">
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.76c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.82 6.05l3.66 2.84c.87-2.6 3.3-4.51 6.16-4.51z" />
+              </svg>
+              Reseñas de Google
+            </p>
+            <p style="margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <strong style="font-family:Poppins,system-ui,sans-serif;font-size:28px;font-weight:600;color:#000000">{media}</strong>
+              <span aria-hidden="true" style="font-size:20px;letter-spacing:0.1em;color:#E76B0B">{'★'.repeat(Math.round(RESUMEN.media))}</span>
+              <span style="font-size:15px;color:#6B6B6B">
+                ({RESUMEN.total})
+                <span class="vh">{RESUMEN.media} de 5 sobre {RESUMEN.total} reseñas</span>
+              </span>
+            </p>
+          </div>
+          <a
+            data-primary
+            href={RESUMEN.perfil}
+            target="_blank"
+            rel="noopener noreferrer"
+            style="display:inline-flex;flex:none;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:17px;font-weight:600"
+            >Escribir una reseña<span class="vh"> en Google (se abre en una pestaña nueva)</span></a
+          >
+        </div>
+
+        {/* Carrusel: scroll nativo con anclaje, sin librería. Las flechas solo
+            ayudan al ratón; con teclado y gestos el scroll ya funciona. */}
+        <div style="position:relative">
+          <div
+            data-pista
+            role="region"
+            aria-label="Reseñas de pacientes en Google"
+            tabindex="0"
+            style="display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px 0 8px"
+          >
+            {RESENAS.map((r) => {
+              const av = avatar(r.autor);
+              return (
+                <article
+                  style="flex:0 0 300px;scroll-snap-align:start;background:#FFFFFF;border-radius:40px;padding:28px;box-shadow:0 12px 36px rgba(0,0,0,.03);display:flex;flex-direction:column;gap:14px"
+                >
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <span
+                      aria-hidden="true"
+                      style={`flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:${av.color};color:#FFFFFF;font-family:Poppins,system-ui,sans-serif;font-size:20px;font-weight:600`}
+                      >{av.inicial}</span
+                    >
+                    <div style="min-width:0">
+                      <p style="margin:0;display:flex;align-items:center;gap:6px;font-size:16px;font-weight:600;color:#000000">
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                          {r.url ? (
+                            <a href={r.url} target="_blank" rel="noopener noreferrer nofollow" style="color:inherit">
+                              {r.autor}
+                            </a>
+                          ) : (
+                            r.autor
+                          )}
+                        </span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#4285F4" aria-hidden="true" focusable="false" style="flex:none">
+                          <path d="M12 2 9.8 4.2 6.7 3.9 5.6 6.8 2.8 7.9l.3 3.1L1 13.2l1.8 2.6-.5 3 3 .8 1.4 2.8 3-.9 2.6 1.7 2.3-2 3 .3 1-2.9 2.8-1.2-.4-3 1.8-2.4-2-2.3.3-3.1-3-.7-1.4-2.7-3 .8L12 2Zm-1.2 13.9-3.4-3.4 1.6-1.6 1.8 1.8 4.6-4.6 1.6 1.6-6.2 6.2Z" />
+                        </svg>
+                        <span class="vh">Reseña publicada en Google</span>
+                      </p>
+                      <p style="margin:2px 0 0;font-size:13px;color:#6B6B6B">{r.fecha}</p>
+                    </div>
+                  </div>
+
+                  <p style="margin:0;font-size:15px;letter-spacing:0.12em;color:#E76B0B">
+                    <span aria-hidden="true">{'★'.repeat(Math.round(r.estrellas))}</span>
+                    <span class="vh">{r.estrellas} de 5 estrellas</span>
+                  </p>
+
+                  <blockquote data-texto style="margin:0;font-size:16px;line-height:1.7;color:#1A1A1A">{r.texto}</blockquote>
+                  {r.texto.length > LARGO && (
+                    <button
+                      type="button"
+                      data-mas
+                      aria-expanded="false"
+                      style="align-self:start;margin-top:auto;padding:0;border:0;background:none;color:#E76B0B;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer"
+                      >Leer más</button
+                    >
+                  )}
+                </article>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            data-flecha="-1"
+            aria-label="Reseñas anteriores"
+            style="position:absolute;top:50%;left:-18px;transform:translateY(-50%);display:grid;place-items:center;width:48px;height:48px;border-radius:50%;border:1px solid rgba(0,0,0,0.08);background:#FFFFFF;color:#1A1A1A;font-size:20px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.08)"
+            >←</button
+          >
+          <button
+            type="button"
+            data-flecha="1"
+            aria-label="Reseñas siguientes"
+            style="position:absolute;top:50%;right:-18px;transform:translateY(-50%);display:grid;place-items:center;width:48px;height:48px;border-radius:50%;border:1px solid rgba(0,0,0,0.08);background:#FFFFFF;color:#1A1A1A;font-size:20px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.08)"
+            >→</button
+          >
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* La pista se desplaza sola: la barra sobra y ensucia el bloque. */
+  [data-pista] {
+    scrollbar-width: none;
+  }
+  [data-pista]::-webkit-scrollbar {
+    display: none;
+  }
+  /* El recorte es visual: el texto completo sigue en el HTML, para quien lea
+     con lector de pantalla y para los buscadores. */
+  [data-texto] {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+  }
+  [data-texto][data-abierto] {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+  }
+  @media (max-width: 900px) {
+    [data-flecha] {
+      display: none;
+    }
+    [data-resumen] {
+      border-radius: 28px;
+      padding: 24px;
+    }
+  }
+</style>
+
+<script>
+  // Un solo oyente para todas las tarjetas: menos trabajo que atar cada botón.
+  document.addEventListener('click', (e) => {
+    const destino = e.target as HTMLElement;
+
+    const mas = destino.closest<HTMLButtonElement>('[data-mas]');
+    if (mas) {
+      const texto = mas.closest('article')?.querySelector<HTMLElement>('[data-texto]');
+      if (!texto) return;
+      const abierto = texto.hasAttribute('data-abierto');
+      texto.toggleAttribute('data-abierto', !abierto);
+      mas.setAttribute('aria-expanded', String(!abierto));
+      mas.textContent = abierto ? 'Leer más' : 'Leer menos';
+      return;
+    }
+
+    const flecha = destino.closest<HTMLButtonElement>('[data-flecha]');
+    if (!flecha) return;
+    const pista = flecha.parentElement?.querySelector<HTMLElement>('[data-pista]');
+    if (!pista) return;
+    const sentido = Number(flecha.dataset.flecha);
+    // En los extremos se da la vuelta, para que ninguna flecha quede muerta.
+    const fin = pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 4;
+    const inicio = pista.scrollLeft <= 4;
+    const destinoX =
+      sentido > 0
+        ? fin
+          ? 0
+          : pista.scrollLeft + 324
+        : inicio
+          ? pista.scrollWidth
+          : pista.scrollLeft - 324;
+    pista.scrollTo({ left: destinoX, behavior: 'smooth' });
+  });
+</script>

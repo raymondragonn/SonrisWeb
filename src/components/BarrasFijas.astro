@@ -1,5 +1,15 @@
 ---
 import { CONTACTO } from '../data/site';
+import textura1 from '../assets/sonris/texturas/textura-1.webp';
+import textura2 from '../assets/sonris/texturas/textura-2.webp';
+import textura3 from '../assets/sonris/texturas/textura-3.webp';
+import textura4 from '../assets/sonris/texturas/textura-4.webp';
+
+// Fondo del flotante: las cuatro texturas se van relevando con fundido. Están
+// recortadas al cuadrado y servidas a 112px (el doble del botón), así que las
+// cuatro juntas pesan menos que un icono suelto.
+const TEXTURAS = [textura1, textura2, textura3, textura4];
+const CICLO = 16; // segundos: 4 por textura
 
 interface Props {
   hrefCita?: string;
@@ -18,12 +28,62 @@ const WHATSAPP_PATH =
   data-primary
   href={CONTACTO.whatsappUrl}
   aria-label={`Escríbenos por WhatsApp al ${CONTACTO.whatsapp}`}
-  style="position:fixed;right:28px;bottom:28px;z-index:80;display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10);transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1),transform 300ms cubic-bezier(0.22,1,0.36,1)"
+  style="position:fixed;right:28px;bottom:28px;z-index:80;display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:9999px;overflow:hidden;background:#D1E3E6;color:#16163F;box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10);transition:box-shadow 300ms cubic-bezier(0.22,1,0.36,1),transform 300ms cubic-bezier(0.22,1,0.36,1)"
 >
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+  {
+    TEXTURAS.map((t, i) => (
+      <span
+        data-textura
+        aria-hidden="true"
+        style={`position:absolute;inset:0;background-image:url(${t.src});background-size:cover;animation-delay:${-i * (CICLO / TEXTURAS.length)}s`}
+      />
+    ))
+  }
+  <svg
+    width="28"
+    height="28"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+    focusable="false"
+    style="position:relative"
+  >
     <path d={WHATSAPP_PATH} />
   </svg>
 </a>
+
+<style define:vars={{ ciclo: `${CICLO}s` }}>
+  /* Cada capa se muestra un cuarto del ciclo y se funde con la siguiente. Los
+     retardos negativos del marcado las arrancan ya desfasadas, así que no hay
+     un primer pase en el que se vean todas a la vez. */
+  [data-textura] {
+    opacity: 0;
+    animation: relevo var(--ciclo) linear infinite;
+  }
+  @keyframes relevo {
+    0%,
+    20% {
+      opacity: 1;
+    }
+    25%,
+    95% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  /* Quien pide menos movimiento se queda con una textura fija, no con un botón
+     parpadeando en la esquina. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-textura] {
+      animation: none;
+    }
+    [data-textura]:first-of-type {
+      opacity: 1;
+    }
+  }
+</style>
 
 <div
   data-mobilebar

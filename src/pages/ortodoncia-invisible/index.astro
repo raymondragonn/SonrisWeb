@@ -1,5 +1,12 @@
 ---
+import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import pequesImg from '../../assets/sonris/blog/ortodoncia-invisible-para-los-mas-pequenos-1024x675-1.jpg';
+import ninosImg from '../../assets/sonris/blog/ventajas-de-la-ortodoncia-invisible-en-ninos-1080x675-1.jpg';
+import cajaIronMan from '../../assets/sonris/tratamientos/Producto-Caja-Iron-Man.png';
+import cajaStitch from '../../assets/sonris/tratamientos/Producto-Caja-Stitch.png';
+import fondoLavanda from '../../assets/sonris/iconos/fondo-memphis-lavanda.png';
+import fondoLima from '../../assets/sonris/iconos/fondo-memphis-lima.png';
 import CtaFinal from '../../components/CtaFinal.astro';
 import CarruselPlanes from '../../islands/CarruselPlanes';
 import Acordeon from '../../islands/Acordeon';
@@ -7,6 +14,9 @@ import { SITE } from '../../data/site';
 import { VENTAJAS, PLANES, PASOS_CLINICOS, TECNOLOGIA, PRIMERA_VISITA, PRUEBAS_INCLUIDAS, FAQ } from '../../data/ortodoncia';
 
 const ruta = '/ortodoncia-invisible/';
+
+const fondoTec = await getImage({ src: fondoLavanda, width: 1920, format: 'webp' });
+const fondoNinos = await getImage({ src: fondoLima, width: 1920, format: 'webp' });
 
 // Los vídeos vienen en los dos formatos de URL de YouTube (youtu.be/ID y
 // watch?v=ID); el ID es el último trozo en ambos.
@@ -174,22 +184,60 @@ const anclas = [
     </div>
   </section>
 
-  <section data-sec data-textura aria-labelledby="ninos-t" style="background-color:#FFBC7D;--velo:rgba(255,188,125,0.9);padding:112px 0">
+  <section
+    data-sec
+    aria-labelledby="ninos-t"
+    style={`background-color:#D2D073;background-image:url(${fondoNinos.src});background-size:cover;background-position:center;padding:112px 0;border-radius:40px`}
+  >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center">
-        <figure style="margin:0">
+        <figure style="margin:0;position:relative">
           <div
             style="position:relative;aspect-ratio:1/1;border-radius:40px;overflow:hidden;background:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;padding:32px"
           >
-            <img
-              src="/img/placeholder-liso-1x1.png"
+            <Image
+              src={pequesImg}
+              widths={[440, 880]}
               sizes="(max-width:900px) 100vw, 40vw"
-              width="1024"
-              height="1024"
               loading="lazy"
               decoding="async"
-              alt="Tratamiento con alineadores para niños y adolescentes en Sonris"
+              alt="Dos niños sosteniendo sus alineadores transparentes"
               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+            />
+            <!-- Se releva con la de arriba cada 10 s (sonris-turno). Va con alt
+                 vacío a propósito: cuenta lo mismo que la primera, y anunciar
+                 las dos duplicaría el mensaje en el lector de pantalla. -->
+            <Image
+              data-turno
+              src={ninosImg}
+              widths={[440, 880]}
+              sizes="(max-width:900px) 100vw, 40vw"
+              loading="lazy"
+              decoding="async"
+              alt=""
+              style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+            />
+          </div>
+          <div data-cajacard="sup-der">
+            <Image
+              src={cajaIronMan}
+              widths={[200, 400]}
+              sizes="(max-width:900px) 32vw, 150px"
+              loading="lazy"
+              decoding="async"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
+          <div data-cajacard="inf-izq">
+            <Image
+              src={cajaStitch}
+              widths={[200, 400]}
+              sizes="(max-width:900px) 32vw, 150px"
+              loading="lazy"
+              decoding="async"
+              alt=""
+              aria-hidden="true"
             />
           </div>
         </figure>
@@ -305,7 +353,13 @@ const anclas = [
     </div>
   </section>
 
-  <section data-sec id="tecnologia" data-peach data-textura aria-labelledby="tec-t" style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);padding:104px 0 128px;border-radius:40px">
+  <section
+    data-sec
+    id="tecnologia"
+    data-peach
+    aria-labelledby="tec-t"
+    style={`background-color:#C3C3DF;background-image:url(${fondoTec.src});background-size:cover;background-position:center;padding:104px 0 128px;border-radius:40px`}
+  >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <h2
         data-h2-grande
@@ -337,6 +391,18 @@ const anclas = [
                 aria-hidden="true"
                 style="position:absolute;inset:0;background:rgba(0,0,0,0.82);opacity:0;transition:opacity 300ms cubic-bezier(0.22,1,0.36,1)"
               />
+              {t.flotante && (
+                <Image
+                  data-featflot
+                  src={t.flotante}
+                  widths={[240, 480]}
+                  sizes="(max-width:900px) 45vw, 180px"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
               <h3
                 data-feattxt
                 style="position:relative;margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;letter-spacing:-0.02em;color:#000000"

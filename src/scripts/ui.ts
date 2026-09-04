@@ -79,5 +79,96 @@ function iniciarContadores() {
   nodos.forEach((n) => io.observe(n));
 }
 
+/** Alineador que gira con el puntero. Seis fotogramas de una vuelta: la X del
+ *  ratón dentro del marco elige la pose y el fundido con la siguiente tapa el
+ *  salto. Lo que hace natural el movimiento es el retardo: la pose y el vuelco
+ *  persiguen al cursor en lugar de ir pegados a él, así el objeto parece tener
+ *  peso. El marco es la zona sensible (el hero entero, por ejemplo) y
+ *  [data-giro] el bloque que se mueve dentro de ella. */
+function girarAlineador(marco: HTMLElement) {
+  // Con poses, el puntero elige cuál se ve. Con un vídeo dentro no hay nada
+  // que elegir y el puntero solo inclina, así que el reposo es el centro y no
+  // el extremo izquierdo de la secuencia.
+  const fotos = Array.from(marco.querySelectorAll<HTMLImageElement>('[data-giro] img'));
+  const reposo = fotos.length ? 0 : 0.5;
+
+  // Las poses que faltan se traen tras el load, para que el primer movimiento
+  // ya las tenga y no se vea el tirón.
+  if (fotos.length) {
+    const precargar = () =>
+      fotos.forEach((f) => {
+        if (!f.src && f.dataset.src) f.src = f.dataset.src;
+      });
+    if (document.readyState === 'complete') precargar();
+    else window.addEventListener('load', precargar, { once: true });
+  }
+
+  const ultimo = fotos.length - 1;
+  let metaX = reposo;
+  let metaY = 0.5;
+  let x = reposo;
+  let y = 0.5;
+  let corriendo = false;
+
+  const paso = () => {
+    x += (metaX - x) * 0.09;
+    y += (metaY - y) * 0.09;
+
+    // Posición continua dentro de la secuencia: la parte entera es el
+    // fotograma y la decimal, cuánto se ve ya del siguiente. El vidrio es
+    // translúcido, así que dos poses a media opacidad se ven las dos a la vez
+    // y aparece un fantasma: el cruce se comprime al tercio central y se
+    // suaviza, fuera de ahí solo hay una pose en pantalla.
+    if (fotos.length > 1) {
+      const pos = x * ultimo;
+      const i = Math.min(ultimo - 1, Math.floor(pos));
+      const cruce = Math.min(1, Math.max(0, (pos - i - 0.35) / 0.3));
+      const mezcla = cruce * cruce * (3 - 2 * cruce);
+      fotos.forEach((foto, n) => {
+        foto.style.opacity = String(n === i ? 1 - mezcla : n === i + 1 ? mezcla : 0);
+      });
+    }
+
+    marco.style.setProperty('--giro', `${(x - 0.5) * 14}deg`);
+    marco.style.setProperty('--vuelco', `${(0.5 - y) * 9}deg`);
+
+    corriendo = Math.abs(metaX - x) > 0.0008 || Math.abs(metaY - y) > 0.0008;
+    if (corriendo) requestAnimationFrame(paso);
+  };
+
+  const arrancar = () => {
+    if (corriendo) return;
+    corriendo = true;
+    requestAnimationFrame(paso);
+  };
+
+  marco.addEventListener('pointermove', (e) => {
+    const caja = marco.getBoundingClientRect();
+    metaX = Math.min(1, Math.max(0, (e.clientX - caja.left) / caja.width));
+    metaY = Math.min(1, Math.max(0, (e.clientY - caja.top) / caja.height));
+    arrancar();
+  });
+
+  // Al salir vuelve solo a la pose de reposo, con el mismo retardo.
+  marco.addEventListener('pointerleave', () => {
+    metaX = reposo;
+    metaY = 0.5;
+    arrancar();
+  });
+}
+
+function iniciarAlineador() {
+  // El vídeo del hero arranca solo desde el marcado; quien pide menos
+  // movimiento se queda con el póster.
+  if (reducido) {
+    document.querySelectorAll<HTMLVideoElement>('[data-giro] video').forEach((v) => v.pause());
+  }
+  // Sin hover fino no hay giro ni inclinación posibles, así que en táctil las
+  // poses que faltan no llegan a pedirse nunca.
+  if (reducido || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  document.querySelectorAll<HTMLElement>('[data-alineador]').forEach(girarAlineador);
+}
+
 iniciarHeader();
 iniciarContadores();
+iniciarAlineador();

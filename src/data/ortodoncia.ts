@@ -2,6 +2,7 @@
 import type { ImageMetadata } from 'astro';
 import dentalMonitoring from '../assets/sonris/tratamientos/Dental-Monitoring.webp';
 import acelerador from '../assets/sonris/tratamientos/Acelerador.webp';
+import scanboxPro from '../assets/sonris/tratamientos/Producto-ScanBox-Pro.png';
 
 export const VENTAJAS = [
   ['Estética.', 'Casi nadie nota que los llevas puestos.'],
@@ -99,7 +100,14 @@ export const PASOS_CLINICOS = [
 
 // `imagen` es opcional: la tarjeta sin ella se queda con el placeholder al pasar
 // el cursor.
-export const TECNOLOGIA: { titulo: string; texto: string; video: string; imagen?: ImageMetadata }[] = [
+export const TECNOLOGIA: {
+  titulo: string;
+  texto: string;
+  video: string;
+  imagen?: ImageMetadata;
+  /** Producto recortado que va flotando encima de `imagen`. */
+  flotante?: ImageMetadata;
+}[] = [
   {
     titulo: 'Escáner intraoral 3D iTero',
     texto: 'Escanea tu boca sin moldes y genera la simulación virtual del punto de partida y del resultado.',
@@ -110,6 +118,7 @@ export const TECNOLOGIA: { titulo: string; texto: string; video: string; imagen?
     texto: 'Una app en tu móvil que monitoriza el tratamiento cada semana y minimiza el número de visitas.',
     video: 'https://youtu.be/eOVLFONmDng',
     imagen: dentalMonitoring,
+    flotante: scanboxPro,
   },
   {
     titulo: 'Acelerador',

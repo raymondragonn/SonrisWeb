@@ -119,6 +119,7 @@ article[id] {
 [data-card]:hover [data-cardimg] {
   transform: scale(1.04);
 }
+
 [data-card]:hover [data-tile],
 [data-tarjeta]:hover [data-tile] {
   background: #E76B0B;
@@ -653,4 +654,80 @@ article[id] {
 [data-ig]:hover svg,
 [data-ig]:focus-visible svg {
   animation: sonris-agita 760ms var(--ease);
+}
+
+/* Las dos fotos de la sección de peques se turnan solas dentro del mismo
+   marco. La segunda va encima con opacity 0 de base, así que cuando el bloque
+   global de prefers-reduced-motion apaga la animación se queda fija la
+   primera y no un marco en blanco. */
+[data-turno] {
+  opacity: 0;
+  animation: sonris-turno 10s var(--ease) infinite;
+}
+@keyframes sonris-turno {
+  0%,
+  40% {
+    opacity: 0;
+  }
+  50%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Producto recortado que flota sobre la tarjeta de tecnología. Va siempre
+   visible, arriba a la derecha, porque el texto está anclado abajo. La sombra
+   es suave para que funcione sobre la tarjeta blanca en reposo y también sobre
+   el velo negro que entra en el hover. El vaivén es el mismo sonris-float de
+   los blobs del hero. */
+[data-featflot] {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 46%;
+  max-height: 52%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.22));
+  animation: sonris-float 22s ease-in-out infinite;
+}
+
+/* Las dos cajas de alineadores van en sendas tarjetitas blancas, encima de las
+   fotos que se turnan en el marco de la sección de peques: montadas a caballo
+   sobre la esquina de arriba a la derecha y la de abajo a la izquierda. Cuelgan
+   del <figure>, no del marco, porque el overflow:hidden de este las recortaría
+   justo por la parte que debe sobresalir. El desfase negativo de la segunda evita que se mezan al unísono,
+   que delataría que comparten un solo bucle. */
+[data-cajacard] {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  aspect-ratio: 1;
+  padding: 14px;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 16px 36px rgba(0, 0, 0, 0.14);
+  animation: sonris-float 22s ease-in-out infinite;
+}
+[data-cajacard] img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+[data-cajacard='sup-der'] {
+  top: -38px;
+  right: -38px;
+}
+[data-cajacard='inf-izq'] {
+  bottom: -38px;
+  left: -38px;
+  animation-delay: -11s;
 }

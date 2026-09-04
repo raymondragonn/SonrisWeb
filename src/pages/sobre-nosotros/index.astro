@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import CtaFinal from '../../components/CtaFinal.astro';
 import { DIRECCION_MEDICA } from '../../data/site';
@@ -11,14 +11,9 @@ import recepcion from '../../assets/sonris/clinica/instalacion-recepcion.png';
 import salaDeEspera from '../../assets/sonris/clinica/instalacion-sala-de-espera.png';
 import zonaDeEscaneado from '../../assets/sonris/clinica/instalacion-zona-de-escaneado.png';
 import consultorio from '../../assets/sonris/clinica/instalacion-consultorio.png';
+import fondoEquipo from '../../assets/sonris/iconos/fondo-memphis-tratamientos.png';
 
 const ruta = '/sobre-nosotros/';
-
-const VALORES = [
-  ['Tecnología digital', 'Aparatología de última generación que permite un diagnóstico más rápido, cómodo y efectivo.'],
-  ['Trato cercano', 'Trato personalizado basado en la empatía, la cercanía y la confianza.'],
-  ['Trayectoria profesional', 'Más de 25 años dedicados a la ortodoncia, con dirección médica propia desde el primer día.'],
-];
 
 const EQUIPO = [
   { area: 'Ortodoncia', nombre: 'Dr. Hardy Luis Giunta', rol: 'Especialista en ortodoncia', colegiado: '28013654', foto: hardy },
@@ -34,6 +29,8 @@ const INSTALACIONES = [
   ['Consultorio', consultorio],
 ] as const;
 const TOUR = 'https://my.matterport.com/show/?m=tmYDb9otn5k';
+
+const fondo = await getImage({ src: fondoEquipo, width: 1672, format: 'webp' });
 ---
 
 <Base
@@ -42,97 +39,105 @@ const TOUR = 'https://my.matterport.com/show/?m=tmYDb9otn5k';
   {ruta}
   migas={[{ nombre: 'Sobre nosotros', href: ruta }]}
 >
-  <section id="inicio" aria-labelledby="hero-t" style="position:relative;overflow:hidden;background:#000000">
-    <div data-herobox style="position:relative;width:100%;aspect-ratio:16/9;max-height:88vh;overflow:hidden">
-      <img
-        src="/img/placeholder-liso-16x9.png"
-        alt="Recorrido por el centro Sonris en Sanchinarro"
-        width="1600"
-        height="900"
-        fetchpriority="high"
-        decoding="async"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
-      />
-      <div
-        aria-hidden="true"
-        style="position:absolute;inset:0;background:rgba(0,0,0,0.62);background-image:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.25) 55%,rgba(0,0,0,0.55) 100%)"
-      >
-      </div>
-      <div
-        data-herotexto
-        style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:0 40px 96px"
-      >
-        <div style="max-width:1240px;width:100%;margin:0 auto">
+  <section
+    id="inicio"
+    aria-labelledby="hero-t"
+    style="position:relative;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%,rgba(254,225,203,0.45) 100%);padding:56px 0 96px"
+  >
+    <div
+      aria-hidden="true"
+      style="position:absolute;top:-200px;right:-140px;width:600px;height:480px;border-radius:9999px;background:#FEE1CB;filter:blur(80px);opacity:0.55;animation:sonris-float 22s ease-in-out infinite"
+    >
+    </div>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-hero style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:56px;align-items:end">
+        <div>
           <h1
             data-h1
-            id="hero-t"
-            style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:68px;line-height:1.05;letter-spacing:-0.02em;color:#FFFFFF;max-width:14ch"
+            style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:60px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
             Un centro que solo hace <span style="color:#E76B0B">esto</span>
           </h1>
-          <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:rgba(255,255,255,0.88);max-width:44ch">
+          <p id="hero-t" style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
             Más de 25 años dedicados en exclusiva a la ortodoncia invisible, en Sanchinarro.
           </p>
-          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
-            <a
-              data-primary
-              href="/contacto/#formulario"
-              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Ven a conocernos<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
-            >
-            <a
-              href="#instalaciones"
-              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.7);color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Ver las instalaciones</a
-            >
-          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+          <a
+            data-primary
+            href="/contacto/#formulario"
+            style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 30px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+            >Ven a conocernos<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+          >
+          <a
+            data-secondary
+            href="#instalaciones"
+            style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
+            >Ver las instalaciones</a
+          >
         </div>
       </div>
     </div>
   </section>
 
-  <section data-sec aria-label="Cómo trabajamos" style="padding:112px 0">
+  <section data-sec id="instalaciones" aria-labelledby="inst-t" style="padding:128px 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-3col style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px">
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between;margin-bottom:48px">
+        <h2
+          data-h2-grande
+          id="inst-t"
+          style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
+        >
+          Mira la clínica antes de venir
+        </h2>
+      </div>
+      <div data-gal style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-bottom:48px">
         {
-          VALORES.map(([titulo, texto]) => (
-            <article
-              data-feat
-              style="position:relative;overflow:hidden;min-height:264px;display:flex;flex-direction:column;justify-content:flex-end;background:#FFFFFF;border-radius:40px;padding:36px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
-            >
-              <img
-                data-featimg
-                src="/img/placeholder-liso-4x3.png"
-                alt=""
-                aria-hidden="true"
-                width="1024"
-                height="768"
-                loading="lazy"
-                decoding="async"
-                style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 300ms cubic-bezier(0.22,1,0.36,1)"
-              />
-              <span
-                data-featveil
-                aria-hidden="true"
-                style="position:absolute;inset:0;background:rgba(0,0,0,0.82);opacity:0;transition:opacity 300ms cubic-bezier(0.22,1,0.36,1)"
-              />
-              <h2
-                data-feattxt
-                style="position:relative;margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;line-height:1.3;letter-spacing:-0.02em;color:#000000"
-              >
-                {titulo}
-              </h2>
-              <p data-feattxt style="position:relative;margin:0;font-size:16px;line-height:1.7;color:#6B6B6B">
-                {texto}
-              </p>
-            </article>
+          INSTALACIONES.map(([nombre, foto]) => (
+            <figure style="margin:0">
+              <div style="aspect-ratio:1/1;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 12px,#EFEFEF 12px 24px)">
+                <Image
+                  src={foto}
+                  widths={[480, 800, 1200]}
+                  sizes="(max-width:900px) 100vw, 25vw"
+                  loading="lazy"
+                  decoding="async"
+                  alt={`${nombre} de la clínica Sonris en Sanchinarro`}
+                  style="width:100%;height:100%;object-fit:cover;display:block"
+                />
+              </div>
+              <figcaption style="margin:12px 0 0;font-size:15px;color:#6B6B6B">{nombre}</figcaption>
+            </figure>
           ))
         }
       </div>
+
+      <div
+        style="position:relative;aspect-ratio:16/9;border-radius:40px;overflow:hidden;background:#EFEFEF;box-shadow:0 12px 36px rgba(0,0,0,.03)"
+      >
+        <iframe
+          title="Tour virtual en 3D del centro Sonris"
+          data-src={TOUR}
+          data-proveedor="Matterport"
+          loading="lazy"
+          allowfullscreen
+          allow="xr-spatial-tracking"
+          style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block"></iframe>
+      </div>
+      <p style="margin:16px 0 0;font-size:15px;color:#6B6B6B">
+        <a data-underline href={TOUR} style="position:relative;color:#1A1A1A;font-weight:500" target="_blank" rel="noopener noreferrer"
+          >Abrir el tour en una pestaña nueva<span class="vh"> (se abre en una pestaña nueva)</span></a
+        >
+      </p>
     </div>
   </section>
 
-  <section data-sec data-band-gray id="equipo" aria-labelledby="eq-t" style="background:#F7F7F7;padding:128px 0">
+  <section
+    data-sec
+    id="equipo"
+    aria-labelledby="eq-t"
+    style={`background-color:#CCE1E4;background-image:url(${fondo.src});background-size:cover;background-position:center;padding:128px 0`}
+  >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between;margin-bottom:56px">
         <h2
@@ -218,58 +223,6 @@ const TOUR = 'https://my.matterport.com/show/?m=tmYDb9otn5k';
           ))
         }
       </div>
-    </div>
-  </section>
-
-  <section data-sec id="instalaciones" aria-labelledby="inst-t" style="padding:128px 0">
-    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between;margin-bottom:48px">
-        <h2
-          data-h2-grande
-          id="inst-t"
-          style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
-        >
-          Mira la clínica antes de venir
-        </h2>
-      </div>
-      <div data-gal style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-bottom:48px">
-        {
-          INSTALACIONES.map(([nombre, foto]) => (
-            <figure style="margin:0">
-              <div style="aspect-ratio:1/1;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 12px,#EFEFEF 12px 24px)">
-                <Image
-                  src={foto}
-                  widths={[480, 800, 1200]}
-                  sizes="(max-width:900px) 100vw, 25vw"
-                  loading="lazy"
-                  decoding="async"
-                  alt={`${nombre} de la clínica Sonris en Sanchinarro`}
-                  style="width:100%;height:100%;object-fit:cover;display:block"
-                />
-              </div>
-              <figcaption style="margin:12px 0 0;font-size:15px;color:#6B6B6B">{nombre}</figcaption>
-            </figure>
-          ))
-        }
-      </div>
-
-      <div
-        style="position:relative;aspect-ratio:16/9;border-radius:40px;overflow:hidden;background:#EFEFEF;box-shadow:0 12px 36px rgba(0,0,0,.03)"
-      >
-        <iframe
-          title="Tour virtual en 3D del centro Sonris"
-          data-src={TOUR}
-          data-proveedor="Matterport"
-          loading="lazy"
-          allowfullscreen
-          allow="xr-spatial-tracking"
-          style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block"></iframe>
-      </div>
-      <p style="margin:16px 0 0;font-size:15px;color:#6B6B6B">
-        <a data-underline href={TOUR} style="position:relative;color:#1A1A1A;font-weight:500" target="_blank" rel="noopener noreferrer"
-          >Abrir el tour en una pestaña nueva<span class="vh"> (se abre en una pestaña nueva)</span></a
-        >
-      </p>
     </div>
   </section>
 

@@ -1,16 +1,27 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import Acordeon from '../../islands/Acordeon';
 import { SITE, CONTACTO } from '../../data/site';
-import { TRATAMIENTOS } from '../../data/tratamientos';
+import { TRATAMIENTOS, FAQ } from '../../data/tratamientos';
 
-import esteticaImg from '../../assets/sonris/tratamientos/Estetica-Dental-1.webp';
+import esteticaImg from '../../assets/sonris/tratamientos/Estetica-Dental-Ozkan.webp';
 import implantesImg from '../../assets/sonris/tratamientos/Implantes-Dentales-1.webp';
-import ortognaticaImg from '../../assets/sonris/tratamientos/Cirugia-Ortognatica-1.webp';
-import endodonciaImg from '../../assets/sonris/tratamientos/Endodoncia-1.webp';
-import cirugiaOralImg from '../../assets/sonris/tratamientos/Cirugia-Oral-img-7675.webp';
-import periodonciaImg from '../../assets/sonris/tratamientos/Peridonicia-3.webp';
-import odontologiaImg from '../../assets/sonris/tratamientos/Odontologia-General-2.webp';
+import ortognaticaImg from '../../assets/sonris/tratamientos/Cirugia-Ortognatica-Render.webp';
+import endodonciaImg from '../../assets/sonris/tratamientos/Endodoncia-Render.webp';
+import cirugiaOralImg from '../../assets/sonris/tratamientos/Cirugia-Oral-Angels.webp';
+import periodonciaImg from '../../assets/sonris/tratamientos/Periodoncia-Ozkan.webp';
+import odontologiaImg from '../../assets/sonris/tratamientos/Odontologia-General-Ozkan.webp';
+
+import textura1 from '../../assets/sonris/texturas/textura-1.webp';
+import textura2 from '../../assets/sonris/texturas/textura-2.webp';
+import textura3 from '../../assets/sonris/texturas/textura-3.webp';
+import textura4 from '../../assets/sonris/texturas/textura-4.webp';
+
+// El marco de cada foto se pinta con una de las cuatro texturas, turnándose
+// según baja la lista. Se dibuja con background-clip en vez de border-image
+// porque este último ignora el border-radius y las tarjetas van redondeadas.
+const TEXTURAS = [textura1, textura2, textura3, textura4];
 
 // Una foto por tratamiento, distinta de la que usa el carrusel de la home.
 const FOTOS: Record<string, ImageMetadata> = {
@@ -24,6 +35,16 @@ const FOTOS: Record<string, ImageMetadata> = {
 };
 
 const ruta = '/tratamientos/';
+
+const faqLd = {
+  '@type': 'FAQPage',
+  '@id': `${SITE.url}${ruta}#faq`,
+  mainEntity: FAQ.map((f) => ({
+    '@type': 'Question',
+    name: f.pregunta,
+    acceptedAnswer: { '@type': 'Answer', text: f.respuesta },
+  })),
+};
 
 const listaLd = {
   '@type': 'ItemList',
@@ -44,7 +65,7 @@ const listaLd = {
   descripcion="Estética dental, implantes, cirugía ortognática, endodoncia, cirugía oral, periodoncia y odontología general, alrededor de la ortodoncia invisible. Sanchinarro, Madrid."
   {ruta}
   migas={[{ nombre: 'Tratamientos', href: ruta }]}
-  jsonLd={[listaLd]}
+  jsonLd={[listaLd, faqLd]}
 >
   <section
     id="tratamientos"
@@ -97,7 +118,9 @@ const listaLd = {
           const textoIzquierda = i % 2 === 0;
           const figura = (
             <figure style={`margin:0;grid-column:${textoIzquierda ? 2 : 1};grid-row:1`}>
-              <div style="position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
+              <div
+                style={`position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;border:6px solid transparent;background-image:url(${TEXTURAS[i % TEXTURAS.length].src}),repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);background-size:48px 48px,auto;background-origin:border-box,padding-box;background-clip:border-box,padding-box;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)`}
+              >
                 <Image
                   src={FOTOS[t.slug]}
                   widths={[600, 1000]}
@@ -181,6 +204,23 @@ const listaLd = {
         </a>{' '}
         para los días siguientes a la intervención.
       </p>
+    </div>
+  </section>
+
+  <section data-sec id="faq" aria-labelledby="faq-t" style="background:#F7F7F7;padding:112px 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:64px;align-items:start">
+        <div>
+          <h2
+            data-h2-grande
+            id="faq-t"
+            style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
+          >
+            Las dudas que más preguntan
+          </h2>
+        </div>
+        <Acordeon client:visible filas={FAQ} />
+      </div>
     </div>
   </section>
 </Base>

@@ -22,7 +22,7 @@ const MOTIVOS = [
   'Corregirme la mordida',
   'El color o la forma',
   'Una revisión o una molestia',
-  'Otra cosa',
+  'No lo sé',
 ];
 
 const ERRORES: Record<Campo, string> = {
@@ -91,12 +91,10 @@ const VACIO = { nombre: '', contacto: '', motivo: '', mensaje: '', rgpd: false }
 export default function FormularioCita({
   email,
   telefono,
-  telefonoE164,
   origen,
 }: {
   email: string;
   telefono: string;
-  telefonoE164: string;
   /** Página desde la que se envía: viaja con el aviso para que en clínica
    *  sepan de qué venía la consulta. */
   origen: string;
@@ -241,7 +239,10 @@ export default function FormularioCita({
         onSubmit={alEnviar}
         data-peach
         data-caja
-        style={{ background: '#FEE1CB', borderRadius: 40, padding: 44 }}
+        data-textura
+        // El velo que espera [data-textura]: mismo melocotón que el fondo, al
+        // 90%, para que el patrón asome sin restar contraste a los campos.
+        style={{ background: '#FEE1CB', borderRadius: 40, padding: 44, ['--velo' as string]: 'rgba(254,225,203,0.9)' }}
       >
         {/* Cepo de Formspree: sin CSS que lo esconda, un bot lo rellena y el
             envío se descarta. Fuera del orden de tabulación. */}
@@ -422,41 +423,33 @@ export default function FormularioCita({
           </p>
         )}
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 32 }}>
-          <button
-            type="submit"
-            data-primary
-            disabled={enviando}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 12,
-              minHeight: 56,
-              padding: '0 32px',
-              borderRadius: 9999,
-              background: '#E76B0B',
-              border: 'none',
-              color: '#FFFFFF',
-              fontFamily: "'DM Sans', system-ui, sans-serif",
-              fontSize: 18.66,
-              fontWeight: 600,
-              cursor: enviando ? 'progress' : 'pointer',
-              opacity: enviando ? 0.7 : 1,
-            }}
-          >
-            {enviando ? 'Enviando…' : 'Enviar'}
-            <span data-arrow style={{ display: 'inline-block', transition: 'transform 300ms cubic-bezier(0.22,1,0.36,1)' }}>
-              →
-            </span>
-          </button>
-          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: '#1A1A1A' }}>
-            Primera visita gratuita, sin compromiso.
-            <br />o llámanos al{' '}
-            <a href={`tel:${telefonoE164}`} style={{ color: '#E76B0B', fontWeight: 500 }}>
-              {telefono}
-            </a>
-          </p>
-        </div>
+        <button
+          type="submit"
+          data-primary
+          disabled={enviando}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            // Ancho completo: es la única acción del formulario y ya no
+            // comparte fila con ningún texto.
+            width: '100%',
+            marginTop: 32,
+            minHeight: 56,
+            padding: '0 32px',
+            borderRadius: 9999,
+            background: '#E76B0B',
+            border: 'none',
+            color: '#FFFFFF',
+            fontFamily: "'DM Sans', system-ui, sans-serif",
+            fontSize: 18.66,
+            fontWeight: 600,
+            cursor: enviando ? 'progress' : 'pointer',
+            opacity: enviando ? 0.7 : 1,
+          }}
+        >
+          {enviando ? 'Enviando…' : 'Quiero mi primera visita gratuita'}
+        </button>
       </form>
 
       {aviso && <Aviso key={aviso.id} aviso={aviso} alCerrar={() => setAviso(null)} />}

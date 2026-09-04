@@ -1,8 +1,27 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import CtaFinal from '../../components/CtaFinal.astro';
 import { SITE } from '../../data/site';
 import { TRATAMIENTOS, type Tratamiento } from '../../data/tratamientos';
+import odontologiaHero from '../../assets/sonris/tratamientos/Odontologia-General-Ozkan.webp';
+import periodonciaHero from '../../assets/sonris/tratamientos/Periodoncia-Ozkan.webp';
+import cirugiaOralHero from '../../assets/sonris/tratamientos/Cirugia-Oral-Angels.webp';
+import esteticaHero from '../../assets/sonris/tratamientos/Estetica-Dental-Ozkan.webp';
+import ortognaticaHero from '../../assets/sonris/tratamientos/Cirugia-Ortognatica-Render.webp';
+import endodonciaHero from '../../assets/sonris/tratamientos/Endodoncia-Render.webp';
+
+// Foto de cabecera por tratamiento, la misma que su tarjeta en la home y en el
+// hub. Implantes dentales es el único que sigue con el fondo liso, así que
+// darle la suya es una línea en este mapa.
+const HEROS: Record<string, ImageMetadata> = {
+  'odontologia-general': odontologiaHero,
+  periodoncia: periodonciaHero,
+  'cirugia-oral': cirugiaOralHero,
+  'estetica-dental': esteticaHero,
+  'cirugia-ortognatica': ortognaticaHero,
+  endodoncia: endodonciaHero,
+};
 
 export function getStaticPaths() {
   return TRATAMIENTOS.map((t) => ({ params: { slug: t.slug }, props: { t } }));
@@ -10,6 +29,7 @@ export function getStaticPaths() {
 
 const { t } = Astro.props as { t: Tratamiento };
 const ruta = `/tratamientos/${t.slug}/`;
+const hero = HEROS[t.slug];
 
 // Pestañas y variantes se pintan igual, uno debajo de otro. Ningún tratamiento
 // llena las dos listas; concatenar evita tener que elegir.
@@ -37,15 +57,29 @@ const procedimientoLd = {
 >
   <section id="inicio" aria-labelledby="hero-t" style="position:relative;overflow:hidden;background:#000000">
     <div data-herobox style="position:relative;width:100%;aspect-ratio:16/9;max-height:88vh;overflow:hidden">
-      <img
-        src="/img/placeholder-liso-16x9.png"
-        alt={`${t.nombre} en la clínica Sonris`}
-        width="1600"
-        height="900"
-        fetchpriority="high"
-        decoding="async"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
-      />
+      {
+        hero ? (
+          <Image
+            src={hero}
+            alt={`${t.nombre} en la clínica Sonris`}
+            width={1600}
+            height={900}
+            loading="eager"
+            fetchpriority="high"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+          />
+        ) : (
+          <img
+            src="/img/placeholder-liso-16x9.png"
+            alt={`${t.nombre} en la clínica Sonris`}
+            width="1600"
+            height="900"
+            fetchpriority="high"
+            decoding="async"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+          />
+        )
+      }
       <div
         aria-hidden="true"
         style="position:absolute;inset:0;background:rgba(0,0,0,0.62);background-image:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.25) 55%,rgba(0,0,0,0.55) 100%)"

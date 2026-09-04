@@ -199,11 +199,13 @@ export default function AntesDespues() {
               cursor: 'ew-resize',
             }}
           >
-            <img src={actual.despues} alt={actual.altDespues} loading="lazy" decoding="async" style={foto} />
+            <img src={actual.despues} alt={actual.altDespues} width={1600} height={900} loading="lazy" decoding="async" style={foto} />
             {/* clip-path revela el "antes" sin reescalar la foto */}
             <img
               src={actual.antes}
               alt={actual.altAntes}
+              width={1600}
+              height={900}
               loading="lazy"
               decoding="async"
               style={{ ...foto, clipPath: `inset(0 ${100 - corte}% 0 0)` }}

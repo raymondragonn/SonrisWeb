@@ -11,15 +11,18 @@ const DUR = 980;
  *  es la única posición con el mismo número de tarjetas a cada lado. */
 const central = (n: number) => Math.floor(n / 2);
 
-/** Medidas de la tarjeta en foco y en reposo. La caja reserva de antemano el
- *  alto de la mayor: mientras una encoge y otra crece, las dos pasan por
- *  tamaños intermedios y el contenedor se encogía a media transición.
- *  En móvil van más pequeñas: con 340px de tarjeta en una pantalla de 360 no
- *  queda hueco a los lados y la activa no llega a centrarse nunca. */
+/** Medidas del círculo en foco y en reposo. Al ser círculos, alto = ancho. La
+ *  caja reserva de antemano el alto del mayor: mientras uno encoge y otro
+ *  crece, los dos pasan por tamaños intermedios y el contenedor se encogía a
+ *  media transición.
+ *  En móvil van más pequeños: con 340px de círculo en una pantalla de 360 no
+ *  queda hueco a los lados y el activo no llega a centrarse nunca. */
 const MEDIDAS = {
-  ancha: { foco: { ancho: 340, alto: 425 }, quieto: 260 },
-  estrecha: { foco: { ancho: 232, alto: 290 }, quieto: 176 },
+  ancha: { foco: { ancho: 340, alto: 340 }, quieto: 220 },
+  estrecha: { foco: { ancho: 232, alto: 232 }, quieto: 150 },
 };
+
+const NARANJA = '#E76B0B';
 const ESTRECHA = '(max-width: 560px)';
 const AIRE = { arriba: 8, abajo: 32 };
 
@@ -95,41 +98,19 @@ export default function FocoTratamientos({ items }: { items: Item[] }) {
                 flex: 'none',
                 width: activo ? medidas.foco.ancho : medidas.quieto,
                 height: activo ? medidas.foco.alto : medidas.quieto,
-                borderRadius: 28,
+                borderRadius: 9999,
                 overflow: 'hidden',
                 display: 'block',
-                opacity: activo ? 1 : 0.45,
-                transition: ['opacity', 'width', 'height'].map((p) => `${p} ${DUR}ms ${EASE}`).join(', '),
+                // El activo va en naranja con letra blanca; los de los lados,
+                // en blanco con letra naranja. El contraste entre ambos ya
+                // marca la jerarquía, así que no hace falta atenuarlos.
+                background: activo ? NARANJA : '#FFFFFF',
+                boxShadow: activo
+                  ? '0 8px 20px rgba(231,107,11,.28), 0 24px 56px rgba(0,0,0,.12)'
+                  : '0 2px 8px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.08)',
+                transition: ['width', 'height', 'background', 'box-shadow'].map((p) => `${p} ${DUR}ms ${EASE}`).join(', '),
               }}
             >
-              <img
-                data-cardimg
-                src={t.img}
-                sizes="340px"
-                width={1024}
-                height={768}
-                loading="lazy"
-                decoding="async"
-                alt={t.alt}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  transform: activo ? 'scale(1)' : 'scale(1.12)',
-                  transition: `transform ${DUR + 300}ms ${EASE}`,
-                }}
-              />
-              <span
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(180deg,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0.55) 100%)',
-                }}
-              />
               <span
                 style={{
                   position: 'absolute',
@@ -137,16 +118,18 @@ export default function FocoTratamientos({ items }: { items: Item[] }) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: 20,
+                  // En porcentaje, no en px: dentro de un círculo el texto
+                  // tiene que apartarse del borde curvo, y el margen que hace
+                  // falta cambia con el diámetro.
+                  padding: '16%',
                   textAlign: 'center',
                   fontFamily: 'Poppins, system-ui, sans-serif',
                   fontWeight: 600,
-                  fontSize: activo ? 28 : 22,
-                  transform: activo ? 'translateY(0)' : 'translateY(6px)',
+                  fontSize: activo ? 28 : 19,
                   lineHeight: 1.2,
                   letterSpacing: '-0.02em',
-                  color: '#FFFFFF',
-                  transition: `font-size ${DUR}ms ${EASE}, transform ${DUR}ms ${EASE}`,
+                  color: activo ? '#FFFFFF' : NARANJA,
+                  transition: `font-size ${DUR}ms ${EASE}, color ${DUR}ms ${EASE}`,
                 }}
               >
                 {t.nombre}

@@ -1,7 +1,7 @@
 // Comprobación del cableado, sobre el build de dist/.
 // Ejecuta: npm run comprobar (después de npm run build).
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { REDIRECCIONES } from '../src/data/redirecciones.js';
@@ -12,7 +12,7 @@ assert.ok(existsSync(DIST), 'No hay dist/: ejecuta antes npm run build');
 
 const RUTAS_CANONICAS = [
   '/',
-  '/ortodoncia-invisalign/',
+  '/ortodoncia-invisible/',
   '/tratamientos/',
   '/tratamientos/estetica-dental/',
   '/tratamientos/implantes-dentales/',
@@ -83,7 +83,7 @@ assert.equal(enSitemap.length, 13, `El sitemap tiene ${enSitemap.length} rutas, 
 // 9. Todo <img> lleva alt, width y height (regla de la auditoría).
 for (const r of RUTAS_CANONICAS) {
   for (const img of html(r).match(/<img[^>]*>/g) || []) {
-    assert.match(img, /\salt=/, `<img> sin alt en ${r}: ${img.slice(0, 90)}`);
+    assert.match(img, /\salt(=|[\s>])/, `<img> sin alt en ${r}: ${img.slice(0, 90)}`);
     assert.match(img, /\swidth=/, `<img> sin width en ${r}: ${img.slice(0, 90)}`);
     assert.match(img, /\sheight=/, `<img> sin height en ${r}: ${img.slice(0, 90)}`);
   }
@@ -94,11 +94,11 @@ for (const f of ['robots.txt', 'llms.txt', 'sitemap-index.xml']) {
   assert.ok(existsSync(join(DIST, f)), `Falta ${f}`);
 }
 
-// 11. Las imágenes referenciadas existen.
-const disponibles = new Set(readdirSync(join(DIST, 'img')));
+// 11. Las imágenes referenciadas existen, incluidas las que el script carga
+// tarde por data-src (los fotogramas del alineador) y las de subcarpetas.
 for (const r of RUTAS_CANONICAS) {
-  for (const [, src] of html(r).matchAll(/<img[^>]+src="\/img\/([^"]+)"/g)) {
-    assert.ok(disponibles.has(src), `Imagen inexistente /img/${src} en ${r}`);
+  for (const [, src] of html(r).matchAll(/-?src="\/img\/([^"]+)"/g)) {
+    assert.ok(existsSync(join(DIST, 'img', src)), `Imagen inexistente /img/${src} en ${r}`);
   }
 }
 
