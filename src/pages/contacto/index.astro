@@ -11,7 +11,7 @@ const TARJETAS = [
   { etiqueta: 'Email', valor: CONTACTO.email, href: `mailto:${CONTACTO.email}`, externo: false },
   {
     etiqueta: 'Dónde estamos',
-    valor: `${CONTACTO.calle}, ${CONTACTO.cp} ${CONTACTO.ciudad}`,
+    valor: CONTACTO.calle,
     href: CONTACTO.mapsUrl,
     externo: true,
   },
@@ -25,12 +25,11 @@ const TARJETAS = [
   {ruta}
   migas={[{ nombre: 'Contacto', href: ruta }]}
   headerVariante="solida"
-  hrefCita="#formulario"
-  conWhatsAppEnBarra
+  hrefCita="#datos"
 >
   <section data-sec id="datos" aria-labelledby="datos-t" style="padding:72px 0 96px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:56px;align-items:start;margin-bottom:56px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:start;margin-bottom:40px">
         <div>
         <h1
           data-h1
@@ -39,13 +38,13 @@ const TARJETAS = [
         >
           Hablamos cuando te venga bien
         </h1>
-        <p style="margin:0 0 56px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:56ch">
+        <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:56ch">
           Estamos en {CONTACTO.barrio}, de lunes a viernes de 12:00 a 20:00. Elige el canal que prefieras: todos llegan al mismo equipo.
         </p>
         </div>
         <!-- Los cuatro canales, dos por fila y sin icono: al lado del
              titular tienen que leerse de un vistazo, no competir con él. -->
-        <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 20px">
+        <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
           {
             TARJETAS.map((c) => (
               <li>
@@ -65,47 +64,73 @@ const TARJETAS = [
           }
         </ul>
       </div>
-      <div id="formulario" style="max-width:760px;margin:0 auto 64px">
-        <FormularioCita
-        client:load
-        email={CONTACTO.email}
-        telefono={CONTACTO.telefono}
-        origen="la página de contacto"
-        />
-      </div>
-      <div id="como-llegar">
-            <h2
-              data-h2-grande
-              id="mapa-t"
-              style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
-            >
-              En Sanchinarro, junto a Isabel de Valois
-            </h2>
-            <div
-              style="position:relative;aspect-ratio:16/10;border-radius:40px;overflow:hidden;background:#EFEFEF;box-shadow:0 12px 36px rgba(0,0,0,.03)"
-            >
-              <iframe
-                title="Mapa de Sonris, Avenida Isabel de Valois 55, Madrid"
-                data-src={CONTACTO.mapsEmbed}
-                data-proveedor="Google Maps"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block"></iframe>
-            </div>
-            <p style="margin:16px 0 0;font-size:15px;color:#6B6B6B">
-              <a
-                data-underline
-                href={CONTACTO.mapsUrl}
-                style="position:relative;color:#1A1A1A;font-weight:500"
-                target="_blank"
-                rel="noopener noreferrer">Abre la ruta en Google Maps<span class="vh"> (se abre en una pestaña nueva)</span></a
-              >
-            </p>
+      {/* El vídeo acompaña mientras se rellena: queda pegado al scroll y entra
+          deslizándose desde la derecha, igual que el formulario. */}
+      <div data-2col data-form style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:start;margin-bottom:64px">
+        <div id="formulario" data-entra>
+          <FormularioCita
+          client:load
+          email={CONTACTO.email}
+          telefono={CONTACTO.telefono}
+          origen="la página de contacto"
+          />
+        </div>
+        <div data-entra data-visita style="--retardo:140ms">
+          <video
+            src="/video/primera-visita.mp4"
+            poster="/img/primera-visita.webp"
+            muted
+            loop
+            playsinline
+            preload="none"
+            aria-label="Cómo es la primera visita en Sonris"
+          ></video>
+          <button type="button" data-visita-sonido aria-pressed="false" aria-label="Activar el sonido del vídeo">
+            <span aria-hidden="true" data-icono>♪</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
 
-  <section data-sec data-peach data-textura aria-labelledby="redes-t" style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);padding:104px 0 112px;border-radius:40px">
+  <section
+    data-sec
+    id="como-llegar"
+    aria-labelledby="mapa-t"
+    style="background:#F7F7F7;padding:96px 0 112px;border-radius:40px"
+  >
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+        <h2
+          data-h2-grande
+          id="mapa-t"
+          style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
+        >
+          En Sanchinarro, junto a Isabel de Valois
+        </h2>
+        <div
+          style="position:relative;aspect-ratio:16/10;border-radius:40px;overflow:hidden;background:#EFEFEF;box-shadow:0 12px 36px rgba(0,0,0,.03)"
+        >
+          <iframe
+            title="Mapa de Sonris, Avenida Isabel de Valois 55, Madrid"
+            data-src={CONTACTO.mapsEmbed}
+            data-proveedor="Google Maps"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block"></iframe>
+        </div>
+        <p style="margin:16px 0 0;font-size:15px;color:#6B6B6B">
+          <a
+            data-underline
+            href={CONTACTO.mapsUrl}
+            style="position:relative;color:#1A1A1A;font-weight:500"
+            target="_blank"
+            rel="noopener noreferrer">Abre la ruta en Google Maps<span class="vh"> (se abre en una pestaña nueva)</span></a
+          >
+        </p>
+    </div>
+  </section>
+
+  <section data-sec data-fin-pagina data-peach data-textura aria-labelledby="redes-t" style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);padding:104px 0 112px;border-radius:40px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:center">
         <div>

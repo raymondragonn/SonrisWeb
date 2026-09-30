@@ -71,6 +71,7 @@ const media = RESUMEN.media.toFixed(1).replace('.', ',');
         <div style="position:relative">
           <div
             data-pista
+            data-auto-carrusel="6000"
             role="region"
             aria-label="Reseñas de pacientes en Google"
             tabindex="0"
@@ -170,6 +171,27 @@ const media = RESUMEN.media.toFixed(1).replace('.', ',');
     line-clamp: unset;
   }
   @media (max-width: 900px) {
+    /* Cuatro tarjetas de 300px no caben en una fila, y de una en una hacen
+       falta cuatro gestos para leerlas: caen en cascada de tres, y cada página
+       del carrusel pasa las tres a la vez. El recorte del texto baja a tres
+       líneas para que las tres quepan en pantalla. */
+    [data-pista] {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 100%;
+      grid-template-rows: repeat(3, auto);
+      align-items: start;
+      gap: 14px !important;
+    }
+    [data-pista] article {
+      padding: 20px !important;
+      border-radius: 28px !important;
+      gap: 10px !important;
+    }
+    [data-texto] {
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+    }
     [data-flecha] {
       display: none;
     }

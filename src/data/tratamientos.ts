@@ -9,14 +9,14 @@ export type Tratamiento = {
   nombre: string;
   claim: string; // línea corta del hub
   resumenHub: string;
-  h1: string;
+  cta: string; // texto del botón del hero
   entradilla: string;
   queEsTitulo: string;
   queEs1: string;
   queEs2: string;
   tiposEyebrow: string;
   tiposTitulo: string;
-  tiposEntradilla: string;
+  tiposEntradilla?: string;
   pestanas: Pestana[];
   variantes: Variante[];
   cruce: { titulo: string; texto: string; etiqueta: string; href: string };
@@ -33,13 +33,13 @@ const CRUCE_POR_DEFECTO = {
 export const TRATAMIENTOS: Tratamiento[] = [
   {
     slug: 'estetica-dental',
+    cta: 'Valora tu caso de estética',
     nombre: 'Estética dental',
     claim: 'Aporta armonía a tu sonrisa',
     resumenHub:
-      'Cuando los dientes ya están en su sitio, trabajamos el color y la forma. Blanqueamiento y carillas, en una sola página.',
-    h1: 'Aporta armonía a tu sonrisa',
+      'Cuando los dientes ya están en su sitio, trabajamos el color y la forma: blanqueamiento y carillas.',
     entradilla:
-      'Cuando los dientes ya están en su sitio, trabajamos el color y la forma. Dos tratamientos, una sola página.',
+      'Cuando los dientes ya están en su sitio, trabajamos el color y la forma.',
     queEsTitulo: '¿Qué es la estética dental?',
     queEs1:
       'Es el conjunto de tratamientos que mejoran el aspecto de tus dientes sin cambiar su función: el color, la forma y las proporciones.',
@@ -47,8 +47,6 @@ export const TRATAMIENTOS: Tratamiento[] = [
       'En Sonris la planteamos siempre después de la ortodoncia, no en su lugar: primero la posición, luego el acabado.',
     tiposEyebrow: 'Variantes',
     tiposTitulo: 'Blanqueamiento y carillas',
-    tiposEntradilla:
-      'Antes eran dos páginas distintas; su contenido es corto y funciona mejor junto. Cada uno conserva su enlace directo.',
     pestanas: [
       {
         id: 'blanqueamiento',
@@ -73,11 +71,11 @@ export const TRATAMIENTOS: Tratamiento[] = [
   },
   {
     slug: 'implantes-dentales',
+    cta: 'Consulta por tus implantes',
     nombre: 'Implantes dentales',
     claim: 'Recupera tu sonrisa',
     resumenHub:
       'Reponemos el diente que falta con una raíz de titanio que el hueso integra, antes de mover el resto.',
-    h1: 'Recupera tu sonrisa',
     entradilla:
       'Cuando falta un diente, lo reponemos con una raíz artificial que se integra en el hueso.',
     queEsTitulo: '¿Qué es un implante dental?',
@@ -120,11 +118,11 @@ export const TRATAMIENTOS: Tratamiento[] = [
   },
   {
     slug: 'cirugia-ortognatica',
+    cta: 'Consulta tu caso de cirugía',
     nombre: 'Cirugía ortognática',
     claim: 'Corrige los huesos maxilofaciales',
     resumenHub:
       'Para cuando el problema no está solo en la posición de los dientes, sino en la relación entre los maxilares.',
-    h1: 'Mejora la armonía y la estética de tu rostro',
     entradilla:
       'Corrige los huesos maxilofaciales cuando el problema no está solo en la posición de los dientes.',
     queEsTitulo: '¿Qué es la cirugía ortognática?',
@@ -157,11 +155,11 @@ export const TRATAMIENTOS: Tratamiento[] = [
   },
   {
     slug: 'endodoncia',
+    cta: 'Reserva tu cita de endodoncia',
     nombre: 'Endodoncia',
     claim: 'Evita la extracción de un diente dañado',
     resumenHub:
       'Tratamos el interior del diente, limpiamos los conductos y los sellamos para conservarlo en boca.',
-    h1: 'Evita la extracción',
     entradilla: 'Cuando el interior del diente está dañado, lo tratamos por dentro para conservarlo.',
     queEsTitulo: '¿Qué es una endodoncia?',
     queEs1:
@@ -182,11 +180,11 @@ export const TRATAMIENTOS: Tratamiento[] = [
   },
   {
     slug: 'cirugia-oral',
+    cta: 'Consulta tu cirugía oral',
     nombre: 'Cirugía oral',
     claim: 'Tratamiento con intervención quirúrgica',
     resumenHub:
       'Injertos de encía, frenectomías y extracción de muelas del juicio, planificados con calma.',
-    h1: 'Tratamiento con intervención quirúrgica',
     entradilla:
       'Intervenciones sencillas en boca, planificadas con calma y explicadas antes de empezar.',
     queEsTitulo: '¿Qué es la cirugía oral?',
@@ -207,11 +205,11 @@ export const TRATAMIENTOS: Tratamiento[] = [
   },
   {
     slug: 'periodoncia',
+    cta: 'Reserva tu revisión de encías',
     nombre: 'Periodoncia',
     claim: 'Cuidado de tus encías',
     resumenHub:
       'La encía es la base sobre la que se mueve todo. Si no está sana, la ortodoncia espera.',
-    h1: 'Cuidado de tus encías',
     entradilla:
       'La encía es la base sobre la que se mueve todo. Si no está sana, la ortodoncia espera.',
     queEsTitulo: '¿Qué es la periodoncia?',
@@ -246,11 +244,11 @@ export const TRATAMIENTOS: Tratamiento[] = [
   },
   {
     slug: 'odontologia-general',
+    cta: 'Reserva tu revisión',
     nombre: 'Odontología general',
     claim: 'Trata los problemas primarios de salud bucal',
     resumenHub:
       'Las revisiones y los arreglos de siempre, en la misma clínica en la que te alineas los dientes.',
-    h1: 'Trata los problemas primarios de salud bucal',
     entradilla:
       'Las revisiones y los arreglos de siempre, en la misma clínica en la que te alineas los dientes.',
     queEsTitulo: '¿Qué es la odontología general?',
@@ -279,9 +277,9 @@ export const porSlug = (slug: string) => TRATAMIENTOS.find((t) => t.slug === slu
  *  la primera visita y el horario); el resto está en PENDIENTES.md. */
 export const FAQ = [
   {
-    pregunta: '¿La primera visita también es gratuita para estos tratamientos?',
+    pregunta: '¿La primera visita también es GRATUITA para estos tratamientos?',
     respuesta:
-      'Sí. La primera visita es gratuita y sin compromiso, sea cual sea el tratamiento por el que vengas. En ella te exploramos, valoramos tu caso y te damos un plan.',
+      'Sí. La primera visita es GRATUITA y sin compromiso, sea cual sea el tratamiento por el que vengas. En ella te exploramos, valoramos tu caso y te damos un plan.',
   },
   {
     pregunta: '¿Qué horario tenéis?',

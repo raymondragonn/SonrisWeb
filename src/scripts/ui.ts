@@ -157,6 +157,84 @@ function girarAlineador(marco: HTMLElement) {
   });
 }
 
+/** Carruseles que pasan solos de página. El desplazamiento manual es el scroll
+ *  nativo del contenedor (dedo, trackpad, barra); los botones [data-ir] que haya
+ *  al lado mueven una página en cada sentido y dan la vuelta en los extremos.
+ *  El intervalo va en el propio atributo: data-auto-carrusel="4500". */
+/** Bloques que entran deslizándose cuando asoman en pantalla. El atributo en
+ *  <html> es lo que activa el estado inicial (oculto y desplazado): sin JS que
+ *  los revele, el CSS no llega a esconderlos. Si el bloque lleva un vídeo, se
+ *  pone en marcha al entrar y se para al salir, para no descargarlo ni tenerlo
+ *  corriendo mientras no se ve. */
+function iniciarEntradas() {
+  const nodos = Array.from(document.querySelectorAll<HTMLElement>('[data-entra]'));
+  if (!nodos.length) return;
+  document.documentElement.dataset.js = '';
+
+  if (reducido) {
+    nodos.forEach((n) => n.setAttribute('data-visible', ''));
+    return;
+  }
+
+  const io = new IntersectionObserver(
+    (entradas) =>
+      entradas.forEach((e) => {
+        const nodo = e.target as HTMLElement;
+        const video = nodo.querySelector('video');
+        if (e.isIntersecting) {
+          nodo.setAttribute('data-visible', '');
+          // El autoplay del navegador exige silencio; el botón lo devuelve.
+          video?.play().catch(() => {});
+        } else {
+          video?.pause();
+        }
+      }),
+    { threshold: 0.25 }
+  );
+  nodos.forEach((n) => io.observe(n));
+}
+
+/** Botón de sonido del vídeo que acompaña al formulario. */
+function iniciarSonidoVisita() {
+  document.querySelectorAll<HTMLElement>('[data-visita-sonido]').forEach((boton) => {
+    const video = boton.parentElement?.querySelector('video');
+    if (!video) return;
+    boton.addEventListener('click', () => {
+      video.muted = !video.muted;
+      boton.setAttribute('aria-pressed', String(!video.muted));
+      boton.setAttribute('aria-label', video.muted ? 'Activar el sonido del vídeo' : 'Silenciar el vídeo');
+      const icono = boton.querySelector('[data-icono]');
+      if (icono) icono.textContent = video.muted ? '♪' : '♫';
+      if (video.paused) video.play().catch(() => {});
+    });
+  });
+}
+
+function iniciarCarruseles() {
+  document.querySelectorAll<HTMLElement>('[data-auto-carrusel]').forEach((pista) => {
+    const paso = (d: number) => {
+      const fin = pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 1;
+      const inicio = pista.scrollLeft <= 1;
+      const destino = d > 0 && fin ? 0 : d < 0 && inicio ? pista.scrollWidth : pista.scrollLeft + d * pista.clientWidth;
+      pista.scrollTo({ left: destino, behavior: 'smooth' });
+    };
+    pista.parentElement?.querySelectorAll<HTMLElement>('[data-ir]').forEach((b) => {
+      b.addEventListener('click', () => paso(Number(b.dataset.ir)));
+    });
+
+    if (reducido) return;
+    // Se para mientras el puntero está encima o el foco dentro: es cuando
+    // alguien lo está mirando.
+    let quieto = false;
+    const pausa = (v: boolean) => () => (quieto = v);
+    pista.addEventListener('pointerenter', pausa(true));
+    pista.addEventListener('pointerleave', pausa(false));
+    pista.addEventListener('focusin', pausa(true));
+    pista.addEventListener('focusout', pausa(false));
+    setInterval(() => quieto || paso(1), Number(pista.dataset.autoCarrusel) || 5000);
+  });
+}
+
 function iniciarAlineador() {
   // El vídeo del hero arranca solo desde el marcado; quien pide menos
   // movimiento se queda con el póster.
@@ -171,4 +249,7 @@ function iniciarAlineador() {
 
 iniciarHeader();
 iniciarContadores();
+iniciarCarruseles();
+iniciarEntradas();
+iniciarSonidoVisita();
 iniciarAlineador();

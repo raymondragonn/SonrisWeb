@@ -83,6 +83,7 @@ article[id] {
 /* Lámina de vidrio */
 [data-lamina] {
   background: rgba(255, 255, 255, 0.72) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
   backdrop-filter: blur(14px) saturate(1.08);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 20px !important;
@@ -143,6 +144,15 @@ article[id] {
 [data-member]:hover [data-portrait][data-circulo] {
   transform: scale(1.62);
 }
+/* Retrato de cuerpo entero en un marco 4/5: sin acercar, la cara queda pequeña
+   y perdida en el fondo. */
+[data-portrait][data-acerca] {
+  transform: scale(1.34);
+  transform-origin: center 24%;
+}
+[data-member]:hover [data-portrait][data-acerca] {
+  transform: scale(1.4);
+}
 [data-feat]:hover [data-featimg],
 [data-feat]:hover [data-featveil] {
   opacity: 1;
@@ -162,7 +172,7 @@ article[id] {
   bottom: -4px;
   height: 2px;
   width: 0;
-  background: #E76B0B;
+  background: var(--acento, #E76B0B);
   transition: width 200ms var(--ease);
 }
 [data-underline][aria-current='page']::after {
@@ -173,7 +183,7 @@ article[id] {
     width: 100%;
   }
   [data-underline]:hover {
-    color: #E76B0B;
+    color: var(--acento, #E76B0B);
   }
 }
 
@@ -187,6 +197,13 @@ article[id] {
 }
 [data-primary]:hover [data-arrow] {
   transform: translateX(4px);
+}
+/* Primario sobre fondo oscuro: el relleno negro por defecto desaparece contra la
+   sección, así que se invierte. El halo del hover se aclara con él. */
+[data-primary-claro] {
+  background: #FFFFFF;
+  color: #0A0A0A;
+  --glow: 0 12px 28px rgba(255, 255, 255, 0.3);
 }
 /* Flotante de WhatsApp: al ser sólo icono, el hover crece en vez de cambiar etiqueta. */
 [data-wa]:hover,
@@ -207,6 +224,7 @@ article[id] {
    el script solo marca [data-fijo] al primer píxel de scroll. */
 #sonris-header[data-variante='transparente'] {
   background-color: rgba(255, 255, 255, 0);
+  -webkit-backdrop-filter: blur(0px);
   backdrop-filter: blur(0px);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   /* Sin fade en el relleno: interpolar de rgba(255,255,255,0) a 0.88 deja el
@@ -216,6 +234,7 @@ article[id] {
 }
 #sonris-header[data-fijo] {
   background-color: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.04),
@@ -263,6 +282,25 @@ article[id] {
   #sonris-header-cta {
     display: none !important;
   }
+  /* Sin CTA ni menú de escritorio, el header es logo + hamburguesa: 92px de
+     barra fija para eso son un cuarto de la pantalla de un móvil apaisado.
+     El botón se queda en 44px, que es el mínimo táctil. */
+  #sonris-header > div {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    gap: 16px !important;
+  }
+  #sonris-header img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  /* El hueco de las anclas iba calculado sobre el header grande. */
+  section[id],
+  div[id],
+  nav[id],
+  article[id] {
+    scroll-margin-top: 68px !important;
+  }
   [data-hero] {
     grid-template-columns: minmax(0, 1fr) !important;
     gap: 40px !important;
@@ -282,6 +320,12 @@ article[id] {
     max-height: none !important;
     min-height: 78vh;
     min-height: 78svh;
+  }
+  /* El hero de un tratamiento sólo lleva titular, entradilla y botón: no
+     necesita los 78vh del de portada, que tiene el doble de contenido. */
+  [data-herobox][data-hero-corto] {
+    min-height: 56vh;
+    min-height: 56svh;
   }
   [data-herotexto] {
     padding: 0 24px 56px !important;
@@ -304,6 +348,32 @@ article[id] {
   [data-zig] > * {
     grid-column: 1 !important;
     grid-row: auto !important;
+  }
+  /* Apilado, el zigzag deja la foto arriba en las filas impares y el nombre del
+     tratamiento no se ve hasta después de scrollear una imagen 4/3. El texto va
+     siempre primero y la foto debajo. */
+  [data-zig] > figure {
+    order: 2 !important;
+  }
+  [data-form] > [data-visita] {
+    position: static !important;
+    order: -1;
+  }
+  /* Tarjetas apiladas: 40px entre ellas y el acolchado de escritorio dentro
+     (hasta 108px arriba donde antes iba un icono) dejan la sección en media
+     pantalla de vacío. */
+  [data-apretado] {
+    gap: 16px !important;
+  }
+  [data-apretado] > * {
+    padding: 24px !important;
+    border-radius: 28px !important;
+    min-height: 0 !important;
+  }
+  /* Entre la última sección y el pie había dos aires seguidos: el de la sección
+     y el del propio footer. El de abajo sobra. */
+  [data-sec][data-fin-pagina] {
+    padding-bottom: 24px !important;
   }
   [data-sec] {
     padding-top: 80px !important;
@@ -361,10 +431,120 @@ article[id] {
   [data-band-gray] {
     background: #ffffff !important;
   }
-  [data-4col],
-  [data-gal],
+  /* Dos credenciales a la vez, rotando (ui.ts las pasa cada 4,5s y también se
+     pasan con el dedo). Las cuatro en fila dejaban el texto en 10px; apiladas,
+     cuatro pantallazos de altura muerta antes del primer contenido. */
   [data-trust] {
-    grid-template-columns: minmax(0, 1fr) !important;
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 16px 8px !important;
+    text-align: center;
+  }
+  [data-trust]::-webkit-scrollbar {
+    display: none;
+  }
+  [data-trust] > div {
+    flex: 0 0 50%;
+    scroll-snap-align: start;
+    padding: 0 8px !important;
+    /* Cada par tiene alturas distintas (un número grande frente a un rótulo):
+       alineadas arriba, la pareja se ve descuadrada. */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  [data-trust] p {
+    margin-bottom: 4px !important;
+    font-size: 12.5px !important;
+    line-height: 1.4 !important;
+  }
+  [data-trust] p:first-child {
+    justify-content: center;
+    gap: 6px !important;
+    font-size: 17px !important;
+  }
+  /* `p[data-count-to]` y no `[data-count-to]` a secas: el +25 es además el
+     primer hijo, y esa regla le ganaba en especificidad y lo dejaba en 17px. */
+  [data-trust] p[data-count-to],
+  [data-trust] strong {
+    font-size: 30px !important;
+  }
+  [data-trust] p span[aria-hidden] {
+    font-size: 11px !important;
+  }
+  [data-trust] > div > span {
+    padding: 5px 10px !important;
+    font-size: 9px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Equipo: la dirección médica en horizontal (foto pequeña al lado del texto)
+     y los cuatro doctores de dos en dos, en vez de cinco fichas a pantalla
+     completa una detrás de otra. */
+  [data-eq-lider] {
+    grid-template-columns: 104px minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+  [data-eq-lider] h3 {
+    font-size: 20px !important;
+  }
+  [data-eq-lider] p {
+    font-size: 14px !important;
+    margin-bottom: 12px !important;
+  }
+  [data-eq-lider] > div > span {
+    margin-bottom: 10px !important;
+    padding: 4px 10px !important;
+    font-size: 9px !important;
+  }
+  [data-4col] {
+    gap: 12px !important;
+  }
+  [data-4col] > article {
+    padding: 14px !important;
+    border-radius: 28px !important;
+  }
+  [data-4col] > article > div {
+    border-radius: 24px !important;
+    margin-bottom: 12px !important;
+  }
+  [data-4col] h3 {
+    font-size: 15px !important;
+  }
+  [data-4col] p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  [data-4col] article span {
+    padding: 4px 8px !important;
+    font-size: 9px !important;
+    letter-spacing: 0.1em !important;
+    margin-bottom: 10px !important;
+  }
+
+  [data-circulo-movil] {
+    aspect-ratio: 1 !important;
+    max-width: 240px;
+    margin: 0 auto !important;
+    border-radius: 9999px !important;
+  }
+
+  /* Las cuatro salas de dos en dos: a pantalla completa eran cuatro
+     pantallazos para ver cuatro fotos. */
+  [data-gal] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    margin-top: 24px !important;
+  }
+  [data-gal] > figure > div {
+    border-radius: 24px !important;
+  }
+  [data-gal] figcaption {
+    margin-top: 6px !important;
+    font-size: 13px !important;
   }
   header > div,
   footer > div,
@@ -375,11 +555,36 @@ article[id] {
     padding-left: 24px !important;
     padding-right: 24px !important;
   }
+  /* Una etiqueta larga rompe en dos renglones y el botón queda encajado a la
+     izquierda de su columna: aquí ocupa el ancho y el texto va centrado. */
   [data-cta-largo] {
+    display: flex !important;
     white-space: normal !important;
     text-align: center;
     justify-content: center;
     padding: 14px 24px !important;
+  }
+  /* Los cinco pasos: número más pequeño y menos aire por fila. */
+  [data-pasos] {
+    gap: 0 !important;
+  }
+  [data-pasos] li {
+    gap: 16px !important;
+    padding: 16px 0 !important;
+  }
+  [data-pasos] li > span {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
+    font-size: 18px !important;
+  }
+  [data-pasos] h3 {
+    margin-bottom: 4px !important;
+    font-size: 18px !important;
+  }
+  [data-pasos] p {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
   }
   h1,
   h2,
@@ -389,10 +594,20 @@ article[id] {
   [data-h2-grande] {
     font-size: 30px !important;
   }
-  /* Los dos botones del hero, a media pantalla cada uno en vez de sueltos. */
-  [data-herotexto] a {
-    flex: 1 1 auto !important;
-    justify-content: center;
+  /* Los botones que van juntos reparten la fila en vez de quedar sueltos y de
+     anchos distintos: dos por fila, y el impar ocupa la fila entera. El nowrap
+     de escritorio se levanta aquí, que es lo que los sacaba de la pantalla. */
+  [data-botonera] {
+    gap: 12px !important;
+  }
+  [data-botonera] > a,
+  [data-botonera] > button {
+    flex: 1 1 calc(50% - 12px) !important;
+    justify-content: center !important;
+    text-align: center;
+    white-space: normal !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
   }
   /* 80px de aire arriba y abajo en una pantalla de 360 es media pantalla. */
   [data-sec] {
@@ -409,11 +624,6 @@ article[id] {
   [data-primary],
   [data-secondary] {
     max-width: 100%;
-  }
-  /* El logo a 68px se come una quinta parte del ancho de un móvil. */
-  #sonris-header img {
-    width: 52px !important;
-    height: 52px !important;
   }
   /* El pie ocupaba casi una pantalla entera de scroll: se aprieta el aire, no
      el contenido. Los iconos de redes se quedan en 44px, que es el mínimo
@@ -435,9 +645,6 @@ article[id] {
   footer#legal nav {
     gap: 12px 18px !important;
   }
-  footer#legal > div > p:last-child {
-    margin-bottom: 8px !important;
-  }
   [data-cta-caja] {
     padding: 32px 24px !important;
     border-radius: 28px !important;
@@ -453,6 +660,107 @@ article[id] {
     width: 100%;
     justify-content: center;
     padding: 0 20px !important;
+  }
+
+  /* Los solapes de escritorio no sobreviven al móvil: [data-sec] aplasta aquí
+     el padding-top que dejaba sitio a la barra flotante, así que esta acababa
+     encima del titular de la sección. En vertical van uno detrás de otro. */
+  [data-overlap] {
+    margin-top: 20px !important;
+  }
+  [data-overlap-pull] {
+    margin-top: 0 !important;
+    padding-top: 48px !important;
+  }
+  /* Siete chips apilados son cinco filas de altura muerta: una sola fila que se
+     desliza con el dedo, como las pestañas de cualquier app. */
+  [data-overlap] ul {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  [data-overlap] ul::-webkit-scrollbar {
+    display: none;
+  }
+  [data-overlap] li {
+    flex: none;
+  }
+  [data-overlap] ul a {
+    white-space: nowrap;
+  }
+
+  /* Las tarjetitas de alineadores sobresalían 38px del marco: en una pantalla
+     de 360 eso cae fuera del viewport y arrastra scroll horizontal. */
+  [data-cajacard] {
+    width: 26% !important;
+  }
+  [data-cajacard='sup-der'] {
+    top: -14px !important;
+    right: -10px !important;
+  }
+  [data-cajacard='inf-izq'] {
+    bottom: -14px !important;
+    left: -10px !important;
+  }
+
+  /* Menos scroll: el aire entre secciones y el alto del hero son lo que más
+     alarga la página, y el titular a 42px se comía tres o cuatro líneas. */
+  [data-sec] {
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
+  }
+  [data-herobox] {
+    min-height: 68vh;
+    min-height: 68svh;
+  }
+  [data-herobox][data-hero-corto] {
+    min-height: 52vh;
+    min-height: 52svh;
+  }
+  [data-h1] {
+    font-size: 34px !important;
+  }
+
+  /* Pie: mismo contenido, la mitad de aire. */
+  footer#legal {
+    padding: 40px 0 20px !important;
+  }
+  footer#legal [data-2col] {
+    gap: 24px !important;
+    padding-bottom: 24px !important;
+  }
+  footer#legal [data-foot-meta] {
+    padding: 16px 0 !important;
+    gap: 14px !important;
+  }
+
+  /* La barra de anclas no aporta en un móvil: el índice de una página que se
+     recorre con el pulgar cuesta más de lo que ahorra. */
+  [data-solo-ancha] {
+    display: none !important;
+  }
+
+  /* Los cinco casos son cuatro filas de pastillas por encima del comparador.
+     Se queda el caso visible, a modo de rótulo, y se pasa con las flechas. */
+  [data-caso-chips] {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  [data-caso-chips] > button:not([aria-current]) {
+    display: none !important;
+  }
+  [data-caso-chips] > button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+
+  /* Red de seguridad: nada puede sacar la página de sus márgenes. clip, no
+     hidden: hidden crearía un contenedor de scroll y rompería el header sticky. */
+  body {
+    overflow-x: clip;
   }
 }
 
@@ -520,6 +828,54 @@ article[id] {
   }
 }
 
+/* Entrada deslizada desde la derecha. Sólo se esconde si hay JS (el atributo
+   [data-js] lo pone ui.ts): sin él, todo se ve desde el primer momento. */
+[data-js] [data-entra] {
+  opacity: 0;
+  transform: translateX(48px);
+}
+[data-js] [data-entra][data-visible] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 700ms var(--ease) var(--retardo, 0ms),
+    transform 700ms var(--ease) var(--retardo, 0ms);
+}
+
+/* Vídeo que acompaña al formulario: se queda pegado al scroll mientras se
+   rellenan los campos. */
+[data-visita] {
+  position: sticky;
+  top: 96px;
+  isolation: isolate;
+}
+[data-visita] video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 40px;
+  background: #000000;
+  box-shadow: var(--e1);
+}
+[data-visita-sonido] {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 17px;
+  cursor: pointer;
+}
+
 /* Modal de vídeo. El <dialog> es solo el marco: el ancho lo pone el hueco. */
 [data-dlg-video] {
   width: min(92vw, 900px);
@@ -569,6 +925,35 @@ article[id] {
   height: 100%;
   border: 0;
 }
+/* Pie del modal de testimonios: pasar de un vídeo a otro sin cerrar. */
+[data-dlg-pie] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+[data-dlg-pie] p {
+  margin: 0;
+  min-width: 0;
+  color: #ffffff;
+  font-size: 15px;
+  text-align: center;
+}
+[data-dlg-pie] button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
 [data-dlg-cerrar] {
   position: absolute;
   top: 12px;
@@ -588,12 +973,38 @@ article[id] {
    opaco a propósito: la textura solo tiene que insinuarse, si sube se lleva por
    delante el contraste del texto. */
 [data-textura] {
-  background-image: linear-gradient(var(--velo), var(--velo)), url('../assets/sonris/iconos/fondo-sonris.webp');
+  background-image: linear-gradient(var(--velo), var(--velo)), var(--textura, url('../assets/sonris/iconos/fondo-sonris.webp'));
   /* 600px en todas las secciones: con `cover` el dibujo cambiaba de escala
      según el alto de cada una. El velo ocupa el área entera. */
   background-size: auto, 600px auto;
   background-position: center;
   background-repeat: repeat;
+}
+/* Variantes para fondos oscuros: el dibujo ya viene en blanco sobre negro, así
+   que no hay que invertir nada, sólo cambiar la imagen y aflojar el velo. */
+[data-textura-ondas] {
+  --textura: url('../assets/sonris/iconos/fondo-ondas-dark.webp');
+}
+[data-textura-circulos] {
+  --textura: url('../assets/sonris/iconos/fondo-circulos-dark.webp');
+}
+[data-textura-palitos] {
+  --textura: url('../assets/sonris/iconos/fondo-palitos-dark.webp');
+}
+[data-textura-palitos] {
+  --textura: url('../assets/sonris/iconos/fondo-palitos-dark.webp');
+}
+
+/* Intercambia visualmente las dos columnas de una rejilla dejando el marcado
+   como está: el titular sigue precediendo a su texto en el DOM, que es lo que
+   leen el lector de pantalla y el móvil, donde todo cae a una sola columna. */
+@media (min-width: 901px) {
+  [data-invertir] > *:first-child {
+    order: 2;
+  }
+  [data-invertir] > *:last-child {
+    order: 1;
+  }
 }
 
 /* Paneles de tipos de tratamiento: al pasar por encima se agitan y se despegan
@@ -615,7 +1026,8 @@ article[id] {
 [data-foco]:hover,
 [data-plan]:hover,
 [data-feat]:hover,
-[data-cta-caja]:hover {
+[data-cta-caja]:hover,
+[data-libro]:hover {
   animation: sonris-agita 760ms var(--ease);
 }
 @keyframes sonris-agita {

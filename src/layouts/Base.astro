@@ -15,9 +15,9 @@ interface Props {
   noindex?: boolean;
   tipoOg?: 'website' | 'article' | 'profile';
   headerVariante?: 'transparente' | 'solida';
+  headerOscuro?: boolean;
   /** Ancla del CTA de header, footer y barra móvil. */
   hrefCita?: string;
-  conWhatsAppEnBarra?: boolean;
   conDireccionMedicaEnFooter?: boolean;
 }
 
@@ -30,8 +30,8 @@ const {
   noindex = false,
   tipoOg = 'website',
   headerVariante = 'transparente',
-  hrefCita = '/contacto/#formulario',
-  conWhatsAppEnBarra = false,
+  headerOscuro = false,
+  hrefCita = '/contacto/',
   conDireccionMedicaEnFooter = false,
 } = Astro.props;
 ---
@@ -60,12 +60,12 @@ const {
     <a class="saltar" href="#contenido">Saltar al contenido</a>
 
     <div style="font-family:'DM Sans',system-ui,sans-serif;color:#1A1A1A;background:#FFFFFF">
-      <Header variante={headerVariante} actual={ruta} />
+      <Header variante={headerVariante} actual={ruta} oscuro={headerOscuro} />
       <main id="contenido">
         <slot />
       </main>
       <Footer {hrefCita} conDireccionMedica={conDireccionMedicaEnFooter} />
-      <BarrasFijas {hrefCita} {conWhatsAppEnBarra} />
+      <BarrasFijas {hrefCita} />
       <AvisoCookies />
     </div>
 

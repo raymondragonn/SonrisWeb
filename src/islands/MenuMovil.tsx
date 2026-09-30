@@ -10,12 +10,14 @@ export default function MenuMovil({
   hrefCita,
   telefono,
   telefonoE164,
+  acento,
 }: {
   enlaces: Enlace[];
   actual: string;
   hrefCita: string;
   telefono: string;
   telefonoE164: string;
+  acento: string;
 }) {
   const [abierto, setAbierto] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
@@ -64,20 +66,35 @@ export default function MenuMovil({
         onClick={() => setAbierto((v) => !v)}
         style={{
           marginLeft: 'auto',
-          width: 48,
-          height: 48,
+          width: 52,
+          height: 52,
           flex: 'none',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: 9999,
+          borderRadius: 16,
           background: '#FFFFFF',
           border: '1px solid rgba(0,0,0,0.08)',
+          boxShadow: '0 2px 8px rgba(0,0,0,.04)',
           cursor: 'pointer',
-          fontSize: 18,
           color: '#1A1A1A',
         }}
       >
-        {abierto ? '✕' : '☰'}
+        {/* Trazos dibujados, no los glifos ☰ / ✕: su tamaño y su centrado
+            dependían de la fuente y quedaban pequeños y descolocados. */}
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          {abierto ? (
+            <>
+              <path d="M6 6 L20 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              <path d="M20 6 L6 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            </>
+          ) : (
+            <>
+              <path d="M4 8h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              <path d="M4 13h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              <path d="M4 18h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            </>
+          )}
+        </svg>
       </button>
 
       {abierto && (
@@ -89,6 +106,7 @@ export default function MenuMovil({
             inset: 0,
             zIndex: 90,
             background: 'rgba(0,0,0,0.45)',
+            WebkitBackdropFilter: 'blur(4px)',
             backdropFilter: 'blur(4px)',
           }}
         >
@@ -110,6 +128,37 @@ export default function MenuMovil({
               boxShadow: '0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)',
             }}
           >
+            {/* El panel arranca en top:12 y tapa el botón del header, que queda
+                por debajo del velo: sin esto, cerrar exige acertar en el hueco
+                del fondo o irse a un enlace. */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+              <button
+                type="button"
+                aria-label="Cerrar el menú"
+                onClick={() => {
+                  setAbierto(false);
+                  boton.current?.focus();
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 44,
+                  height: 44,
+                  flex: 'none',
+                  borderRadius: 16,
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  color: '#1A1A1A',
+                  cursor: 'pointer',
+                }}
+              >
+                <svg width="22" height="22" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+                  <path d="M6 6 L20 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                  <path d="M20 6 L6 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
             <nav aria-label="Menú">
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 4 }}>
                 {enlaces.map((e) => (
@@ -128,7 +177,7 @@ export default function MenuMovil({
                         fontWeight: 600,
                         fontSize: 20,
                         letterSpacing: '-0.02em',
-                        color: e.href === actual ? '#E76B0B' : '#1A1A1A',
+                        color: e.href === actual ? acento : '#1A1A1A',
                       }}
                     >
                       {e.nombre}
@@ -149,7 +198,7 @@ export default function MenuMovil({
                       fontWeight: 600,
                       fontSize: 20,
                       letterSpacing: '-0.02em',
-                      color: actual === '/contacto/' ? '#E76B0B' : '#1A1A1A',
+                      color: actual === '/contacto/' ? acento : '#1A1A1A',
                     }}
                   >
                     Contacto
@@ -170,13 +219,13 @@ export default function MenuMovil({
                 width: '100%',
                 minHeight: 56,
                 borderRadius: 9999,
-                background: '#E76B0B',
+                background: acento,
                 color: '#FFFFFF',
                 fontSize: 18.66,
                 fontWeight: 600,
               }}
             >
-              Pide tu cita
+              Reservar visita
               <span data-arrow style={{ display: 'inline-block', transition: 'transform 300ms cubic-bezier(0.22,1,0.36,1)' }}>
                 →
               </span>

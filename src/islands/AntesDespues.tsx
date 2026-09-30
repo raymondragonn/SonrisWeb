@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import apinamientoAntes from "../assets/sonris/casos/Apinamiento-severo-Interna-Inicio-16-9.webp";
 import apinamientoDespues from "../assets/sonris/casos/Apinamiento-severo-Interna-Final-16-9.webp";
@@ -73,9 +73,24 @@ const CASOS = [
 export default function AntesDespues() {
   const [corte, setCorte] = useState(50);
   const [caso, setCaso] = useState(0);
+  const [quieto, setQuieto] = useState(false);
   const arrastrando = useRef(false);
   const caja = useRef<HTMLDivElement>(null);
   const actual = CASOS[caso];
+
+  const ir = (i: number) => {
+    setCaso((i + CASOS.length) % CASOS.length);
+    setCorte(50);
+  };
+
+  // Pasa solo de caso en caso. Se para mientras el puntero está encima o el
+  // foco dentro, que es cuando alguien lo está mirando; `caso` en las deps hace
+  // que cualquier cambio manual reinicie la cuenta en vez de sumarse a ella.
+  useEffect(() => {
+    if (quieto || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setTimeout(() => ir(caso + 1), 6000);
+    return () => clearTimeout(t);
+  }, [quieto, caso]);
 
   const desdeEvento = (e: React.PointerEvent) => {
     const r = caja.current?.getBoundingClientRect();
@@ -110,6 +125,22 @@ export default function AntesDespues() {
     display: 'block',
   };
 
+  const flecha: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: '0 0 auto',
+    width: 44,
+    height: 44,
+    borderRadius: 9999,
+    background: '#FFFFFF',
+    border: '1px solid rgba(0,0,0,0.08)',
+    fontSize: 22,
+    lineHeight: 1,
+    color: '#1A1A1A',
+    cursor: 'pointer',
+  };
+
   const etiqueta: React.CSSProperties = {
     position: 'absolute',
     top: 20,
@@ -124,10 +155,15 @@ export default function AntesDespues() {
   };
 
   return (
-    <>
-      {/* El selector comparte fila con el título: ocupa el sitio de la antigua
-          entradilla y se ve antes de llegar al comparador. */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40 }}>
+    <div
+      onPointerEnter={() => setQuieto(true)}
+      onPointerLeave={() => setQuieto(false)}
+      onFocus={() => setQuieto(true)}
+      onBlur={() => setQuieto(false)}
+    >
+      {/* Titular en su propia fila y centrado; el selector queda debajo, también
+          centrado, y se ve antes de llegar al comparador. */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, marginBottom: 40 }}>
         <h2
           data-h2-grande
           id="casos-t"
@@ -139,21 +175,22 @@ export default function AntesDespues() {
             lineHeight: 1.1,
             letterSpacing: '-0.02em',
             color: '#000000',
-            maxWidth: '20ch',
+            textAlign: 'center',
           }}
         >
           Sonrisas que he cambiado
         </h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <button type="button" aria-label="Caso anterior" onClick={() => ir(caso - 1)} style={flecha}>
+            ‹
+          </button>
+          <div data-caso-chips style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
           {CASOS.map((c, i) => (
             <button
               key={c.etiqueta}
               type="button"
               aria-current={i === caso ? 'true' : undefined}
-              onClick={() => {
-                setCaso(i);
-                setCorte(50);
-              }}
+              onClick={() => ir(i)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -172,6 +209,10 @@ export default function AntesDespues() {
               {c.etiqueta}
             </button>
           ))}
+          </div>
+          <button type="button" aria-label="Caso siguiente" onClick={() => ir(caso + 1)} style={flecha}>
+            ›
+          </button>
         </div>
       </div>
 
@@ -274,19 +315,11 @@ export default function AntesDespues() {
             <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: '#6B6B6B' }}>{actual.descripcion}</p>
           </div>
           <div style={{ height: 1, background: 'rgba(0,0,0,0.08)', margin: '20px 0' }} />
-          <p style={{ margin: '0 0 18px', fontSize: 15, lineHeight: 1.7, color: '#6B6B6B' }}>
-            Cada boca es distinta. Los casos que ves aquí se publican con el consentimiento firmado de cada paciente:
-            ninguno anticipa tu resultado, el tuyo se valora en la primera visita y con las pruebas delante.
+          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: '#6B6B6B' }}>
+            Casos publicados con el consentimiento firmado de cada paciente.
           </p>
-          <a
-            data-underline
-            href="/sobre-nosotros/"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 16, fontWeight: 500, color: '#1A1A1A' }}
-          >
-            Conoce el resto del equipo <span>→</span>
-          </a>
         </aside>
       </div>
-    </>
+    </div>
   );
 }

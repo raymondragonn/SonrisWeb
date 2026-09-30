@@ -2,8 +2,14 @@
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import doctoraImg from '../../assets/sonris/equipo/Isabel-Velez.webp';
-import libroImg from '../../assets/sonris/blog/libro-ortodoncia-con-alineadores.png';
+import bioImg from '../../assets/sonris/equipo/Isabel-Velez-alineador.jpg';
+import libroImg from '../../assets/sonris/blog/libro-ortodoncia-con-alineadores-recorte.png';
 import qrLibroImg from '../../assets/sonris/blog/qr-pre-orden-libro.png';
+import confBruselas from '../../assets/sonris/conferencias/conferencia-eas7-bruselas.webp';
+import confAuditorio from '../../assets/sonris/conferencias/auditorio-eas7-bruselas.webp';
+import confTaller from '../../assets/sonris/conferencias/taller-con-doctores.webp';
+import confSmartee from '../../assets/sonris/conferencias/ponencia-smartee.webp';
+import confEscenario from '../../assets/sonris/conferencias/conferencia-sonris-escenario.webp';
 import CtaFinal from '../../components/CtaFinal.astro';
 import AntesDespues from '../../islands/AntesDespues';
 import { CONTACTO, DIRECCION_MEDICA } from '../../data/site';
@@ -20,6 +26,14 @@ const FORMACION = [
 ];
 
 const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
+
+const CONFERENCIAS = [
+  [confBruselas, 'La Dra. Vélez ponente en el congreso EAS7 de Bruselas'],
+  [confTaller, 'La Dra. Vélez explicando un caso a un grupo de doctores alrededor de una mesa'],
+  [confAuditorio, 'Auditorio del congreso EAS7 de Bruselas durante su ponencia'],
+  [confSmartee, 'La Dra. Vélez durante una ponencia sobre protocolos con alineadores'],
+  [confEscenario, 'La Dra. Vélez en el escenario ante el público de una conferencia'],
+] as const;
 ---
 
 <Base
@@ -28,12 +42,13 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
   {ruta}
   migas={[{ nombre: DIRECCION_MEDICA.nombre, href: ruta }]}
   tipoOg="profile"
+  headerOscuro
   conDireccionMedicaEnFooter
 >
   <section
     id="inicio"
     aria-labelledby="hero-t"
-    style="position:relative;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%,rgba(254,225,203,0.5) 100%);padding:56px 0 112px"
+    style="position:relative;overflow:hidden;background:#FFFFFF;padding:56px 0 112px"
   >
     <div
       aria-hidden="true"
@@ -46,7 +61,7 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
     >
     </div>
     <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-hero style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center">
+      <div data-hero data-invertir style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:center">
         <figure style="margin:0">
           <div
             style="position:relative;aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)"
@@ -100,21 +115,21 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
             Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.
           </p>
           <p style="margin:0 0 36px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:56ch">
-            Valoro tu caso, firmo tu plan de tratamiento y formo a otros ortodoncistas en los casos que se salen de lo sencillo.
+            Diagnostico y planifico tu plan de tratamiento, además formo a otros ortodoncistas en los casos que se salen de lo sencillo.
           </p>
-          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+          <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
             <a
               data-primary
               data-cta-largo
-              href="/contacto/#formulario"
+              href="/contacto/"
               style="display:inline-flex;flex:0 1 auto;max-width:100%;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#000000;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Reserva tu valoración con la Dra. Vélez<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
+              >Reservar mi valoración<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
                 >→</span
               ></a
             >
           </div>
           <p style="margin:20px 0 0;font-size:16px;color:#6B6B6B">
-            Primera visita gratuita. O llámanos al{' '}
+            Primera visita GRATUITA. O llámanos al{' '}
             <a href={`tel:${CONTACTO.telefonoE164}`} data-underline style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a>.
           </p>
         </div>
@@ -124,17 +139,30 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
 
   <section data-sec aria-labelledby="bio-t" style="padding:128px 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:center">
+        <figure style="margin:0">
+          <div
+            style="aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 12px,#EFEFEF 12px 24px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
+          >
+            <Image
+              src={bioImg}
+              widths={[420, 840]}
+              sizes="(max-width:900px) 92vw, 420px"
+              loading="lazy"
+              decoding="async"
+              alt="La Dra. Isabel Vélez en la clínica Sonris, tras un alineador transparente"
+              style="width:100%;height:100%;object-fit:cover;display:block"
+            />
+          </div>
+        </figure>
         <div>
           <h2
             data-h2-grande
             id="bio-t"
-            style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
+            style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
             Mi carrera entera en una sola especialidad
           </h2>
-        </div>
-        <div>
           <p style="margin:0 0 20px;font-size:19px;line-height:1.7;color:#1A1A1A;max-width:65ch">
             Soy licenciada en Odontología y especializada en ortodoncia, y llevo más de 25 años dedicada a la práctica exclusiva de la
             ortodoncia.
@@ -193,7 +221,7 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
     </div>
   </section>
 
-  <section data-sec data-peach data-textura aria-labelledby="rec-t" style="background-color:#0A0A0A;--velo:rgba(10,10,10,0.92);padding:104px 0 128px;border-radius:40px">
+  <section data-sec data-peach data-textura data-textura-ondas aria-labelledby="rec-t" style="background-color:#0A0A0A;--velo:rgba(10,10,10,0.78);padding:104px 0 128px;border-radius:40px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
         <div>
@@ -202,15 +230,28 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
             id="rec-t"
             style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#FFFFFF;max-width:18ch"
           >
-            Diamond Provider y trabajo multimarca
+            Certificada en las mejores marcas de alineadores
           </h2>
           <div style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
-            <span
-              style="display:inline-flex;align-items:center;gap:8px;background:#000000;color:#FFFFFF;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:16px"
-              >◆ Diamond provider</span
-            >
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+              <span
+                style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase"
+                >Diamond provider</span
+              >
+              <span
+                style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase"
+                >Key Opinion Leader</span
+              >
+              <span
+                style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase"
+                >Ortodoncia integral</span
+              >
+            </div>
             <p style="margin:0 0 12px;font-size:17px;line-height:1.7;color:#1A1A1A">
               Máxima categoría de proveedor de ortodoncia invisible, otorgada por el número de casos completados.
+            </p>
+            <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A">
+              Key opinion leader de Smartee y Dental Monitoring.
             </p>
           </div>
         </div>
@@ -238,10 +279,24 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
     </div>
   </section>
 
+  <section data-sec aria-labelledby="casos-t" style="background:#F7F7F7;padding:96px 0 128px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      {/* Título y tarjeta lateral viven dentro de la isla: el selector de casos
+          va junto al título y la tarjeta cuenta el caso visible, así que ambos
+          necesitan el mismo estado que el comparador. */}
+      <AntesDespues client:visible />
+    </div>
+  </section>
+
   <section data-sec aria-labelledby="doc-t" style="padding:112px 0 128px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:center">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center">
         <div>
+          <p
+            style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B"
+          >
+            Key Opinion Leader en ortodoncia
+          </p>
           <h2
             data-h2-grande
             id="doc-t"
@@ -257,22 +312,44 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
             Para ti eso significa una cosa práctica: el criterio con el que valoro tu caso es el mismo que enseño en esas salas.
           </p>
         </div>
-        <figure style="margin:0">
-          <div
-            style="position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
-          >
-            <img
-              src="/img/placeholder-liso-4x3.png"
-              sizes="(max-width:900px) 100vw, 50vw"
-              width="1024"
-              height="768"
-              loading="lazy"
-              decoding="async"
-              alt="La Dra. Isabel Vélez impartiendo una conferencia a otros ortodoncistas"
-              style="width:100%;height:100%;object-fit:cover;display:block"
-            />
+        {/* Muro de fotos en escritorio (columnas CSS, cada una con su
+            proporción) y carrusel de una en una sólo en móvil: ver cinco a la
+            vez en 360px no es verlas. El aspecto de cada modo, en el <style>
+            del final. */}
+        <div data-conf>
+          <div data-conf-pista data-auto-carrusel="4500" aria-label="Conferencias de la Dra. Vélez">
+            {
+              CONFERENCIAS.map(([foto, descripcion]) => (
+                <figure>
+                  <Image
+                    src={foto}
+                    widths={[320, 640]}
+                    sizes="(max-width:560px) 300px, 240px"
+                    loading="lazy"
+                    decoding="async"
+                    alt={descripcion}
+                    style="width:100%;height:auto;display:block"
+                  />
+                </figure>
+              ))
+            }
           </div>
-        </figure>
+          {
+            [
+              ['-1', 'Foto anterior', '‹', 'left:8px'],
+              ['1', 'Foto siguiente', '›', 'right:8px'],
+            ].map(([ir, etiqueta, glifo, lado]) => (
+              <button
+                type="button"
+                data-ir={ir}
+                aria-label={etiqueta}
+                style={`position:absolute;top:50%;${lado};transform:translateY(-50%);align-items:center;justify-content:center;width:40px;height:40px;border-radius:9999px;background:rgba(255,255,255,0.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.08);font-size:20px;line-height:1;color:#1A1A1A;cursor:pointer`}
+              >
+                {glifo}
+              </button>
+            ))
+          }
+        </div>
       </div>
     </div>
   </section>
@@ -281,36 +358,44 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
     data-sec
     data-peach
     data-textura
+    data-textura-palitos
     id="libro"
     aria-labelledby="libro-t"
-    style="background-color:#0A0A0A;--velo:rgba(10,10,10,0.92);padding:112px 0;border-radius:40px"
+    style="background-color:#0A0A0A;--velo:rgba(10,10,10,0.78);padding:112px 0;border-radius:40px"
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:56px;align-items:center">
         <figure style="margin:0">
-          <div
-            style="position:relative;border-radius:40px;overflow:hidden;background:#FFFFFF;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)"
+          {/* El libro entero lleva al mismo sitio que el botón. El QR va dentro del
+              enlace para que pulsarlo no quede muerto; como código sigue siendo
+              escaneable y conserva su fondo claro por contraste. */}
+          <a
+            data-libro
+            href="https://jsj.top/f/OLppJ8"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="position:relative;display:block"
           >
             <Image
               src={libroImg}
-              widths={[520, 1040]}
-              sizes="(max-width:900px) 100vw, 42vw"
+              widths={[620, 1240]}
+              sizes="(max-width:900px) 100vw, 50vw"
               loading="lazy"
               decoding="async"
               alt="Portada y contraportada del libro Ortodoncia con alineadores, de la Dra. Isabel Vélez"
               style="width:100%;height:auto;display:block"
             />
-            {/* El QR se apoya en la esquina, dentro del padding de la tarjeta: así
-                nunca pisa el borde redondeado ni se recorta. */}
             <Image
               src={qrLibroImg}
               width={110}
               loading="lazy"
               decoding="async"
-              alt="Código QR para pre-ordenar el libro"
-              style="position:absolute;left:24px;bottom:24px;width:clamp(72px,14%,110px);height:auto;display:block;border-radius:12px;background:#FFFFFF;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.10)"
+              alt=""
+              aria-hidden="true"
+              style="position:absolute;left:0;bottom:0;width:clamp(72px,14%,110px);height:auto;display:block;border-radius:12px;background:#FFFFFF;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.10)"
             />
-          </div>
+            <span class="vh">Pre-ordenar el libro (se abre en una pestaña nueva)</span>
+          </a>
         </figure>
         <div>
           <h2
@@ -331,10 +416,11 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
           <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
             <a
               data-primary
+              data-primary-claro
               href="https://jsj.top/f/OLppJ8"
               target="_blank"
               rel="noopener noreferrer"
-              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#000000;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms var(--ease),box-shadow 300ms var(--ease)"
+              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;font-size:18.66px;font-weight:600;transition:background 300ms var(--ease),box-shadow 300ms var(--ease)"
               >Pre-ordenar el libro<span data-arrow style="display:inline-block;transition:transform 300ms var(--ease)">→</span
               ><span class="vh"> (se abre en una pestaña nueva)</span></a
             >
@@ -347,14 +433,57 @@ const MEMBRESIAS = ['SEDO', 'EAS', 'IASAO', 'CIRNO'];
     </div>
   </section>
 
-  <section data-sec aria-labelledby="casos-t" style="background:#F7F7F7;padding:128px 0">
-    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      {/* Título y tarjeta lateral viven dentro de la isla: el selector de casos
-          va junto al título y la tarjeta cuenta el caso visible, así que ambos
-          necesitan el mismo estado que el comparador. */}
-      <AntesDespues client:visible />
-    </div>
-  </section>
-
   <CtaFinal />
 </Base>
+
+<style>
+  /* Escritorio: el muro de siempre. `columns` con ancho decide solo cuántas
+     caben y cada foto conserva su proporción. */
+  [data-conf] {
+    position: relative;
+  }
+  [data-conf-pista] {
+    columns: 240px;
+    column-gap: 20px;
+  }
+  [data-conf-pista] > figure {
+    margin: 0 0 20px;
+    break-inside: avoid;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+  [data-conf] button {
+    display: none;
+  }
+
+  /* Móvil: una cada vez, más pequeña y con su alto natural, no recortada a una
+     proporción común. Pasa sola (ui.ts) y con el dedo o las flechas. */
+  @media (max-width: 560px) {
+    [data-conf] {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    [data-conf-pista] {
+      columns: auto;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    [data-conf-pista]::-webkit-scrollbar {
+      display: none;
+    }
+    [data-conf-pista] > figure {
+      flex: 0 0 100%;
+      margin: 0;
+      scroll-snap-align: start;
+    }
+    [data-conf] button {
+      display: flex;
+    }
+  }
+</style>

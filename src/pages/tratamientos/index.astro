@@ -2,8 +2,10 @@
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Acordeon from '../../islands/Acordeon';
-import { SITE, CONTACTO } from '../../data/site';
+import { SITE } from '../../data/site';
 import { TRATAMIENTOS, FAQ } from '../../data/tratamientos';
+import { TESTIMONIOS } from '../../data/testimonios';
+import CtaFinal from '../../components/CtaFinal.astro';
 
 import esteticaImg from '../../assets/sonris/tratamientos/Estetica-Dental-Ozkan.webp';
 import implantesImg from '../../assets/sonris/tratamientos/Implantes-Dentales-1.webp';
@@ -35,6 +37,13 @@ const FOTOS: Record<string, ImageMetadata> = {
 };
 
 const ruta = '/tratamientos/';
+
+// Los vídeos llegan como enlace de YouTube en cualquiera de sus dos formatos
+// (youtu.be/ID o watch?v=ID); el ID es el último trozo en ambos.
+const VIDEOS = TESTIMONIOS.map((t) => ({
+  titulo: t.titulo,
+  src: `https://www.youtube-nocookie.com/embed/${t.url.split(/[/=]/).pop()?.split('?')[0]}?autoplay=1&rel=0`,
+}));
 
 const faqLd = {
   '@type': 'FAQPage',
@@ -68,6 +77,7 @@ const listaLd = {
   jsonLd={[listaLd, faqLd]}
 >
   <section
+    data-sec
     id="tratamientos"
     aria-labelledby="hero-t"
     style="position:relative;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%,rgba(254,225,203,0.45) 100%);padding:56px 0 96px"
@@ -98,28 +108,62 @@ const listaLd = {
             Entra en cada uno para ver cómo trabajamos.
           </p>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+        <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
           <a
             data-primary
-            href="/contacto/#formulario"
+            href="/contacto/"
             style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 30px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >Pide tu primera visita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+            >Reserva tu primera visita</a
           >
-          <p style="margin:0;font-size:16px;color:#6B6B6B">Gratuita y sin compromiso.</p>
+          {
+            VIDEOS.length > 0 && (
+              <button
+                type="button"
+                data-secondary
+                data-abre-testimonios
+                style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
+              >
+                Ver testimonios
+              </button>
+            )
+          }
+          <p style="flex:1 1 100%;margin:0;font-size:16px;color:#6B6B6B">Gratuita y sin compromiso.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section data-sec aria-label="Nuestros tratamientos" style="background:#F7F7F7;padding:112px 0">
+  <nav data-overlap data-solo-ancha aria-label="Los siete tratamientos" style="position:relative;z-index:5;max-width:1240px;margin:-64px auto 0;padding:0 40px">
+    <div style="background:#FFFFFF;border-radius:40px;box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10);padding:20px 24px">
+      <ul style="margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px">
+        {TRATAMIENTOS.map((t) => (
+          <li style="flex:1 1 auto">
+            <a href={`#${t.slug}`} style="width:100%;justify-content:center;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:15px;font-weight:500">
+              {t.nombre}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+
+  <section
+    data-sec
+    data-overlap-pull
+    aria-label="Nuestros tratamientos"
+    style="background:#F7F7F7;padding:176px 0 112px;margin-top:-64px"
+  >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       {
         TRATAMIENTOS.map((t, i) => {
           const textoIzquierda = i % 2 === 0;
           const figura = (
             <figure style={`margin:0;grid-column:${textoIzquierda ? 2 : 1};grid-row:1`}>
+              {/* Mismo destino que el enlace de texto: fuera del orden de foco y
+                  del lector de pantalla para no anunciar dos veces lo mismo. */}
+              <a href={`/tratamientos/${t.slug}/`} tabindex="-1" aria-hidden="true" style="display:block">
               <div
-                style={`position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;border:6px solid transparent;background-image:url(${TEXTURAS[i % TEXTURAS.length].src}),repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);background-size:48px 48px,auto;background-origin:border-box,padding-box;background-clip:border-box,padding-box;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)`}
+                style={`position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;border:12px solid transparent;background-image:url(${TEXTURAS[i % TEXTURAS.length].src}),repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);background-size:48px 48px,auto;background-origin:border-box,padding-box;background-clip:border-box,padding-box;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)`}
               >
                 <Image
                   src={FOTOS[t.slug]}
@@ -131,6 +175,7 @@ const listaLd = {
                   style="width:100%;height:100%;object-fit:cover;display:block"
                 />
               </div>
+              </a>
             </figure>
           );
           const texto = (
@@ -164,48 +209,74 @@ const listaLd = {
     </div>
   </section>
 
-  <section data-sec id="formulario" aria-labelledby="cta-t" style="padding:112px 0">
-    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div
-        data-peach
-        data-cta-caja
-        data-textura
-        style="background-color:#FEE1CB;--velo:rgba(254,225,203,0.9);border-radius:40px;padding:56px;display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between"
-      >
-        <div>
-          <h2
-            data-h2-grande
-            id="cta-t"
-            style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
-          >
-            Cuéntanos qué te preocupa
-          </h2>
-          <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A;max-width:52ch">
-            Primera visita gratuita, sin compromiso. {CONTACTO.horario}, en {CONTACTO.calle}.
-          </p>
+  {
+    VIDEOS.length > 0 && (
+      <dialog data-dlg-video data-dlg-testimonios aria-label="Testimonios de pacientes">
+        <button type="button" data-dlg-cerrar aria-label="Cerrar los testimonios">
+          ✕
+        </button>
+        <div data-dlg-slot />
+        <div data-dlg-pie>
+          <button type="button" data-testi-ir="-1" aria-label="Testimonio anterior">
+            ←
+          </button>
+          {/* aria-live: con lector de pantalla se oye a quién se está viendo. */}
+          <p data-testi-info aria-live="polite" />
+          <button type="button" data-testi-ir="1" aria-label="Testimonio siguiente">
+            →
+          </button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <a
-            data-primary
-            href="/contacto/#formulario"
-            style="display:inline-flex;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >Pide tu cita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
-          >
-          <p style="margin:0;font-size:16px;color:#1A1A1A">
-            o llámanos al <a href={`tel:${CONTACTO.telefonoE164}`} style="color:#E76B0B;font-weight:500">{CONTACTO.telefono}</a>
-          </p>
-        </div>
-      </div>
+      </dialog>
+    )
+  }
 
-      <p style="margin:32px 0 0;font-size:17px;line-height:1.7;color:#6B6B6B">
-        ¿Ya te has tratado con nosotros? Consulta las{' '}
-        <a data-underline href="/indicaciones-post-tratamiento/" style="color:#1A1A1A;font-weight:500">
-          indicaciones post-tratamiento
-        </a>{' '}
-        para los días siguientes a la intervención.
-      </p>
-    </div>
-  </section>
+  {
+    VIDEOS.length > 0 && (
+      <script define:vars={{ VIDEOS }}>
+        // El <dialog> nativo ya trae Esc, el foco atrapado y el velo. Aquí solo
+        // se cambia de vídeo y se vacía el hueco al cerrar: si no, el vídeo se
+        // queda sonando de fondo.
+        const dlg = document.querySelector('[data-dlg-testimonios]');
+        const slot = dlg.querySelector('[data-dlg-slot]');
+        const info = dlg.querySelector('[data-testi-info]');
+        let i = 0;
+
+        const pintar = () => {
+          const v = VIDEOS[i];
+          slot.innerHTML =
+            '<iframe src="' + v.src + '" title="' + v.titulo + '" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>';
+          info.textContent = v.titulo + ' · ' + (i + 1) + ' de ' + VIDEOS.length;
+        };
+
+        document.querySelectorAll('[data-abre-testimonios]').forEach((b) =>
+          b.addEventListener('click', () => {
+            i = 0;
+            pintar();
+            dlg.showModal();
+          })
+        );
+        dlg.querySelectorAll('[data-testi-ir]').forEach((b) =>
+          b.addEventListener('click', () => {
+            i = (i + Number(b.dataset.testiIr) + VIDEOS.length) % VIDEOS.length;
+            pintar();
+          })
+        );
+        dlg.querySelector('[data-dlg-cerrar]').addEventListener('click', () => dlg.close());
+        dlg.addEventListener('click', (e) => e.target === dlg && dlg.close());
+        dlg.addEventListener('close', () => (slot.innerHTML = ''));
+      </script>
+    )
+  }
+
+  <CtaFinal>
+    <p style="margin:32px 0 0;font-size:17px;line-height:1.7;color:#6B6B6B">
+      ¿Ya te has tratado con nosotros? Consulta las{' '}
+      <a data-underline href="/indicaciones-post-tratamiento/" style="color:#1A1A1A;font-weight:500">
+        indicaciones post-tratamiento
+      </a>{' '}
+      para los días siguientes a la intervención.
+    </p>
+  </CtaFinal>
 
   <section data-sec id="faq" aria-labelledby="faq-t" style="background:#F7F7F7;padding:112px 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">

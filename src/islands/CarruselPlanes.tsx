@@ -10,7 +10,9 @@ const DUR = 620;
 const ANCHO = { ancha: 380, estrecha: 268 };
 const ESTRECHA = '(max-width: 560px)';
 
-/** Los cinco planes. El activo recupera opacidad y lleva el borde ámbar de 2px;
+const NARANJA = '#E76B0B';
+
+/** Los cinco planes. El activo va en naranja con el texto en blanco;
  *  el recomendado se distingue por el badge «El más elegido». */
 export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
   const inicial = Math.max(0, planes.findIndex((p) => p.recomendado));
@@ -87,37 +89,14 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                 width: ancho,
                 opacity: activo ? 1 : 0.45,
                 position: 'relative',
-                marginTop: p.recomendado ? -16 : 0,
-                background: '#FFFFFF',
+                background: activo ? NARANJA : '#FFFFFF',
                 borderRadius: 40,
-                border: activo ? '2px solid #E76B0B' : '1px solid rgba(0,0,0,0.08)',
+                border: activo ? `2px solid ${NARANJA}` : '1px solid rgba(0,0,0,0.08)',
                 padding: ancho === ANCHO.ancha ? 36 : 28,
-                boxShadow: activo ? '0 20px 52px rgba(0,0,0,.055)' : '0 12px 36px rgba(0,0,0,.03)',
-                transition: ['opacity', 'box-shadow'].map((pr) => `${pr} ${DUR}ms ${EASE}`).join(', '),
+                boxShadow: activo ? '0 8px 20px rgba(231,107,11,.28), 0 24px 56px rgba(0,0,0,.12)' : '0 12px 36px rgba(0,0,0,.03)',
+                transition: ['opacity', 'box-shadow', 'background', 'border-color'].map((pr) => `${pr} ${DUR}ms ${EASE}`).join(', '),
               }}
             >
-              {p.recomendado && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: -14,
-                    left: 36,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: '#FFBC7D',
-                    color: '#000000',
-                    borderRadius: 9999,
-                    padding: '6px 14px',
-                    fontSize: 11,
-                    fontWeight: 500,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  ★ El más elegido
-                </span>
-              )}
               <h3
                 style={{
                   margin: p.recomendado ? '0 0 8px' : '0 0 20px',
@@ -125,17 +104,27 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                   fontWeight: 600,
                   fontSize: 24,
                   letterSpacing: '-0.02em',
-                  color: '#000000',
+                  color: activo ? '#FFFFFF' : '#000000',
                 }}
               >
                 {p.nombre}
               </h3>
-              {p.recomendado && <p style={{ margin: '0 0 20px', fontSize: 15, fontWeight: 500, color: '#E76B0B' }}>Recomendado</p>}
+              {p.recomendado && (
+                <p style={{ margin: '0 0 20px', fontSize: 15, fontWeight: 500, color: activo ? '#FFE7D2' : '#E76B0B' }}>Recomendado</p>
+              )}
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {p.puntos.map((pt) => (
                   <li
                     key={pt.texto}
-                    style={{ display: 'flex', gap: 12, fontSize: 16, lineHeight: 1.6, color: pt.incluido ? '#1A1A1A' : '#6B6B6B' }}
+                    style={{
+                      display: 'flex',
+                      gap: 12,
+                      minWidth: 0,
+                      overflowWrap: 'anywhere',
+                      fontSize: 16,
+                      lineHeight: 1.6,
+                      color: activo ? '#FFFFFF' : pt.incluido ? '#1A1A1A' : '#6B6B6B',
+                    }}
                   >
                     <span
                       aria-hidden="true"
@@ -144,8 +133,16 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                         width: 20,
                         height: 20,
                         borderRadius: 9999,
-                        background: pt.incluido ? '#FEE1CB' : '#EFEFEF',
-                        color: pt.incluido ? '#E76B0B' : '#6B6B6B',
+                        // En la tarjeta en foco el círculo se invierte: sobre
+                        // naranja, un check naranja no se vería.
+                        background: activo
+                          ? pt.incluido
+                            ? '#FFFFFF'
+                            : 'rgba(255,255,255,0.28)'
+                          : pt.incluido
+                            ? NARANJA
+                            : '#EFEFEF',
+                        color: activo ? (pt.incluido ? NARANJA : '#FFFFFF') : pt.incluido ? '#FFFFFF' : '#6B6B6B',
                         fontSize: 12,
                         display: 'flex',
                         alignItems: 'center',
@@ -165,20 +162,23 @@ export default function CarruselPlanes({ planes }: { planes: Plan[] }) {
                   tabulable ni lo ve un lector de pantalla. */}
               <a
                 data-primary
-                href={`/contacto/?plan=${encodeURIComponent(p.nombre)}#formulario`}
+                href={`/contacto/?plan=${encodeURIComponent(p.nombre)}`}
                 aria-hidden={activo ? undefined : true}
                 tabIndex={activo ? undefined : -1}
                 style={{
                   marginTop: 28,
                   display: 'inline-flex',
-                  whiteSpace: 'nowrap',
+                  // Sin nowrap: en la tarjeta estrecha del móvil la etiqueta
+                  // medía más que la propia tarjeta y se salía por el lado.
                   alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
                   gap: 10,
                   minHeight: 48,
-                  padding: '0 26px',
+                  padding: '10px 20px',
                   borderRadius: 9999,
-                  background: '#E76B0B',
-                  color: '#FFFFFF',
+                  background: '#FFFFFF',
+                  color: '#0A0A0A',
                   fontSize: 18.66,
                   fontWeight: 600,
                   visibility: activo ? 'visible' : 'hidden',

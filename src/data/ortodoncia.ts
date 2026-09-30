@@ -2,16 +2,15 @@
 import type { ImageMetadata } from 'astro';
 import dentalMonitoring from '../assets/sonris/tratamientos/Dental-Monitoring.webp';
 import acelerador from '../assets/sonris/tratamientos/Acelerador.webp';
-import scanboxPro from '../assets/sonris/tratamientos/Producto-ScanBox-Pro.png';
 
 export const VENTAJAS = [
-  ['Estética.', 'Casi nadie nota que los llevas puestos.'],
-  ['Indolora.', 'Sin alambres ni brackets que rocen.'],
-  ['Predecible.', 'El plan se ve entero antes de empezar.'],
+  ['Estéticos.', 'Casi nadie nota que los llevas puestos.'],
+  ['Indoloros.', 'Sin alambres ni brackets que rocen.'],
+  ['Predecibles.', 'El plan se ve entero antes de empezar.'],
   ['De fácil uso.', 'Te los pones y los quitas tú.'],
-  ['Cómoda.', 'Hecha a la forma exacta de tus dientes.'],
-  ['Precisa.', 'Cada movimiento se planifica en digital.'],
-  ['Higiénica.', 'Te cepillas y usas el hilo como siempre.'],
+  ['Cómodos.', 'Hechos a la forma exacta de tus dientes.'],
+  ['Precisos.', 'Cada movimiento se planifica en digital.'],
+  ['Higiénicos.', 'Te cepillas y usas el hilo como siempre.'],
   ['Sin alergias.', 'Material sin metal.'],
 ] as const;
 
@@ -118,7 +117,6 @@ export const TECNOLOGIA: {
     texto: 'Una app en tu móvil que monitoriza el tratamiento cada semana y minimiza el número de visitas.',
     video: 'https://youtu.be/eOVLFONmDng',
     imagen: dentalMonitoring,
-    flotante: scanboxPro,
   },
   {
     titulo: 'Acelerador',

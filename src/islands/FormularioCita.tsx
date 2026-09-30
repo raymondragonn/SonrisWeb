@@ -2,7 +2,7 @@ import { useEffect, useId, useState, type CSSProperties, type FormEvent } from '
 import Aviso, { type AvisoDatos } from './Aviso';
 
 type Canal = 'whatsapp' | 'correo';
-type Campo = 'nombre' | 'contacto' | 'motivo' | 'rgpd';
+type Campo = 'nombre' | 'contacto' | 'motivos' | 'rgpd';
 
 /** Endpoint de Formspree. Es público por diseño (va en el HTML), pero sin él el
  *  formulario no entrega: el envío avisa y ofrece teléfono y correo. */
@@ -16,19 +16,28 @@ const CANALES: { valor: Canal; etiqueta: string; ayuda: string }[] = [
 ];
 
 /** La pregunta que de verdad ordena la primera visita: con qué viene el
- *  paciente. Va en botones porque escribirlo cuesta y elegirlo no. */
+ *  paciente. Va en botones porque escribirlo cuesta y elegirlo no, y admite
+ *  varias: casi nadie viene por una sola cosa. */
 const MOTIVOS = [
   'Alinearme los dientes',
   'Corregirme la mordida',
+  'Ortodoncia para un hijo',
   'El color o la forma',
+  'Recuperar un diente',
+  'Encías o limpieza',
   'Una revisión o una molestia',
+  'Una segunda opinión',
   'No lo sé',
 ];
+
+/** Marcarlo descarta el resto, y marcar cualquier otro lo descarta a él: en el
+ *  aviso que llega a clínica, «no lo sé» junto a tres motivos no dice nada. */
+const NINGUNO = 'No lo sé';
 
 const ERRORES: Record<Campo, string> = {
   nombre: '⚠ Escribe tu nombre para que sepamos con quién hablamos.',
   contacto: '⚠ Revisa el dato: necesitamos por dónde contestarte.',
-  motivo: '⚠ Elige con qué vienes: es lo que nos sirve para prepararte la visita.',
+  motivos: '⚠ Elige con qué vienes: es lo que nos sirve para prepararte la visita.',
   rgpd: '⚠ Marca la casilla para que podamos tratar tus datos y contestarte.',
 };
 
@@ -86,7 +95,7 @@ const ESTILO_PILDORA = (marcada: boolean): CSSProperties => ({
   cursor: 'pointer',
 });
 
-const VACIO = { nombre: '', contacto: '', motivo: '', mensaje: '', rgpd: false };
+const VACIO = { nombre: '', contacto: '', motivos: [] as string[], mensaje: '', rgpd: false };
 
 export default function FormularioCita({
   email,
@@ -115,7 +124,7 @@ export default function FormularioCita({
   useEffect(() => {
     const plan = new URLSearchParams(location.search).get('plan')?.replace(/\s+/g, ' ').trim().slice(0, 60);
     if (plan) {
-      setValores((v) => ({ ...v, motivo: MOTIVOS[0], mensaje: `Me interesa el plan ${plan}.` }));
+      setValores((v) => ({ ...v, motivos: [MOTIVOS[0]], mensaje: `Me interesa el plan ${plan}.` }));
     }
   }, []);
 
@@ -125,8 +134,8 @@ export default function FormularioCita({
         return valores.nombre.trim().length > 1;
       case 'contacto':
         return porWhatsApp ? valores.contacto.replace(/\D/g, '').length >= 9 : /.+@.+\..+/.test(valores.contacto);
-      case 'motivo':
-        return valores.motivo !== '';
+      case 'motivos':
+        return valores.motivos.length > 0;
       case 'rgpd':
         return valores.rgpd;
     }
@@ -169,7 +178,7 @@ export default function FormularioCita({
     e.preventDefault();
     if (enviando) return;
 
-    const primero = revisar(['nombre', 'contacto', 'motivo', 'rgpd']);
+    const primero = revisar(['nombre', 'contacto', 'motivos', 'rgpd']);
     if (primero) {
       enfocar(primero);
       setAviso({
@@ -202,7 +211,7 @@ export default function FormularioCita({
           nombre: valores.nombre.trim(),
           [porWhatsApp ? 'telefono' : 'email']: valores.contacto.trim(),
           responder_por: porWhatsApp ? 'WhatsApp' : 'Correo',
-          vengo_por: valores.motivo,
+          vengo_por: valores.motivos.join(', '),
           mensaje: valores.mensaje.trim(),
           origen,
           _subject: `Cita en Sonris · ${valores.nombre.trim()}`,
@@ -325,31 +334,39 @@ export default function FormularioCita({
 
         <fieldset style={{ border: 'none', margin: '0 0 24px', padding: 0 }}>
           <legend style={{ ...ESTILO_ETIQUETA, padding: 0 }}>
-            ¿Con qué vienes?
+            ¿Con qué vienes? <span style={{ color: '#6B6B6B', fontWeight: 400 }}>(las que quieras)</span>
             <Obligatorio />
           </legend>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
             {MOTIVOS.map((m, i) => (
-              <label key={m} style={ESTILO_PILDORA(valores.motivo === m)}>
+              <label key={m} style={ESTILO_PILDORA(valores.motivos.includes(m))}>
                 <input
                   // El id va en el primero para que el foco del error caiga aquí.
-                  id={i === 0 ? id('motivo') : undefined}
-                  type="radio"
-                  name={id('motivo-grupo')}
+                  id={i === 0 ? id('motivos') : undefined}
+                  type="checkbox"
                   value={m}
-                  checked={valores.motivo === m}
-                  onChange={() => setValores((v) => ({ ...v, motivo: m }))}
-                  aria-invalid={errores.motivo ? 'true' : 'false'}
-                  aria-describedby={errores.motivo ? id('e-motivo') : undefined}
+                  checked={valores.motivos.includes(m)}
+                  onChange={() =>
+                    setValores((v) => ({
+                      ...v,
+                      motivos: v.motivos.includes(m)
+                        ? v.motivos.filter((x) => x !== m)
+                        : m === NINGUNO
+                          ? [m]
+                          : [...v.motivos.filter((x) => x !== NINGUNO), m],
+                    }))
+                  }
+                  aria-invalid={errores.motivos ? 'true' : 'false'}
+                  aria-describedby={errores.motivos ? id('e-motivos') : undefined}
                   style={{ width: 20, height: 20, accentColor: '#E76B0B', margin: 0 }}
                 />
                 {m}
               </label>
             ))}
           </div>
-          {errores.motivo && (
-            <p id={id('e-motivo')} style={ESTILO_ERROR}>
-              {ERRORES.motivo}
+          {errores.motivos && (
+            <p id={id('e-motivos')} style={ESTILO_ERROR}>
+              {ERRORES.motivos}
             </p>
           )}
         </fieldset>
@@ -448,7 +465,7 @@ export default function FormularioCita({
             opacity: enviando ? 0.7 : 1,
           }}
         >
-          {enviando ? 'Enviando…' : 'Quiero mi primera visita gratuita'}
+          {enviando ? 'Enviando…' : 'Quiero mi primera visita GRATUITA'}
         </button>
       </form>
 

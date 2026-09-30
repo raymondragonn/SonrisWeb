@@ -1,8 +1,9 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import CtaFinal from '../../components/CtaFinal.astro';
 import { SITE } from '../../data/site';
+import fondoBeneficios from '../../assets/sonris/iconos/fondo-memphis-tratamientos.png';
 import { TRATAMIENTOS, type Tratamiento } from '../../data/tratamientos';
 import odontologiaHero from '../../assets/sonris/tratamientos/Odontologia-General-Ozkan.webp';
 import periodonciaHero from '../../assets/sonris/tratamientos/Periodoncia-Ozkan.webp';
@@ -10,10 +11,10 @@ import cirugiaOralHero from '../../assets/sonris/tratamientos/Cirugia-Oral-Angel
 import esteticaHero from '../../assets/sonris/tratamientos/Estetica-Dental-Ozkan.webp';
 import ortognaticaHero from '../../assets/sonris/tratamientos/Cirugia-Ortognatica-Render.webp';
 import endodonciaHero from '../../assets/sonris/tratamientos/Endodoncia-Render.webp';
+import implantesHero from '../../assets/sonris/tratamientos/Implantes-Dentales-1.webp';
 
 // Foto de cabecera por tratamiento, la misma que su tarjeta en la home y en el
-// hub. Implantes dentales es el único que sigue con el fondo liso, así que
-// darle la suya es una línea en este mapa.
+// hub.
 const HEROS: Record<string, ImageMetadata> = {
   'odontologia-general': odontologiaHero,
   periodoncia: periodonciaHero,
@@ -21,6 +22,7 @@ const HEROS: Record<string, ImageMetadata> = {
   'estetica-dental': esteticaHero,
   'cirugia-ortognatica': ortognaticaHero,
   endodoncia: endodonciaHero,
+  'implantes-dentales': implantesHero,
 };
 
 export function getStaticPaths() {
@@ -30,6 +32,7 @@ export function getStaticPaths() {
 const { t } = Astro.props as { t: Tratamiento };
 const ruta = `/tratamientos/${t.slug}/`;
 const hero = HEROS[t.slug];
+const fondo = await getImage({ src: fondoBeneficios, width: 1672, format: 'webp' });
 
 // Pestañas y variantes se pintan igual, uno debajo de otro. Ningún tratamiento
 // llena las dos listas; concatenar evita tener que elegir.
@@ -56,12 +59,14 @@ const procedimientoLd = {
   jsonLd={[procedimientoLd]}
 >
   <section id="inicio" aria-labelledby="hero-t" style="position:relative;overflow:hidden;background:#000000">
-    <div data-herobox style="position:relative;width:100%;aspect-ratio:16/9;max-height:88vh;overflow:hidden">
+    <div data-herobox data-hero-corto style="position:relative;width:100%;aspect-ratio:21/9;max-height:68vh;overflow:hidden">
       {
         hero ? (
           <Image
             src={hero}
             alt={`${t.nombre} en la clínica Sonris`}
+            widths={[640, 1080, 1600]}
+            sizes="100vw"
             width={1600}
             height={900}
             loading="eager"
@@ -82,7 +87,7 @@ const procedimientoLd = {
       }
       <div
         aria-hidden="true"
-        style="position:absolute;inset:0;background:rgba(0,0,0,0.62);background-image:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.25) 55%,rgba(0,0,0,0.55) 100%)"
+        style="position:absolute;inset:0;background-image:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.25) 55%,rgba(0,0,0,0.55) 100%)"
       >
       </div>
       <div
@@ -95,15 +100,15 @@ const procedimientoLd = {
             id="hero-t"
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:60px;line-height:1.05;letter-spacing:-0.02em;color:#FFFFFF;max-width:16ch"
           >
-            {t.h1}
+            {t.nombre}
           </h1>
           <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:rgba(255,255,255,0.88);max-width:46ch">{t.entradilla}</p>
-          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+          <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
             <a
               data-primary
-              href="/contacto/#formulario"
-              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Pide tu cita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+              href="/contacto/"
+              style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+              >{t.cta}</a
             >
           </div>
         </div>
@@ -117,11 +122,11 @@ const procedimientoLd = {
         <ul style="margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px">
           {
             TRATAMIENTOS.map((o) => (
-              <li>
+              <li style="flex:1 1 auto">
                 <a
                   href={`/tratamientos/${o.slug}/`}
                   aria-current={o.slug === t.slug ? 'page' : undefined}
-                  style={`display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:9999px;background:${o.slug === t.slug ? '#FEE1CB' : '#FFFFFF'};border:${o.slug === t.slug ? '2px solid #E76B0B' : '1px solid rgba(0,0,0,0.08)'};color:#1A1A1A;font-size:15px;font-weight:500`}
+                  style={`display:inline-flex;align-items:center;width:100%;justify-content:center;white-space:nowrap;min-height:44px;padding:0 18px;border-radius:9999px;background:${o.slug === t.slug ? '#FEE1CB' : '#FFFFFF'};border:${o.slug === t.slug ? '2px solid #E76B0B' : '1px solid rgba(0,0,0,0.08)'};color:#1A1A1A;font-size:15px;font-weight:500`}
                 >
                   {o.nombre}
                 </a>
@@ -175,7 +180,7 @@ const procedimientoLd = {
       >
         {t.tiposTitulo}
       </h2>
-      <p style="margin:0 0 48px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">{t.tiposEntradilla}</p>
+      {t.tiposEntradilla && <p style="margin:0 0 48px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">{t.tiposEntradilla}</p>}
 
       {/* Zigzag: cada panel deja aire a un lado, alternando. En móvil el ancho
           vuelve al 100% desde global.css. */}
@@ -198,7 +203,12 @@ const procedimientoLd = {
     </div>
   </section>
 
-  <section data-sec id="beneficios" data-peach aria-labelledby="ben-t" style="background:#FEE1CB;padding:104px 0 128px;border-radius:40px">
+  <section
+    data-sec
+    id="beneficios"
+    aria-labelledby="ben-t"
+    style={`background-color:#CCE1E4;background-image:url(${fondo.src});background-size:cover;background-position:center;padding:104px 0 128px;border-radius:40px`}
+  >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <h2
         data-h2-grande
@@ -210,12 +220,12 @@ const procedimientoLd = {
       <p style="margin:0 0 48px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">
         Tres cosas que valen para cualquier tratamiento que hagas con nosotros.
       </p>
-      <div data-3col style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px">
+      <div data-3col data-apretado style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px">
         {
           /* Sin icono: los 76px extra de padding superior (56 del cuadro + 20 de
              su margen) mantienen la card a la altura y el texto en el sitio de antes. */
           [
-            ['Primera visita gratuita', 'Valoramos tu caso sin compromiso, y decides después.'],
+            ['Primera visita GRATUITA', 'Valoramos tu caso sin compromiso, y decides después.'],
             ['Plan y presupuesto por escrito', 'Sabes qué se va a hacer y qué cuesta antes de empezar.'],
             ['Todo en la misma clínica', 'En Avenida Isabel de Valois 55, con el mismo equipo de siempre.'],
           ].map(([titulo, texto]) => (
@@ -233,32 +243,28 @@ const procedimientoLd = {
 
   <section data-sec id="cruce" aria-labelledby="cruce-t" style="padding:112px 0 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div
-        data-2col
-        data-caja style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:center;background:#F7F7F7;border-radius:40px;padding:56px"
-      >
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:start">
         <div>
           <h2
+            data-h2-grande
             id="cruce-t"
-            style="margin:0 0 14px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:36px;line-height:1.15;letter-spacing:-0.02em;color:#000000;max-width:20ch"
+            style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
             {t.cruce.titulo}
           </h2>
           <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:52ch">{t.cruce.texto}</p>
         </div>
-        <!-- Los dos enlaces comparten fila; envuelven solos si la etiqueta del
-             cruce es larga o la caja se estrecha. -->
-        <div style="display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center">
+        <aside style="background:#F7F7F7;border-radius:40px;padding:36px">
+          <h3 style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;letter-spacing:-0.02em;color:#000000">
+            {t.cruce.etiqueta}
+          </h3>
           <a
             data-primary
             href={t.cruce.href}
-            style="display:inline-flex;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >{t.cruce.etiqueta}<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+            style="display:inline-flex;white-space:nowrap;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
+            >Conocer los alineadores<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
           >
-          <a data-underline href="/tratamientos/" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:500;color:#1A1A1A"
-            >Ver todos<span class="vh"> los tratamientos</span> <span>→</span></a
-          >
-        </div>
+        </aside>
       </div>
     </div>
   </section>

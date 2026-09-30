@@ -9,7 +9,7 @@ import { CONTACTO, DIRECCION_MEDICA } from '../data/site';
 import { TRATAMIENTOS } from '../data/tratamientos';
 import { RESUMEN } from '../data/resenas';
 
-import doctoraImg from '../assets/sonris/equipo/Isabel-Velez.webp';
+import doctoraImg from '../assets/sonris/equipo/Isabel-Velez-alineadores.jpg';
 import esteticaImg from '../assets/sonris/tratamientos/Estetica-Dental-Ozkan.webp';
 import implantesImg from '../assets/sonris/tratamientos/Implantes-Dentales-2.webp';
 import ortognaticaImg from '../assets/sonris/tratamientos/Cirugia-Ortognatica-Render.webp';
@@ -62,8 +62,8 @@ const foco = await Promise.all(
            parpadeo mientras llega el mp4. -->
       <div data-giro style="position:absolute;inset:0;pointer-events:none">
         <video
-          src="/video/alineador-giro.mp4"
-          poster="/img/alineador-poster.webp"
+          src="/video/alineador-completo.mp4"
+          poster="/img/alineador-completo-poster.webp"
           autoplay
           muted
           loop
@@ -90,14 +90,14 @@ const foco = await Promise.all(
             Sonríe sin <span style="color:#E76B0B">notarlo</span>
           </h1>
           <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:#1A1A1A;max-width:40ch">
-            Ortodoncia invisible en Sanchinarro. Primera visita gratuita.
+            Ortodoncia invisible en Sanchinarro. Primera visita GRATUITA.
           </p>
-          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+          <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
             <a
               data-primary
-              href="/contacto/#formulario"
+              href="/contacto/"
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Pide tu cita<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+              >Reserva tu primera visita</a
             >
             <a
               href={CONTACTO.whatsappUrl}
@@ -113,6 +113,7 @@ const foco = await Promise.all(
   <section data-overlap aria-label="Sonris en cifras" style="position:relative;z-index:5;max-width:1240px;margin:-64px auto 0;padding:0 40px">
     <div
       data-trust
+      data-auto-carrusel="4500"
       data-lamina
       data-lamina-xl
       style="background:#FFFFFF;border-radius:40px;box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10);padding:40px 16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))"
@@ -125,7 +126,7 @@ const foco = await Promise.all(
         >
           +25
         </p>
-        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">años de trayectoria dedicados a la ortodoncia</p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">años en ortodoncia</p>
       </div>
       <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
         <p
@@ -133,16 +134,14 @@ const foco = await Promise.all(
         >
           Solo alineadores
         </p>
-        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">dedicación exclusiva a la ortodoncia invisible</p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">dedicación exclusiva</p>
       </div>
       <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
         <span
-          style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px"
-          >◆ Diamond provider</span
+          style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px"
+          >Diamond provider</span
         >
-        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">
-          Máxima categoría de proveedor de ortodoncia invisible
-        </p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">máxima categoría de proveedor</p>
       </div>
       <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
         <a href="#resenas" style="display:block;color:inherit">
@@ -156,7 +155,7 @@ const foco = await Promise.all(
             >
           </p>
           <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">
-            <span data-count-to={RESUMEN.total}>{RESUMEN.total}</span> reseñas en Google Maps
+            <span data-count-to={RESUMEN.total}>{RESUMEN.total}</span> reseñas en Google
             <span aria-hidden="true">→</span>
           </p>
           <span class="vh">{media} de 5 sobre {RESUMEN.total} reseñas. Ir a la sección de reseñas</span>
@@ -167,23 +166,7 @@ const foco = await Promise.all(
 
   <section data-sec id="ortodoncia" aria-labelledby="orto-t" style="padding:128px 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:72px;align-items:center">
-        <figure style="margin:0">
-          <div
-            style="position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
-          >
-            <Image
-              data-cardimg
-              src={alineadorImg}
-              widths={[600, 1000]}
-              sizes="(max-width:900px) 100vw, 50vw"
-              loading="lazy"
-              decoding="async"
-              alt="Paciente colocándose un alineador transparente"
-              style="width:100%;height:100%;object-fit:cover;display:block"
-            />
-          </div>
-        </figure>
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:56px;align-items:center">
         <div>
           <h2
             data-h2-grande
@@ -208,6 +191,23 @@ const foco = await Promise.all(
             ></a
           >
         </div>
+        <figure style="margin:0">
+          <div
+            data-circulo-movil
+            style="position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
+          >
+            <Image
+              data-cardimg
+              src={alineadorImg}
+              widths={[520, 1040]}
+              sizes="(max-width:560px) 240px, (max-width:900px) 92vw, 42vw"
+              loading="lazy"
+              decoding="async"
+              alt="Paciente colocándose un alineador transparente"
+              style="width:100%;height:100%;object-fit:cover;display:block"
+            />
+          </div>
+        </figure>
       </div>
     </div>
   </section>
@@ -251,12 +251,12 @@ const foco = await Promise.all(
             <Image
               data-portrait
               src={doctoraImg}
-              widths={[400, 669]}
+              widths={[500, 1000]}
               sizes="(max-width:900px) 100vw, 40vw"
               loading="lazy"
               decoding="async"
               alt={`${DIRECCION_MEDICA.nombre}, directora médica de Sonris`}
-              style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.28);transform-origin:center 30%"
+              style="width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block"
             />
             <div
               data-lamina
