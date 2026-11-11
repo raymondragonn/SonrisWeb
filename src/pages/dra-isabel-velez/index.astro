@@ -342,6 +342,7 @@ const CONFERENCIAS = [
             ].map(([ir, etiqueta, glifo, lado]) => (
               <button
                 type="button"
+                data-secondary
                 data-ir={ir}
                 aria-label={etiqueta}
                 style={`position:absolute;top:50%;${lado};transform:translateY(-50%);align-items:center;justify-content:center;width:40px;height:40px;border-radius:9999px;background:rgba(255,255,255,0.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.08);font-size:20px;line-height:1;color:#1A1A1A;cursor:pointer`}

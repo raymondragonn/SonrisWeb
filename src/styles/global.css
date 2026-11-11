@@ -311,12 +311,61 @@ article[id] {
 [data-wa]:focus-visible {
   transform: scale(1.12);
 }
-[data-secondary]:hover {
-  background: #fee1cb;
-  border-color: #E76B0B;
+/* Hover de todos los botones del sitio. !important: casi todos llevan fondo y
+   borde en su style en línea, que si no ganaría al hover (el secundario solo
+   movía la flecha). Superficie clara: melocotón y borde naranja. */
+[data-secondary]:hover,
+[data-planes-paso]:hover,
+[data-ad-paso]:hover,
+[data-ad-ir]:not([aria-current='true']):hover,
+[data-tec-cerrar]:hover,
+[data-dlg-cerrar]:hover {
+  background: #fee1cb !important;
+  border-color: #e76b0b !important;
+  color: #1a1a1a !important;
 }
 [data-secondary]:hover [data-arrow] {
   transform: translateX(4px);
+}
+/* Los que no traen transición en línea entran suaves (la de línea, si la hay, manda). */
+[data-secondary],
+[data-planes-paso],
+[data-ad-paso],
+[data-ad-ir],
+[data-tec-cerrar],
+[data-dlg-cerrar] {
+  transition:
+    background 300ms var(--ease),
+    border-color 300ms var(--ease);
+}
+/* Sobre fondo oscuro (footer, vídeo del hero): se aclara el cristal y el
+   borde pasa a blanco pleno. */
+[data-secondary-oscuro],
+[data-dlg-pie] button {
+  transition:
+    background 300ms var(--ease),
+    border-color 300ms var(--ease);
+}
+[data-secondary-oscuro]:hover,
+[data-dlg-pie] button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: #ffffff !important;
+}
+/* Puntos de los carruseles: el que se apunta se enciende en naranja. */
+[data-planes-ir]:hover > span,
+[data-punto]:hover > span {
+  background: #e76b0b !important;
+}
+/* Enlaces del menú móvil. */
+[data-menu-enlace]:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+/* Portada de vídeo: el botón de play crece un poco. */
+button[data-video] > span[aria-hidden='true'] {
+  transition: transform 300ms var(--ease);
+}
+button[data-video]:hover > span[aria-hidden='true'] {
+  transform: translate(-50%, -50%) scale(1.1) !important;
 }
 [data-input]:focus {
   border-color: #E76B0B;
@@ -1573,6 +1622,8 @@ main:has(> [data-fondo-pagina]) {
    del <figure>, no del marco, porque el overflow:hidden de este las recortaría
    justo por la parte que debe sobresalir. El desfase negativo de la segunda evita que se mezan al unísono,
    que delataría que comparten un solo bucle. */
+/* Solo el PNG recortado de la caja, sin círculo blanco detrás: la sombra la
+   sigue la silueta (drop-shadow), no un recuadro. */
 [data-cajacard] {
   position: absolute;
   display: flex;
@@ -1580,12 +1631,6 @@ main:has(> [data-fondo-pagina]) {
   justify-content: center;
   width: 30%;
   aspect-ratio: 1;
-  padding: 14px;
-  border-radius: 9999px;
-  background: #ffffff;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 16px 36px rgba(0, 0, 0, 0.14);
   animation: sonris-float 22s ease-in-out infinite;
 }
 [data-cajacard] img {
@@ -1593,6 +1638,7 @@ main:has(> [data-fondo-pagina]) {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.22));
 }
 [data-cajacard='sup-der'] {
   top: -38px;

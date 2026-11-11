@@ -116,6 +116,7 @@ const foco = await Promise.all(
               ><Cms k="inicio.hero.boton">Reserva tu primera visita</Cms></a
             >
             <a
+              data-secondary
               {...attrs({ href: c('contacto.whatsapp@wa', CONTACTO.whatsappUrl) })}
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1)"
               ><Cms k="inicio.hero.boton-2">WhatsApp</Cms></a
@@ -269,7 +270,7 @@ const foco = await Promise.all(
     </div>
   </section>
 
-  <section data-sec id="doctora" aria-labelledby="dra-t" style="padding:112px 0 128px">
+  <section data-sec id="doctora" aria-labelledby="dra-t" style="padding:112px 0 0;padding-bottom:24px !important">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:72px;align-items:center">
         <figure style="margin:0">

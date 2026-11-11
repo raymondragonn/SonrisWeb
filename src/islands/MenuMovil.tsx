@@ -72,6 +72,7 @@ export default function MenuMovil({
         ref={boton}
         type="button"
         data-burger
+        data-secondary
         aria-label={abierto ? t('Cerrar el menú', 'Close the menu') : t('Abrir el menú', 'Open the menu')}
         aria-expanded={abierto}
         onClick={() => setAbierto((v) => !v)}
@@ -147,6 +148,7 @@ export default function MenuMovil({
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
               <button
                 type="button"
+                data-secondary
                 aria-label={t('Cerrar el menú', 'Close the menu')}
                 onClick={() => {
                   setAbierto(false);
@@ -177,6 +179,7 @@ export default function MenuMovil({
                 {enlaces.map((e, i) => (
                   <li key={e.href}>
                     <a
+                      data-menu-enlace
                       href={e.href}
                       aria-current={e.href === actual ? 'page' : undefined}
                       onClick={() => setAbierto(false)}
@@ -199,6 +202,7 @@ export default function MenuMovil({
                 ))}
                 <li>
                   <a
+                    data-menu-enlace
                     href={hrefContacto}
                     onClick={() => setAbierto(false)}
                     style={{

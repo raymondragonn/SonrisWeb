@@ -71,6 +71,7 @@ export default function Aviso({ aviso, alCerrar }: { aviso: AvisoDatos; alCerrar
       </div>
       <button
         type="button"
+        data-secondary
         onClick={alCerrar}
         aria-label={document.documentElement.lang === 'en' ? 'Close the notice' : 'Cerrar el aviso'}
         style={{

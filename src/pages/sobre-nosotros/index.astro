@@ -4,8 +4,10 @@ import Base from '../../layouts/Base.astro';
 import CtaFinal from '../../components/CtaFinal.astro';
 import Cms from '../../components/Cms.astro';
 import CmsImage from '../../components/CmsImage.astro';
-import { c, fondo as marcaFondo } from '../../lib/cms';
-import { DIRECCION_MEDICA } from '../../data/site';
+import Faq from '../../components/Faq.astro';
+import { c, ld, fondo as marcaFondo } from '../../lib/cms';
+import { CONTACTO, DIRECCION_MEDICA, SITE } from '../../data/site';
+import { FAQ as FAQ_TRATAMIENTOS } from '../../data/tratamientos';
 import isabel from '../../assets/sonris/equipo/Isabel-Velez-recepcion.jpg';
 import heroFachada from '../../assets/sonris/clinica/fachada-equipo.jpg';
 import heroCajas from '../../assets/sonris/clinica/equipo-cajas-alineadores.jpg';
@@ -45,6 +47,41 @@ const INSTALACIONES = [
 ] as const;
 const TOUR = 'https://my.matterport.com/show/?m=tmYDb9otn5k';
 
+// Dudas sobre la clínica y el equipo, para quien pregunta a un buscador
+// generativo «quién está detrás de Sonris» o «dónde está». Todo sale de datos
+// que ya publica el sitio (site.ts, el equipo de arriba, el FAQ de
+// tratamientos): nada inventado. Mismas claves en el FAQ visible y el FAQPage.
+const FAQ = [
+  {
+    pregunta: '¿Dónde está la clínica Sonris?',
+    respuesta: `En la ${CONTACTO.calle}, ${CONTACTO.cp} ${CONTACTO.ciudad}, en el barrio de ${CONTACTO.barrio} (${CONTACTO.distrito}).`,
+  },
+  {
+    pregunta: '¿Quién dirige Sonris?',
+    respuesta: `La ${DIRECCION_MEDICA.nombre}, directora médica (nº de colegiado ${DIRECCION_MEDICA.colegiado}), con más de 25 años dedicados en exclusiva a la ortodoncia.`,
+  },
+  {
+    pregunta: '¿Quién me va a atender?',
+    respuesta: `Un equipo fijo: la ${DIRECCION_MEDICA.nombre} y el Dr. Hardy Luis Giunta en ortodoncia, el Dr. Benjamín Cabrera Galeano en endodoncia y estética dental, Antonio Salazar Cabello en higiene y Johana Meza Ruibal en atención al paciente.`,
+  },
+  {
+    pregunta: '¿Puedo ver la clínica antes de ir?',
+    respuesta: 'Sí. En esta página puedes recorrerla en 3D: recepción, sala de espera, zona de escaneado y consultorio.',
+  },
+  FAQ_TRATAMIENTOS[1], // horario
+  FAQ_TRATAMIENTOS[0], // primera visita gratuita
+];
+
+const faqLd = {
+  '@type': 'FAQPage',
+  '@id': `${SITE.url}${ruta}#faq`,
+  mainEntity: FAQ.map((f, i) => ({
+    '@type': 'Question',
+    name: ld(`nosotros.faq.${i + 1}.pregunta`, f.pregunta),
+    acceptedAnswer: { '@type': 'Answer', text: ld(`nosotros.faq.${i + 1}.respuesta`, f.respuesta) },
+  })),
+};
+
 const fondo = await getImage({ src: fondoEquipo, width: 1672, format: 'webp' });
 ---
 
@@ -53,6 +90,7 @@ const fondo = await getImage({ src: fondoEquipo, width: 1672, format: 'webp' });
   descripcion="Más de 25 años dedicados en exclusiva a la ortodoncia invisible en Sanchinarro, Madrid. Conoce el equipo médico de Sonris y recorre la clínica en 3D."
   {ruta}
   migas={[{ nombre: c('comun.nav.5', 'Sobre nosotros'), href: ruta }]}
+  jsonLd={[faqLd]}
 >
   {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
       las secciones claras no llevan color propio. */}
@@ -270,6 +308,24 @@ const fondo = await getImage({ src: fondoEquipo, width: 1672, format: 'webp' });
             </article>
           ))
         }
+      </div>
+    </div>
+  </section>
+
+  {/* Abajo casi sin aire: el formulario que sigue ya trae su relleno arriba. */}
+  <section data-sec id="faq" aria-labelledby="faq-t" style="padding:112px 0 0;padding-bottom:24px !important">
+    <div style="max-width:1240px;margin:0 auto;padding:0 40px">
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:64px;align-items:start">
+        <div>
+          <h2
+            data-h2-grande
+            id="faq-t"
+            style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
+          >
+            <Cms k="nosotros.faq.titulo">Las dudas que más preguntan</Cms>
+          </h2>
+        </div>
+        <Faq filas={FAQ} clave="nosotros.faq" />
       </div>
     </div>
   </section>

@@ -10,6 +10,9 @@ declare(strict_types=1);
 $raiz = sys_get_temp_dir() . '/gr-auth-' . getmypid();
 mkdir($raiz . '/storage', 0775, true);
 mkdir($raiz . '/lib', 0775, true);
+// Auth lee CMS_STORAGE antes que storage/: en el contenedor apunta al almacén real
+// (/var/www/almacen) y la prueba daría de alta usuarios en el admin.json de verdad.
+putenv('CMS_STORAGE=' . $raiz . '/storage');
 copy(__DIR__ . '/../lib/Auth.php', $raiz . '/lib/Auth.php');
 
 require $raiz . '/lib/Auth.php';

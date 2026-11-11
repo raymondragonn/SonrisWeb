@@ -51,6 +51,7 @@ const ICONOS: Record<string, string> = {
           {
             REDES.map((r) => (
               <a
+                data-secondary-oscuro
                 href={r.url}
                 aria-label={`${r.nombre} de Sonris (se abre en una pestaña nueva)`}
                 target="_blank"
@@ -80,6 +81,7 @@ const ICONOS: Record<string, string> = {
           ><Cms k="contacto.telefono">{CONTACTO.telefono}</Cms></a
         >
         <a
+          data-secondary-oscuro
           href={CONTACTO.mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -109,6 +111,7 @@ const ICONOS: Record<string, string> = {
         <!-- Retirar o cambiar el consentimiento tiene que ser tan fácil como darlo. -->
         <button
           type="button"
+          data-underline
           data-abrir-cookies
           style="padding:0;border:0;background:none;font-family:inherit;font-size:14px;color:rgba(255,255,255,0.55);cursor:pointer"
           ><Cms k="comun.footer.cookies">Preferencias de cookies</Cms></button

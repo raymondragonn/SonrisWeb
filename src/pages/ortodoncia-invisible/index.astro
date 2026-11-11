@@ -137,6 +137,7 @@ const anclas = [
               ><Cms k="ortodoncia.hero.boton">Empieza por la valoración</Cms></a
             >
             <a
+              data-secondary-oscuro
               href="#que-es"
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:rgba(0,0,0,0.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.7);color:#FFFFFF;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1)"
               ><Cms k="ortodoncia.hero.boton-2">Cómo funciona</Cms></a
@@ -152,7 +153,7 @@ const anclas = [
       <ul style="margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px">
         {anclas.map(([href, nombre], i) => (
           <li style="flex:1 1 auto">
-            <a href={href} style="width:100%;justify-content:center;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:15px;font-weight:500">
+            <a data-secondary href={href} style="width:100%;justify-content:center;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:15px;font-weight:500">
               <Cms k={`ortodoncia.secciones.${i + 1}`}>{nombre}</Cms>
             </a>
           </li>
@@ -166,7 +167,7 @@ const anclas = [
     data-overlap-pull
     id="que-es"
     aria-labelledby="que-t"
-    style="padding:176px 0 128px;margin-top:-64px"
+    style="padding:176px 0 0;padding-bottom:24px !important;margin-top:-64px"
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start;margin-bottom:64px">
@@ -325,7 +326,8 @@ const anclas = [
             target="_blank"
             rel="noopener noreferrer"
             data-cta-largo
-            style="position:relative;margin-top:24px;display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:0 26px;border-radius:9999px;background:#FFFFFF;color:#1A1A1A;font-size:17px;font-weight:600"
+            data-secondary
+            style="position:relative;margin-top:24px;display:flex;width:100%;box-sizing:border-box;justify-content:center;align-items:center;gap:10px;min-height:56px;padding:0 26px;border-radius:9999px;background:#FFFFFF;color:#1A1A1A;font-size:17px;font-weight:600"
             ><Cms k="ortodoncia.ninos.boton">Valora tu caso con una foto</Cms> <span>→</span><span class="vh"> (se abre en una pestaña nueva)</span></a
           >
         </div>

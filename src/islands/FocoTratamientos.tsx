@@ -293,6 +293,7 @@ export default function FocoTratamientos({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 32 }}>
         <button
           type="button"
+          data-secondary
           aria-label={en ? 'Previous treatment' : 'Tratamiento anterior'}
           onClick={() => ir(foco - 1)}
           style={{
@@ -314,6 +315,7 @@ export default function FocoTratamientos({
             <button
               key={t.href}
               type="button"
+              data-punto
               aria-label={etiquetas[i]}
               aria-current={i === foco ? 'true' : undefined}
               onClick={() => ir(i)}
@@ -344,6 +346,7 @@ export default function FocoTratamientos({
         </div>
         <button
           type="button"
+          data-secondary
           aria-label={en ? 'Next treatment' : 'Tratamiento siguiente'}
           onClick={() => ir(foco + 1)}
           style={{

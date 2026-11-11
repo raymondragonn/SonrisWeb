@@ -145,7 +145,7 @@ const listaLd = {
       <ul style="margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px">
         {TRATAMIENTOS.map((t) => (
           <li style="flex:1 1 auto">
-            <a href={`#${t.slug}`} style="width:100%;justify-content:center;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:15px;font-weight:500">
+            <a data-secondary href={`#${t.slug}`} style="width:100%;justify-content:center;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:15px;font-weight:500">
               <Cms k={`tratamientos.${t.slug}.nombre`}>{t.nombre}</Cms>
             </a>
           </li>

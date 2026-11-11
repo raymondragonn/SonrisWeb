@@ -160,6 +160,7 @@ const procedimientoLd = {
             TRATAMIENTOS.map((o) => (
               <li style="flex:1 1 auto">
                 <a
+                  data-secondary
                   href={`/tratamientos/${o.slug}/`}
                   aria-current={o.slug === t.slug ? 'page' : undefined}
                   style={`display:inline-flex;align-items:center;width:100%;justify-content:center;white-space:nowrap;min-height:44px;padding:0 18px;border-radius:9999px;background:${o.slug === t.slug ? '#FEE1CB' : '#FFFFFF'};border:${o.slug === t.slug ? '2px solid #E76B0B' : '1px solid rgba(0,0,0,0.08)'};color:#1A1A1A;font-size:15px;font-weight:500`}

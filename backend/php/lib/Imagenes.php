@@ -21,7 +21,9 @@ final class Imagenes
     private const RUTA_WEB = '/subidas';
     private const CLAVE = '[a-z0-9][a-z0-9.\-]*';
     private const PESO_MAXIMO = 20 * 1024 * 1024;   // 20 MB, igual que el php.ini
-    private const ANCHO_MAXIMO = 2000;              // por encima no aporta nada visible
+    // El mayor ancho de srcset que usa el sitio (hero de sobre-nosotros, data-cms-min
+    // 2200): con menos, al reemplazar esas fotos se perdía su variante grande.
+    private const ANCHO_MAXIMO = 2200;
     private const PIXELES_MAXIMOS = 50000000;       // freno a imágenes que agotan la memoria
     private const CALIDAD = 80;
 
