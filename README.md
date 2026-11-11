@@ -35,6 +35,32 @@ deja el `Location` relativo, que es lo correcto detrás de un proxy o una CDN.
 TLS, `www` → sin `www` y HTTP → HTTPS quedan **fuera del contenedor**: son del
 borde. Las reglas están en `deploy/sonris.nginx.conf` si el borde es también nginx.
 
+## Modo edición (textos e imágenes)
+
+El cliente edita textos e imágenes sobre el propio sitio y el cambio se publica al
+instante: PHP reescribe el HTML ya compilado. Plan completo y estado por fases en
+[`PLAN-MODO-EDICION.md`](PLAN-MODO-EDICION.md).
+
+```bash
+docker compose up --build dev      # sitio + modo edición → http://localhost:8080
+docker compose logs -f dev         # ver cuándo termina cada compilación
+```
+
+- Un solo contenedor: Apache + PHP (como Hostinger) sirviendo el sitio **compilado**,
+  que es lo que el modo edición reescribe. No hay recarga en caliente: al guardar
+  código se recompila solo (unos segundos) y basta con recargar. Lo editado desde el
+  navegador se vuelve a aplicar tras cada compilación.
+- Entrar: el candado del header (en móvil, al final del menú) o `/entrar`. Sin
+  administrador, `/alta` crea el primero. Por consola, **como www-data** (si no,
+  `admin.json` queda ilegible para Apache):
+  `docker compose exec -u www-data dev php /app/.astro/dist/bin/crear-admin.php`.
+- Marcar contenido: `<Cms k="pagina.seccion.campo">` para texto, `<CmsImage k=…>` para
+  imágenes, y `attrs()` / `ld()` de `src/lib/cms.ts` para atributos y JSON-LD. Un dato
+  repetido usa la misma clave en todos los sitios. `npm run comprobar` (12) valida
+  los marcadores.
+- **Al subir por FTP a Hostinger: no borres `storage/` ni `subidas/`** del servidor:
+  ahí vive lo editado. Tras subir, visita `/api/republicar.php` con la sesión abierta.
+
 ## Rutas
 
 Las 17 del mapa de cableado, todas con barra final:
@@ -66,8 +92,6 @@ contadores y las cargas diferidas van en `src/scripts/ui.ts`, un módulo sin JSX
 | --- | --- | --- |
 | `MenuMovil` | header, todas las páginas | `client:idle` |
 | `FocoTratamientos` | home | `client:visible` |
-| `CarruselPlanes` | ortodoncia invisible | `client:visible` |
-| `Acordeon` | FAQ de ortodoncia | `client:visible` |
 | `PestanasVariantes` | estética dental | `client:visible` |
 | `AntesDespues` | Dra. Vélez | `client:visible` |
 | `FormularioCita` + `Aviso` | contacto | `client:load` |
@@ -126,7 +150,7 @@ así que hay que reconstruir el sitio dentro de ese plazo para mantenerlas al d�
 - `FAQPage` solo incluye preguntas con respuesta real: las pendientes no entran.
 - `sitemap-index.xml` con las 13 rutas indexables; las 4 de utilidad y la 404 van
   con `noindex` y quedan fuera.
-- `public/llms.txt` con los datos citables de la clínica y las advertencias sobre
+- `llms.txt` (generado desde `src/data/llms-base.txt` + `site.ts`) con los datos citables de la clínica y las advertencias sobre
   qué no debe inferirse (precios, financiación, garantía de resultado).
 - Sin dependencias de fuentes bloqueantes más allá de Google Fonts con `preconnect`;
   el mapa de Google y el tour de Matterport no cargan hasta que el visitante lo pide.

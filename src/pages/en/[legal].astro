@@ -1,0 +1,12 @@
+---
+// Versión en inglés de las páginas legales: misma plantilla, slug inglés.
+import Pagina from '../[legal].astro';
+import { LEGAL } from '../../data/legal';
+import { aIngles, slugDe } from '../../i18n/rutas.js';
+
+export function getStaticPaths() {
+  return LEGAL.map((p) => ({ params: { legal: slugDe(aIngles(`/${p.slug}/`)) }, props: { p } }));
+}
+---
+
+<Pagina {...Astro.props} />

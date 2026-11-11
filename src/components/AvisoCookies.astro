@@ -3,6 +3,8 @@
 // lo único que hay que consentir son los marcos de terceros (mapa de Google en
 // Contacto, tour de Matterport en Sobre nosotros), que no se cargan hasta que
 // se acepta. Rechazar cuesta un clic igual que aceptar, como pide la AEPD.
+// Con PUBLIC_GA_ID, también Google Analytics (src/scripts/analitica.ts).
+const analitica = Boolean(import.meta.env.PUBLIC_GA_ID);
 ---
 
 <dialog
@@ -14,11 +16,14 @@
     id="cookies-t"
     style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:24px;line-height:1.2;letter-spacing:-0.02em;color:#000000"
   >
-    Cookies de terceros
+    {analitica ? 'Cookies de medición y de terceros' : 'Cookies de terceros'}
   </h2>
   <p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#6B6B6B">
-    Esta web no usa cookies propias ni analítica. El mapa de Google y el tour virtual sí guardan cookies cuando se
-    muestran, así que solo se cargan si los aceptas. Puedes cambiar de idea cuando quieras desde el pie de página.
+    {
+      analitica
+        ? 'Si aceptas, usamos Google Analytics para saber cuántas personas visitan la web y qué páginas les sirven, y cargamos el mapa de Google y el tour virtual, que también guardan cookies. Si rechazas, no se carga nada de eso. Puedes cambiar de idea cuando quieras desde el pie de página.'
+        : 'Esta web no usa cookies propias ni analítica. El mapa de Google y el tour virtual sí guardan cookies cuando se muestran, así que solo se cargan si los aceptas. Puedes cambiar de idea cuando quieras desde el pie de página.'
+    }
   </p>
   <div style="display:flex;flex-wrap:wrap;gap:12px">
     <button
@@ -84,12 +89,14 @@
         'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center;background:#EFEFEF';
       const texto = document.createElement('p');
       texto.style.cssText = 'margin:0;font-size:16px;line-height:1.7;color:#6B6B6B;max-width:40ch';
-      texto.textContent = `Este contenido lo aloja ${marco.dataset.proveedor || 'un tercero'} y guarda cookies en tu dispositivo al mostrarse.`;
+      texto.textContent = document.documentElement.lang === 'en'
+        ? `This content is hosted by ${marco.dataset.proveedor || 'a third party'} and stores cookies on your device when shown.`
+        : `Este contenido lo aloja ${marco.dataset.proveedor || 'un tercero'} y guarda cookies en tu dispositivo al mostrarse.`;
       const boton = document.createElement('button');
       boton.type = 'button';
       boton.dataset.cookies = 'aceptadas';
       boton.dataset.primary = '';
-      boton.textContent = 'Aceptar y mostrar';
+      boton.textContent = document.documentElement.lang === 'en' ? 'Accept and show' : 'Aceptar y mostrar';
       boton.style.cssText =
         'display:inline-flex;align-items:center;min-height:48px;padding:0 26px;border-radius:9999px;border:0;background:#E76B0B;color:#FFFFFF;font-family:inherit;font-size:18.66px;font-weight:600;cursor:pointer';
       caja.append(texto, boton);
@@ -105,6 +112,8 @@
     }
     dlg?.close();
     aplicar(v);
+    // analitica.ts escucha esto para cargar o parar GA4.
+    document.dispatchEvent(new CustomEvent('sonris:cookies', { detail: v }));
   }
 
   // Un solo oyente para los botones del diálogo y los de los huecos, que se

@@ -9,7 +9,7 @@ Datos verificables de la clínica, para citar con exactitud:
 - Razón social: MASTER SMILE S.L. · CIF B88526173
 - Dirección: Avenida Isabel de Valois 55, 28050 Madrid (barrio de Sanchinarro, distrito de Hortaleza)
 - Coordenadas: 40.494262, -3.659298
-- Teléfono: 910 459 517 · WhatsApp: 658 746 117 · Email: hola@sonris.es
+- Teléfono: {contacto.telefono} · WhatsApp: {contacto.whatsapp} · Email: {contacto.email}
 - Horario: lunes a viernes, de 12:00 a 20:00. Sábados y domingos, cerrado.
 - Dirección médica: Dra. Isabel Vélez, nº de colegiado 28007651
 

@@ -1,0 +1,30 @@
+---
+import { Image } from 'astro:assets';
+import { minimo } from '../lib/cms';
+
+/**
+ * Imagen reemplazable desde el modo edición.
+ *
+ * Envuelve la <Image> de Astro en marcadores. Al reemplazarla, PHP genera los mismos
+ * anchos de srcset y solo cambia src, srcset, alt, width y height: sizes, loading y
+ * estilos se conservan, así que la imagen nueva carga igual que la compilada.
+ */
+interface Props {
+  k: string;
+  src: ImageMetadata;
+  alt: string;
+  [atributo: string]: unknown;
+}
+
+const { k, ...resto } = Astro.props;
+
+// Resolución mínima de un reemplazo: el ancho mayor que se sirve (el último de
+// widths, o el propio de la imagen) con la proporción del original.
+const anchos = (resto.widths as number[] | undefined) ?? [Number(resto.width) || resto.src.width];
+const min = minimo(Math.max(...anchos), resto.src.height / resto.src.width);
+
+if (!/^[a-z0-9][a-z0-9.-]*$/.test(k)) {
+  throw new Error(`Clave de imagen inválida: "${k}". Usa minúsculas, números, punto y guion.`);
+}
+---
+<Fragment set:html={`<!--cms-img:${k}-->`} /><Image {...(resto as any)} data-cms-min={min} /><Fragment set:html="<!--/cms-img-->" />

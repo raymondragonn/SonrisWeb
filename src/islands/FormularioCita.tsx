@@ -1,4 +1,5 @@
-import { useEffect, useId, useState, type CSSProperties, type FormEvent } from 'react';
+import { medir } from '../scripts/analitica';
+import { useEffect, useId, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import Aviso, { type AvisoDatos } from './Aviso';
 
 type Canal = 'whatsapp' | 'correo';
@@ -95,19 +96,73 @@ const ESTILO_PILDORA = (marcada: boolean): CSSProperties => ({
   cursor: 'pointer',
 });
 
+// Textos fijos del formulario en inglés, por su frase española exacta. Los
+// motivos se envían en español: es lo que lee la clínica.
+const EN: Record<string, string> = {
+  WhatsApp: 'WhatsApp',
+  Correo: 'Email',
+  'Te escribimos al número que nos dejes.': 'We will message the number you give us.',
+  'Te contestamos al email que nos dejes.': 'We will reply to the email you give us.',
+  'Alinearme los dientes': 'Straighten my teeth',
+  'Corregirme la mordida': 'Correct my bite',
+  'Ortodoncia para un hijo': 'Orthodontics for my child',
+  'El color o la forma': 'Tooth colour or shape',
+  'Recuperar un diente': 'Replace a tooth',
+  'Encías o limpieza': 'Gums or a clean',
+  'Una revisión o una molestia': 'A check-up or some discomfort',
+  'Una segunda opinión': 'A second opinion',
+  'No lo sé': 'I am not sure',
+  '⚠ Escribe tu nombre para que sepamos con quién hablamos.': '⚠ Tell us your name so we know who we are talking to.',
+  '⚠ Revisa el dato: necesitamos por dónde contestarte.': '⚠ Check this: we need a way to reply to you.',
+  '⚠ Elige con qué vienes: es lo que nos sirve para prepararte la visita.': '⚠ Choose what you are coming for: it helps us prepare your visit.',
+  '⚠ Marca la casilla para que podamos tratar tus datos y contestarte.': '⚠ Tick the box so we can process your details and reply to you.',
+  '¿Por dónde te contestamos?': 'How should we reply?',
+  '¿Cómo te llamas?': 'What is your name?',
+  'Tu nombre': 'Your name',
+  '¿A qué número te escribimos?': 'Which number should we message?',
+  '¿A qué correo te contestamos?': 'Which email should we reply to?',
+  'tu@email.com': 'you@email.com',
+  '¿Con qué vienes?': 'What are you coming for?',
+  '(las que quieras)': '(choose any)',
+  '¿Algo más que debamos saber?': 'Anything else we should know?',
+  '(opcional)': '(optional)',
+  'Si has llevado ortodoncia antes, si te corre prisa, si vienes por alguien de la familia…':
+    'If you have had orthodontics before, if you are in a hurry, if you are coming for a family member…',
+  'He leído y acepto la': 'I have read and accept the',
+  'Política de Privacidad': 'Privacy Policy',
+  'y el': 'and the',
+  'Aviso Legal': 'Legal Notice',
+  '. Tus datos los trata MASTER SMILE S.L. solo para responderte.': '. Your details are processed by MASTER SMILE S.L. only to reply to you.',
+  'Enviando…': 'Sending…',
+  'Quiero mi primera visita GRATUITA': 'I want my FREE first visit',
+  'No se ha enviado': 'Not sent',
+  'El formulario no está configurado': 'The form is not set up',
+  'Mensaje enviado': 'Message sent',
+  'No hemos podido enviarlo': 'We could not send it',
+  'Ya nos ha llegado. Te escribimos por WhatsApp en horario de clínica, de 12:00 a 20:00.':
+    'We have received it. We will message you on WhatsApp during clinic hours, 12:00 to 20:00.',
+  'Ya nos ha llegado. Te contestamos por correo en horario de clínica, de 12:00 a 20:00.':
+    'We have received it. We will reply by email during clinic hours, 12:00 to 20:00.',
+};
+
 const VACIO = { nombre: '', contacto: '', motivos: [] as string[], mensaje: '', rgpd: false };
 
 export default function FormularioCita({
   email,
   telefono,
   origen,
+  en = false,
 }: {
   email: string;
   telefono: string;
+  /** Página en inglés. */
+  en?: boolean;
   /** Página desde la que se envía: viaja con el aviso para que en clínica
    *  sepan de qué venía la consulta. */
   origen: string;
 }) {
+  const tr = (es: string) => (en ? (EN[es] ?? es) : es);
+  const rutaLegal = (es: string, ingles: string) => (en ? ingles : es);
   const uid = useId().replace(/:/g, '');
   const id = (n: string) => `${uid}-${n}`;
 
@@ -115,6 +170,7 @@ export default function FormularioCita({
   const [errores, setErrores] = useState<Partial<Record<Campo, boolean>>>({});
   const [canal, setCanal] = useState<Canal>('whatsapp');
   const [enviando, setEnviando] = useState(false);
+  const empezado = useRef(false);
   const [aviso, setAviso] = useState<AvisoDatos | null>(null);
 
   const porWhatsApp = canal === 'whatsapp';
@@ -124,7 +180,7 @@ export default function FormularioCita({
   useEffect(() => {
     const plan = new URLSearchParams(location.search).get('plan')?.replace(/\s+/g, ' ').trim().slice(0, 60);
     if (plan) {
-      setValores((v) => ({ ...v, motivos: [MOTIVOS[0]], mensaje: `Me interesa el plan ${plan}.` }));
+      setValores((v) => ({ ...v, motivos: [MOTIVOS[0]], mensaje: en ? `I am interested in the ${plan} plan.` : `Me interesa el plan ${plan}.` }));
     }
   }, []);
 
@@ -184,8 +240,10 @@ export default function FormularioCita({
       setAviso({
         id: Date.now(),
         tono: 'error',
-        titulo: 'No se ha enviado',
-        texto: `Faltan datos por revisar y los hemos marcado en el formulario. Nada ha salido de aquí. Si lo prefieres, llámanos al ${telefono}.`,
+        titulo: tr('No se ha enviado'),
+        texto: en
+          ? `Some details need checking and we have marked them on the form. Nothing has been sent. If you prefer, call us on ${telefono}.`
+          : `Faltan datos por revisar y los hemos marcado en el formulario. Nada ha salido de aquí. Si lo prefieres, llámanos al ${telefono}.`,
       });
       return;
     }
@@ -194,8 +252,10 @@ export default function FormularioCita({
       setAviso({
         id: Date.now(),
         tono: 'error',
-        titulo: 'El formulario no está configurado',
-        texto: `No podemos recoger tu mensaje ahora mismo. Escríbenos a ${email} o llámanos al ${telefono} y te atendemos igual.`,
+        titulo: tr('El formulario no está configurado'),
+        texto: en
+          ? `We cannot take your message right now. Write to ${email} or call us on ${telefono} and we will help you just the same.`
+          : `No podemos recoger tu mensaje ahora mismo. Escríbenos a ${email} o llámanos al ${telefono} y te atendemos igual.`,
       });
       return;
     }
@@ -214,26 +274,30 @@ export default function FormularioCita({
           vengo_por: valores.motivos.join(', '),
           mensaje: valores.mensaje.trim(),
           origen,
+          idioma: en ? 'Inglés' : 'Español',
           _subject: `Cita en Sonris · ${valores.nombre.trim()}`,
         }),
       });
       if (!respuesta.ok) throw new Error(String(respuesta.status));
+      medir('form_submit', { form_id: 'formulario-cita', form_location: origen });
 
       setValores(VACIO);
       setAviso({
         id: Date.now(),
         tono: 'ok',
-        titulo: 'Mensaje enviado',
+        titulo: tr('Mensaje enviado'),
         texto: porWhatsApp
-          ? 'Ya nos ha llegado. Te escribimos por WhatsApp en horario de clínica, de 12:00 a 20:00.'
-          : 'Ya nos ha llegado. Te contestamos por correo en horario de clínica, de 12:00 a 20:00.',
+          ? tr('Ya nos ha llegado. Te escribimos por WhatsApp en horario de clínica, de 12:00 a 20:00.')
+          : tr('Ya nos ha llegado. Te contestamos por correo en horario de clínica, de 12:00 a 20:00.'),
       });
     } catch {
       setAviso({
         id: Date.now(),
         tono: 'error',
-        titulo: 'No hemos podido enviarlo',
-        texto: `Ha fallado la conexión y tu mensaje no ha salido. Vuelve a intentarlo, escríbenos a ${email} o llámanos al ${telefono}.`,
+        titulo: tr('No hemos podido enviarlo'),
+        texto: en
+          ? `The connection failed and your message was not sent. Try again, write to ${email} or call us on ${telefono}.`
+          : `Ha fallado la conexión y tu mensaje no ha salido. Vuelve a intentarlo, escríbenos a ${email} o llámanos al ${telefono}.`,
       });
     } finally {
       setEnviando(false);
@@ -246,6 +310,12 @@ export default function FormularioCita({
         id="formulario-cita"
         noValidate
         onSubmit={alEnviar}
+        // form_start una sola vez: al primer foco dentro del formulario.
+        onFocusCapture={() => {
+          if (empezado.current) return;
+          empezado.current = true;
+          medir('form_start', { form_id: 'formulario-cita', form_location: origen });
+        }}
         data-peach
         data-caja
         data-textura
@@ -258,7 +328,7 @@ export default function FormularioCita({
         <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
 
         <fieldset style={{ border: 'none', margin: '0 0 24px', padding: 0 }}>
-          <legend style={{ ...ESTILO_ETIQUETA, padding: 0 }}>¿Por dónde te contestamos?</legend>
+          <legend style={{ ...ESTILO_ETIQUETA, padding: 0 }}>{tr('¿Por dónde te contestamos?')}</legend>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
             {CANALES.map((c) => (
               <label key={c.valor} style={ESTILO_PILDORA(canal === c.valor)}>
@@ -270,8 +340,8 @@ export default function FormularioCita({
                   onChange={() => setCanal(c.valor)}
                   style={{ width: 20, height: 20, accentColor: '#E76B0B', margin: 0 }}
                 />
-                {c.etiqueta}
-                <span className="vh">. {c.ayuda}</span>
+                {tr(c.etiqueta)}
+                <span className="vh">. {tr(c.ayuda)}</span>
               </label>
             ))}
           </div>
@@ -279,7 +349,7 @@ export default function FormularioCita({
 
         <div style={{ marginBottom: 24 }}>
           <label htmlFor={id('nombre')} style={ESTILO_ETIQUETA}>
-            ¿Cómo te llamas?
+            {tr('¿Cómo te llamas?')}
             <Obligatorio />
           </label>
           <input
@@ -289,7 +359,7 @@ export default function FormularioCita({
             type="text"
             required
             autoComplete="name"
-            placeholder="Tu nombre"
+            placeholder={tr('Tu nombre')}
             value={valores.nombre}
             onChange={(e) => setValores((v) => ({ ...v, nombre: e.target.value }))}
             onBlur={() => revisar(['nombre'])}
@@ -299,7 +369,7 @@ export default function FormularioCita({
           />
           {errores.nombre && (
             <p id={id('e-nombre')} style={ESTILO_ERROR}>
-              {ERRORES.nombre}
+              {tr(ERRORES.nombre)}
             </p>
           )}
         </div>
@@ -307,7 +377,7 @@ export default function FormularioCita({
         {/* Un solo dato de contacto: el del canal elegido. */}
         <div style={{ marginBottom: 24 }}>
           <label htmlFor={id('contacto')} style={ESTILO_ETIQUETA}>
-            {porWhatsApp ? '¿A qué número te escribimos?' : '¿A qué correo te contestamos?'}
+            {tr(porWhatsApp ? '¿A qué número te escribimos?' : '¿A qué correo te contestamos?')}
             <Obligatorio />
           </label>
           <input
@@ -317,7 +387,7 @@ export default function FormularioCita({
             type={porWhatsApp ? 'tel' : 'email'}
             required
             autoComplete={porWhatsApp ? 'tel' : 'email'}
-            placeholder={porWhatsApp ? '600 000 000' : 'tu@email.com'}
+            placeholder={porWhatsApp ? '600 000 000' : tr('tu@email.com')}
             value={valores.contacto}
             onChange={(e) => setValores((v) => ({ ...v, contacto: e.target.value }))}
             onBlur={() => valores.contacto && revisar(['contacto'])}
@@ -327,14 +397,14 @@ export default function FormularioCita({
           />
           {errores.contacto && (
             <p id={id('e-contacto')} style={ESTILO_ERROR}>
-              {ERRORES.contacto}
+              {tr(ERRORES.contacto)}
             </p>
           )}
         </div>
 
         <fieldset style={{ border: 'none', margin: '0 0 24px', padding: 0 }}>
           <legend style={{ ...ESTILO_ETIQUETA, padding: 0 }}>
-            ¿Con qué vienes? <span style={{ color: '#6B6B6B', fontWeight: 400 }}>(las que quieras)</span>
+            {tr('¿Con qué vienes?')} <span style={{ color: '#6B6B6B', fontWeight: 400 }}>{tr('(las que quieras)')}</span>
             <Obligatorio />
           </legend>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -360,27 +430,27 @@ export default function FormularioCita({
                   aria-describedby={errores.motivos ? id('e-motivos') : undefined}
                   style={{ width: 20, height: 20, accentColor: '#E76B0B', margin: 0 }}
                 />
-                {m}
+                {tr(m)}
               </label>
             ))}
           </div>
           {errores.motivos && (
             <p id={id('e-motivos')} style={ESTILO_ERROR}>
-              {ERRORES.motivos}
+              {tr(ERRORES.motivos)}
             </p>
           )}
         </fieldset>
 
         <div style={{ marginBottom: 24 }}>
           <label htmlFor={id('mensaje')} style={ESTILO_ETIQUETA}>
-            ¿Algo más que debamos saber? <span style={{ color: '#6B6B6B' }}>(opcional)</span>
+            {tr('¿Algo más que debamos saber?')} <span style={{ color: '#6B6B6B' }}>{tr('(opcional)')}</span>
           </label>
           <textarea
             data-input
             id={id('mensaje')}
             name="mensaje"
             rows={3}
-            placeholder="Si has llevado ortodoncia antes, si te corre prisa, si vienes por alguien de la familia…"
+            placeholder={tr('Si has llevado ortodoncia antes, si te corre prisa, si vienes por alguien de la familia…')}
             value={valores.mensaje}
             onChange={(e) => setValores((v) => ({ ...v, mensaje: e.target.value }))}
             style={{
@@ -422,21 +492,21 @@ export default function FormularioCita({
             }}
           />
           <span>
-            He leído y acepto la{' '}
-            <a href="/politica-de-privacidad/" style={{ color: '#E76B0B', fontWeight: 500, textDecoration: 'underline' }}>
-              Política de Privacidad
+            {tr('He leído y acepto la')}{' '}
+            <a href={rutaLegal('/politica-de-privacidad/', '/en/privacy-policy/')} style={{ color: '#E76B0B', fontWeight: 500, textDecoration: 'underline' }}>
+              {tr('Política de Privacidad')}
             </a>{' '}
-            y el{' '}
-            <a href="/aviso-legal/" style={{ color: '#E76B0B', fontWeight: 500, textDecoration: 'underline' }}>
-              Aviso Legal
+            {tr('y el')}{' '}
+            <a href={rutaLegal('/aviso-legal/', '/en/legal-notice/')} style={{ color: '#E76B0B', fontWeight: 500, textDecoration: 'underline' }}>
+              {tr('Aviso Legal')}
             </a>
-            . Tus datos los trata MASTER SMILE S.L. solo para responderte.
+            {tr('. Tus datos los trata MASTER SMILE S.L. solo para responderte.')}
             <Obligatorio />
           </span>
         </label>
         {errores.rgpd && (
           <p id={id('e-rgpd')} style={ESTILO_ERROR}>
-            {ERRORES.rgpd}
+            {tr(ERRORES.rgpd)}
           </p>
         )}
 
@@ -465,7 +535,7 @@ export default function FormularioCita({
             opacity: enviando ? 0.7 : 1,
           }}
         >
-          {enviando ? 'Enviando…' : 'Quiero mi primera visita GRATUITA'}
+          {tr(enviando ? 'Enviando…' : 'Quiero mi primera visita GRATUITA')}
         </button>
       </form>
 

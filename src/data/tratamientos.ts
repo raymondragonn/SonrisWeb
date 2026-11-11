@@ -286,3 +286,23 @@ export const FAQ = [
     respuesta: 'Abrimos de lunes a viernes, de 12:00 a 20:00 h. Sábados y domingos permanecemos cerrados.',
   },
 ];
+
+/**
+ * Animación del procedimiento. Archivo en public/video/<n>.mp4 y póster en
+ * public/img/<n>-poster.webp. El primero ocupa el hero de la página del
+ * tratamiento y su tarjeta en el hub (a 1920x1080, misma clave editable
+ * tratamientos.<slug>.video.1); los demás van bajo «¿Qué es…?». Un mismo
+ * archivo puede servir a varios tratamientos. Sin entrada, se queda la foto.
+ */
+export const VIDEOS: Record<string, [n: string, es: string, en: string][]> = {
+  'implantes-dentales': [['implantes-dentales', 'Animación de la colocación de un implante dental', 'Animation of a dental implant being placed']],
+  'estetica-dental': [['estetica-dental', 'Animación de la colocación de carillas', 'Animation of veneers being placed']],
+  'cirugia-ortognatica': [['cirugia-ortognatica', 'Animación de una cirugía ortognática de mandíbula', 'Animation of orthognathic jaw surgery']],
+  endodoncia: [['endodoncia', 'Animación de una endodoncia', 'Animation of a root canal treatment']],
+  periodoncia: [
+    ['periodoncia-encia', 'Animación de la retracción de la encía por la enfermedad periodontal', 'Animation of gum recession caused by gum disease'],
+    ['periodoncia-raspado', 'Animación del raspado del sarro', 'Animation of tartar scaling'],
+  ],
+  'cirugia-oral': [['cirugia-ortognatica', 'Animación de una cirugía de mandíbula', 'Animation of jaw surgery']],
+  'odontologia-general': [['periodoncia-raspado', 'Animación de una limpieza dental con raspado del sarro', 'Animation of a dental cleaning with tartar scaling']],
+};

@@ -1,5 +1,7 @@
 ---
 import { CONTACTO } from '../data/site';
+import Cms from './Cms.astro';
+import { attrs, c } from '../lib/cms';
 
 interface Props {
   titulo?: string;
@@ -7,12 +9,12 @@ interface Props {
   href?: string;
   etiqueta?: string;
 }
-const {
-  titulo = 'Cuéntanos qué te preocupa',
-  texto = `Primera visita GRATUITA, sin compromiso. ${CONTACTO.horario}, en ${CONTACTO.calle}.`,
-  href = '/contacto/',
-  etiqueta = 'Reserva tu primera visita',
-} = Astro.props;
+const { titulo, texto, href = '/contacto/', etiqueta } = Astro.props;
+
+// Los textos por defecto son comunes a todas las páginas y se editan una vez. Uno
+// que pase la página NO se marca con esa clave: al publicar, PHP lo pisaría con el
+// texto común.
+const INTRO = 'Primera visita GRATUITA, sin compromiso.';
 ---
 
 <section data-sec data-fin-pagina id="formulario" aria-labelledby="cta-t" style="padding:112px 0 72px">
@@ -29,19 +31,27 @@ const {
           id="cta-t"
           style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
         >
-          {titulo}
+          {titulo ?? <Cms k="comun.cta.titulo">Cuéntanos qué te preocupa</Cms>}
         </h2>
-        {texto && <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A;max-width:52ch">{texto}</p>}
+        {
+          texto === undefined ? (
+            <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A;max-width:52ch">
+              <Cms k="comun.cta.texto">{INTRO}</Cms> {CONTACTO.horario}, en {CONTACTO.calle}.
+            </p>
+          ) : (
+            texto && <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A;max-width:52ch">{texto}</p>
+          )
+        }
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
         <a
           data-primary
           href={href}
           style="display:inline-flex;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-          >{etiqueta}<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+          >{etiqueta ?? <Cms k="comun.cta.boton">Reserva tu primera visita</Cms>}<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
         >
         <p style="margin:0;font-size:16px;color:#1A1A1A">
-          o llámanos al <a href={`tel:${CONTACTO.telefonoE164}`} style="color:#E76B0B;font-weight:500">{CONTACTO.telefono}</a>
+          o llámanos al <a {...attrs({ href: c('contacto.telefono@tel', `tel:${CONTACTO.telefonoE164}`) })} style="color:#E76B0B;font-weight:500"><Cms k="contacto.telefono">{CONTACTO.telefono}</Cms></a>
         </p>
       </div>
     </div>

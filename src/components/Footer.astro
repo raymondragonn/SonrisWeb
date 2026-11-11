@@ -2,6 +2,9 @@
 import { Image } from 'astro:assets';
 import { CONTACTO, REDES, UTILIDAD_NAV, SITE, DIRECCION_MEDICA } from '../data/site';
 import logo from '../assets/sonris/logos/logo-sonris-white-2.png';
+import Cms from './Cms.astro';
+import { attrs, c } from '../lib/cms';
+import { t } from '../i18n/idioma';
 
 interface Props {
   /** Destino del CTA. Por defecto la página de contacto; dentro de ella, un ancla. */
@@ -22,7 +25,7 @@ const ICONOS: Record<string, string> = {
 };
 ---
 
-<footer id="legal" aria-labelledby="foot-t" style="background:#16163F;color:#FFFFFF;padding:64px 0 32px">
+<footer id="legal" data-cristal aria-labelledby="foot-t" style="color:#FFFFFF;padding:64px 0 32px">
   <div style="max-width:1240px;margin:0 auto;padding:0 40px">
     <h2 id="foot-t" class="vh">Información de contacto y legal</h2>
 
@@ -35,13 +38,14 @@ const ICONOS: Record<string, string> = {
           data-h2-grande
           style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:44px;line-height:1.05;letter-spacing:-0.02em;color:#FFFFFF"
         >
-          Reserva tu primera visita
+          <Cms k="comun.footer.titulo">Reserva tu primera visita</Cms>
         </h3>
         <a
           data-primary
           href={hrefCita}
           style="display:inline-flex;align-items:center;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-          >Reservar ahora</a
+          >
+          <Cms k="comun.footer.boton">Reservar ahora</Cms></a
         >
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:32px">
           {
@@ -71,16 +75,16 @@ const ICONOS: Record<string, string> = {
           {CONTACTO.calle}<br />{CONTACTO.cp} {CONTACTO.ciudad} · {CONTACTO.distrito}
         </p>
         <a
-          href={`tel:${CONTACTO.telefonoE164}`}
+          {...attrs({ href: c('contacto.telefono@tel', `tel:${CONTACTO.telefonoE164}`) })}
           style="display:block;margin:0 0 16px;font-size:20px;font-weight:600;color:#FFFFFF;text-decoration:underline;text-underline-offset:4px"
-          >{CONTACTO.telefono}</a
+          ><Cms k="contacto.telefono">{CONTACTO.telefono}</Cms></a
         >
         <a
           href={CONTACTO.mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
           style="position:relative;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;border-radius:9999px;border:1px solid rgba(255,255,255,0.28);color:#FFFFFF;font-size:15px;font-weight:600"
-          >Ver en Google Maps<span class="vh"> (se abre en una pestaña nueva)</span></a
+          ><Cms k="comun.footer.mapa">Ver en Google Maps</Cms><span class="vh"> (se abre en una pestaña nueva)</span></a
         >
       </div>
     </div>
@@ -98,7 +102,7 @@ const ICONOS: Record<string, string> = {
         {
           UTILIDAD_NAV.map((u) => (
             <a href={u.href} style="font-size:14px;color:rgba(255,255,255,0.55)">
-              {u.nombre}
+              <Cms k={`legal.${u.href.replace(/\//g, '')}.nombre`}>{u.nombre}</Cms>
             </a>
           ))
         }
@@ -107,7 +111,18 @@ const ICONOS: Record<string, string> = {
           type="button"
           data-abrir-cookies
           style="padding:0;border:0;background:none;font-family:inherit;font-size:14px;color:rgba(255,255,255,0.55);cursor:pointer"
-          >Preferencias de cookies</button
+          ><Cms k="comun.footer.cookies">Preferencias de cookies</Cms></button
+        >
+        <!-- Acceso del administrador al modo edición: aquí abajo y apagado, para
+             que solo lo busque quien sabe que está. nofollow, y /entrar responde
+             con noindex. -->
+        <a
+          href="/entrar"
+          rel="nofollow"
+          aria-label={t('Acceso', 'Sign in')}
+          title={t('Acceso', 'Sign in')}
+          style="display:inline-flex;align-items:center;color:rgba(255,255,255,0.25)"
+          ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></a
         >
       </nav>
     </div>

@@ -1,0 +1,60 @@
+---
+// Selector ES · EN: lleva a la misma página en el otro idioma. El idioma
+// actual va como texto; el otro, como enlace con hreflang (el middleware no
+// reescribe los enlaces que lo llevan). Sin gemela (404), no se pinta.
+import { idioma } from '../i18n/idioma';
+import { aIngles, RUTAS_EN } from '../i18n/rutas.js';
+
+interface Props {
+  /** Ruta española de la página. */
+  ruta: string;
+  /** Tamaño del menú móvil, más grande. */
+  grande?: boolean;
+}
+const { ruta, grande = false } = Astro.props;
+const en = idioma() === 'en';
+const base = ruta.split('#')[0];
+const tieneGemela = base in RUTAS_EN;
+const opciones = [
+  { codigo: 'es', corto: 'ES', nombre: 'Español', href: base },
+  { codigo: 'en', corto: 'EN', nombre: 'English', href: aIngles(base) },
+];
+const alto = grande ? 40 : 32;
+const letra = grande ? 14 : 12;
+---
+
+{
+  tieneGemela && (
+    <div
+      data-idioma
+      role="group"
+      aria-label={en ? 'Language' : 'Idioma'}
+      style={`display:inline-flex;flex:none;align-items:center;gap:2px;height:${alto}px;padding:3px;border-radius:9999px;border:1px solid rgba(0,0,0,0.12);background:rgba(255,255,255,0.7);box-sizing:border-box`}
+    >
+      {opciones.map((o) =>
+        (o.codigo === 'en') === en ? (
+          <span
+            aria-current="true"
+            lang={o.codigo}
+            title={o.nombre}
+            style={`display:inline-flex;align-items:center;justify-content:center;min-width:${alto - 8}px;height:100%;padding:0 8px;border-radius:9999px;background:#1A1A1A;color:#FFFFFF;font-size:${letra}px;font-weight:600;letter-spacing:0.04em;box-sizing:border-box`}
+          >
+            {o.corto}
+          </span>
+        ) : (
+          <a
+            data-idioma-otro
+            href={o.href}
+            hreflang={o.codigo}
+            lang={o.codigo}
+            aria-label={o.nombre}
+            title={o.nombre}
+            style={`display:inline-flex;align-items:center;justify-content:center;min-width:${alto - 8}px;height:100%;padding:0 8px;border-radius:9999px;color:#1A1A1A;font-size:${letra}px;font-weight:600;letter-spacing:0.04em;box-sizing:border-box;transition:background 200ms`}
+          >
+            {o.corto}
+          </a>
+        )
+      )}
+    </div>
+  )
+}

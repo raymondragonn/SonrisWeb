@@ -72,7 +72,7 @@ export default function Aviso({ aviso, alCerrar }: { aviso: AvisoDatos; alCerrar
       <button
         type="button"
         onClick={alCerrar}
-        aria-label="Cerrar el aviso"
+        aria-label={document.documentElement.lang === 'en' ? 'Close the notice' : 'Cerrar el aviso'}
         style={{
           flex: 'none',
           width: 32,

@@ -6,6 +6,7 @@
 // terceros, sin cookies y sin clave de API, así que las ve todo el mundo,
 // también quien rechace las cookies.
 import { RESENAS, RESUMEN } from '../data/resenas';
+import Cms from './Cms.astro';
 
 // La inicial y su color hacen de avatar: las fotos de Google no se pueden
 // enlazar desde aquí y no merecen una copia local.
@@ -22,14 +23,14 @@ const media = RESUMEN.media.toFixed(1).replace('.', ',');
 
 {
   RESENAS.length > 0 && (
-    <section data-sec data-band-gray id="resenas" aria-labelledby="res-t" style="background:#F7F7F7;padding:112px 0">
+    <section data-sec id="resenas" aria-labelledby="res-t" style="padding:112px 0 0;padding-bottom:24px !important">
       <div style="max-width:1240px;margin:0 auto;padding:0 40px">
         <h2
           data-h2-grande
           id="res-t"
           style="margin:0 0 40px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;text-align:center"
         >
-          Lo que dicen nuestros pacientes
+          <Cms k="comun.resenas.titulo">Lo que dicen nuestros pacientes</Cms>
         </h2>
 
         {/* Resumen: media, estrellas y acceso a la ficha. */}
@@ -45,7 +46,7 @@ const media = RESUMEN.media.toFixed(1).replace('.', ',');
                 <path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.82 6.05l3.66 2.84c.87-2.6 3.3-4.51 6.16-4.51z" />
               </svg>
-              Reseñas de Google
+              <Cms k="comun.resenas.etiqueta">Reseñas de Google</Cms>
             </p>
             <p style="margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
               <strong style="font-family:Poppins,system-ui,sans-serif;font-size:28px;font-weight:600;color:#000000">{media}</strong>
@@ -62,7 +63,7 @@ const media = RESUMEN.media.toFixed(1).replace('.', ',');
             target="_blank"
             rel="noopener noreferrer"
             style="display:inline-flex;flex:none;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:17px;font-weight:600"
-            >Escribir una reseña<span class="vh"> en Google (se abre en una pestaña nueva)</span></a
+            ><Cms k="comun.resenas.boton">Escribir una reseña</Cms><span class="vh"> en Google (se abre en una pestaña nueva)</span></a
           >
         </div>
 
@@ -209,12 +210,42 @@ const media = RESUMEN.media.toFixed(1).replace('.', ',');
 
     const mas = destino.closest<HTMLButtonElement>('[data-mas]');
     if (mas) {
-      const texto = mas.closest('article')?.querySelector<HTMLElement>('[data-texto]');
-      if (!texto) return;
-      const abierto = texto.hasAttribute('data-abierto');
-      texto.toggleAttribute('data-abierto', !abierto);
-      mas.setAttribute('aria-expanded', String(!abierto));
-      mas.textContent = abierto ? 'Leer más' : 'Leer menos';
+      const tarjeta = mas.closest('article');
+      const texto = tarjeta?.querySelector<HTMLElement>('[data-texto]');
+      const pista = tarjeta?.parentElement;
+      if (!texto || !pista) return;
+
+      // En escritorio la fila es flex y estira todas las tarjetas a la más
+      // alta: se fija la altura que tienen ahora y se deja de estirar, así
+      // solo crece la que se abre. En móvil (grid con align-items:start) no
+      // hace falta.
+      // ponytail: la altura fijada no se recalcula al redimensionar; con
+      // tarjetas de 300px fijos no cambia.
+      if (getComputedStyle(pista).display === 'flex' && pista.style.alignItems !== 'flex-start') {
+        for (const t of pista.children as HTMLCollectionOf<HTMLElement>) t.style.minHeight = `${t.offsetHeight}px`;
+        pista.style.alignItems = 'flex-start';
+      }
+
+      // El estado vive en el botón: el atributo del texto sigue puesto
+      // mientras se cierra, y un doble clic a mitad de animación debe invertirla.
+      const abrir = mas.getAttribute('aria-expanded') !== 'true';
+      const desde = texto.offsetHeight;
+      texto.getAnimations().forEach((a) => a.cancel());
+      texto.toggleAttribute('data-abierto', abrir);
+      const hasta = texto.offsetHeight;
+      // Al cerrar, el recorte de líneas se aplica al final, no de golpe.
+      if (!abrir) texto.setAttribute('data-abierto', '');
+      const anim = texto.animate(
+        { height: [`${desde}px`, `${hasta}px`] },
+        {
+          duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300,
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        },
+      );
+      if (!abrir) anim.onfinish = () => texto.removeAttribute('data-abierto');
+
+      mas.setAttribute('aria-expanded', String(abrir));
+      mas.textContent = document.documentElement.lang === 'en' ? (abrir ? 'Read less' : 'Read more') : abrir ? 'Leer menos' : 'Leer más';
       return;
     }
 

@@ -4,3 +4,7 @@ node_modules/
 .DS_Store
 .env
 .env.production
+
+# Modo edición: datos locales de prueba (admin, contenido editado). Solo se versiona la regla.
+backend/php/storage/*
+!backend/php/storage/.htaccess

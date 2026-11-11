@@ -1,0 +1,305 @@
+---
+/**
+ * Los cinco planes de ortodoncia. Sustituye a la isla CarruselPlanes: las tarjetas
+ * se pintan aquí, en HTML, y el script solo mueve el foco y el scroll. El texto
+ * tiene que estar en el HTML servido para que el modo edición lo pueda reescribir al
+ * publicar (en la isla viajaba en props y React lo habría repintado con el viejo).
+ *
+ * El plan en foco arranca en el recomendado ya desde el servidor: sin JS se ve igual.
+ */
+import Cms from './Cms.astro';
+import { attrs, c } from '../lib/cms';
+import type { Plan } from '../data/ortodoncia';
+
+interface Props {
+  planes: Plan[];
+  /** Prefijo de las claves editables (ej. "ortodoncia.planes"). */
+  clave: string;
+}
+
+const { planes, clave } = Astro.props;
+const inicial = Math.max(0, planes.findIndex((p) => p.recomendado));
+---
+
+<div data-planes>
+  <div data-planes-pista>
+    {
+      planes.map((p, i) => (
+        <article data-plan tabindex="0" aria-current={i === inicial ? 'true' : undefined}>
+          <h3 data-plan-nombre>
+            <Cms k={`${clave}.${i + 1}.nombre`}>{p.nombre}</Cms>
+          </h3>
+          {p.recomendado && (
+            <p data-plan-badge>
+              <Cms k={`${clave}.recomendado`}>Recomendado</Cms>
+            </p>
+          )}
+          <ul>
+            {p.puntos.map((pt, j) => (
+              <li data-incluido={pt.incluido ? 'si' : 'no'}>
+                <span aria-hidden="true">{pt.incluido ? '✓' : '·'}</span>
+                <Cms k={`${clave}.${i + 1}.puntos.${j + 1}`}>{pt.texto}</Cms>
+              </li>
+            ))}
+          </ul>
+          <a
+            data-primary
+            href={`/contacto/?plan=${encodeURIComponent(p.nombre)}`}
+            aria-hidden={i === inicial ? undefined : 'true'}
+            tabindex={i === inicial ? undefined : '-1'}
+          >
+            <Cms k={`${clave}.boton`}>Consúltanos tu caso</Cms>
+            <span data-arrow>→</span>
+          </a>
+        </article>
+      ))
+    }
+  </div>
+
+  <div data-planes-mandos>
+    <button type="button" data-planes-paso="-1" aria-label="Plan anterior">←</button>
+    <div data-planes-puntos>
+      {
+        planes.map((p, i) => (
+          <button
+            type="button"
+            data-planes-ir={i}
+            {...attrs({ 'aria-label': c(`${clave}.${i + 1}.nombre`, p.nombre) })}
+            aria-current={i === inicial ? 'true' : undefined}
+          >
+            <span />
+          </button>
+        ))
+      }
+    </div>
+    <button type="button" data-planes-paso="1" aria-label="Plan siguiente">→</button>
+  </div>
+</div>
+
+<style>
+  /* Misma curva y duración que el carrusel de la home (FocoTratamientos). */
+  [data-planes] {
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur: 620ms;
+    --ancho: 380px;
+    --relleno: 36px;
+  }
+  /* En una pantalla de 360 los 380px de escritorio no dejan hueco a los lados y
+     la tarjeta en foco no llega a centrarse nunca. */
+  @media (max-width: 560px) {
+    [data-planes] {
+      --ancho: 268px;
+      --relleno: 28px;
+    }
+  }
+
+  [data-planes-pista] {
+    display: flex;
+    gap: 28px;
+    align-items: stretch;
+    overflow-x: auto;
+    /* offsetLeft de las tarjetas se mide contra esta caja, que es lo que espera
+       scrollTo. */
+    position: relative;
+    /* overflow-x:auto obliga al eje Y a recortar también, así que el badge y las
+       sombras necesitan hueco dentro de la caja; el margen negativo lo devuelve.
+       Medio hueco de tarjeta a cada lado para poder centrar la primera y la última. */
+    padding: 48px max(24px, calc(50% - var(--ancho) / 2)) 56px;
+    margin: -48px -24px -56px;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+
+  [data-plan] {
+    flex: none;
+    width: var(--ancho);
+    position: relative;
+    padding: var(--relleno);
+    border-radius: 40px;
+    /* Todas naranjas; las de los lados, tenues por la opacidad. */
+    background: #e76b0b;
+    border: 2px solid #e76b0b;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.03);
+    opacity: 0.25;
+    cursor: pointer;
+    transition:
+      opacity var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+  [data-plan][aria-current='true'] {
+    opacity: 1;
+    cursor: default;
+    box-shadow:
+      0 8px 20px rgba(231, 107, 11, 0.28),
+      0 24px 56px rgba(0, 0, 0, 0.12);
+  }
+
+  [data-plan-nombre] {
+    margin: 0 0 20px;
+    font-family: Poppins, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+  [data-plan-nombre]:has(+ [data-plan-badge]) {
+    margin-bottom: 8px;
+  }
+  [data-plan-badge] {
+    margin: 0 0 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffe7d2;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  li {
+    display: flex;
+    gap: 12px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #ffffff;
+  }
+  li > span {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    margin-top: 3px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Círculo invertido: sobre naranja, un check naranja no se vería. */
+    background: #ffffff;
+    color: #e76b0b;
+  }
+  li[data-incluido='no'] > span {
+    background: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+  }
+
+  /* Solo se ve en la tarjeta en foco, pero se pinta siempre: montarlo y
+     desmontarlo cambiaba la altura de toda la fila al pasar de un plan a otro. */
+  [data-plan] > a {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    background: #ffffff;
+    color: #0a0a0a;
+    font-size: 18.66px;
+    font-weight: 600;
+    visibility: hidden;
+  }
+  [data-plan][aria-current='true'] > a {
+    visibility: visible;
+  }
+  [data-plan] [data-arrow] {
+    display: inline-block;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  [data-planes-mandos] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  [data-planes-paso] {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 9999px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #1a1a1a;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  [data-planes-puntos] {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  [data-planes-ir] {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  [data-planes-ir] > span {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  [data-planes-ir][aria-current='true'] > span {
+    background: #e76b0b;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-planes]').forEach((raiz) => {
+    const pista = raiz.querySelector<HTMLElement>('[data-planes-pista]')!;
+    const tarjetas = [...raiz.querySelectorAll<HTMLElement>('[data-plan]')];
+    const puntos = [...raiz.querySelectorAll<HTMLElement>('[data-planes-ir]')];
+    let foco = Math.max(0, tarjetas.findIndex((t) => t.getAttribute('aria-current') === 'true'));
+
+    const ir = (i: number, behavior: ScrollBehavior = 'smooth') => {
+      foco = Math.max(0, Math.min(tarjetas.length - 1, i));
+      const marcar = (el: Element | null, nombre: string, valor: string | null) =>
+        valor === null ? el?.removeAttribute(nombre) : el?.setAttribute(nombre, valor);
+
+      tarjetas.forEach((t, n) => {
+        const activa = n === foco;
+        marcar(t, 'aria-current', activa ? 'true' : null);
+        // Oculto no es tabulable ni lo anuncia un lector de pantalla.
+        const cta = t.querySelector('a');
+        marcar(cta, 'aria-hidden', activa ? null : 'true');
+        marcar(cta, 'tabindex', activa ? null : '-1');
+      });
+      puntos.forEach((p, n) => marcar(p, 'aria-current', n === foco ? 'true' : null));
+      const el = tarjetas[foco];
+      pista.scrollTo({ left: el.offsetLeft - (pista.clientWidth - el.offsetWidth) / 2, behavior });
+    };
+
+    tarjetas.forEach((t, i) =>
+      t.addEventListener('click', (e) => {
+        if (i === foco || (e.target as HTMLElement).closest('a')) return;
+        ir(i);
+      }),
+    );
+    puntos.forEach((p, i) => p.addEventListener('click', () => ir(i)));
+    raiz.querySelectorAll<HTMLElement>('[data-planes-paso]').forEach((b) =>
+      b.addEventListener('click', () => ir(foco + Number(b.dataset.planesPaso))),
+    );
+
+    // El plan de partida ya aparece centrado, sin animación; al cambiar de ancho
+    // se recentra porque la medida de todo ha cambiado.
+    ir(foco, 'instant');
+    matchMedia('(max-width: 560px)').addEventListener('change', () => ir(foco, 'instant'));
+  });
+</script>

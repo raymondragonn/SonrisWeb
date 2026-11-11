@@ -1,0 +1,20 @@
+---
+/**
+ * Vídeo propio reemplazable desde el modo edición. Envuelve un <video> o el botón
+ * que abre el vídeo en un diálogo (data-video, data-poster y su <img> de portada):
+ * PHP cambia solo esos atributos al publicar (ver backend/php/lib/Videos.php).
+ *
+ * Los vídeos de YouTube no usan esto: son un enlace, marcado con attrs() y una clave
+ * terminada en ".youtube".
+ */
+interface Props {
+  k: string;
+}
+
+const { k } = Astro.props;
+
+if (!/^[a-z0-9][a-z0-9.-]*$/.test(k)) {
+  throw new Error(`Clave de vídeo inválida: "${k}". Usa minúsculas, números, punto y guion.`);
+}
+---
+<Fragment set:html={`<!--cms-video:${k}-->`} /><slot /><Fragment set:html="<!--/cms-video-->" />

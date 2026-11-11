@@ -4,6 +4,11 @@ import { NAV, CONTACTO } from '../data/site';
 import logo from '../assets/sonris/logos/logo-sonris-solido.png';
 import logoOscuro from '../assets/sonris/logos/logo-sonris-dark.png';
 import MenuMovil from '../islands/MenuMovil';
+import Cms from './Cms.astro';
+import { attrs, c } from '../lib/cms';
+import SelectorIdioma from './SelectorIdioma.astro';
+import { idioma, t } from '../i18n/idioma';
+import { aIngles } from '../i18n/rutas.js';
 
 interface Props {
   /** «transparente» arranca sobre el hero y se rellena al hacer scroll;
@@ -19,39 +24,41 @@ const acento = oscuro ? '#1A1A1A' : '#E76B0B';
 // El halo del hover va tintado del acento: un glow ámbar bajo un botón negro desentona.
 const glow = oscuro ? '0 12px 28px rgba(0,0,0,0.28)' : '0 12px 28px rgba(235,107,10,0.3)';
 const hrefCita = '/contacto/';
+// El menú móvil se pinta en el navegador al abrirse: sus enlaces tienen que
+// llegarle ya en el idioma de la página (el middleware solo ve el HTML inicial).
+const en = idioma() === 'en';
+const loc = (h: string) => (en ? aIngles(h) : h);
+// Los slots del menú móvil van escritos uno a uno (n0…n4, más abajo).
+if (NAV.length !== 5) throw new Error('Header.astro: NAV ya no tiene 5 enlaces; ajusta los slots n0…n4 del menú móvil.');
 ---
 
 <header
   id="sonris-header"
   data-variante={variante}
-  style={`--acento:${acento};--glow:${glow};${
-    solida
-      ? 'position:sticky;top:0;z-index:60;background:rgba(255,255,255,0.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(0,0,0,.04)'
-      : 'position:sticky;top:0;z-index:60'
-  }`}
+  style={`--acento:${acento};--glow:${glow};position:sticky;top:0;z-index:60`}
 >
   <div style="max-width:1240px;margin:0 auto;padding:20px 40px;display:flex;align-items:center;gap:36px;min-width:0">
     <a
       href="/"
-      aria-label="Sonris, ir al inicio"
+      aria-label={t('Sonris, ir al inicio', 'Sonris, go to the home page')}
       style="flex:none;display:inline-flex;align-items:center"
     >
       <Image src={oscuro ? logoOscuro : logo} alt="" width={68} height={68} loading="eager" style="display:block;width:68px;height:68px" />
     </a>
     <nav
       data-desknav
-      aria-label="Navegación principal"
+      aria-label={t('Navegación principal', 'Main navigation')}
       style="display:flex;align-items:center;gap:26px;margin-left:auto;flex-wrap:nowrap;white-space:nowrap;min-width:0"
     >
       {
-        NAV.map((e) => (
+        NAV.map((e, i) => (
           <a
             data-underline
             href={e.href}
             aria-current={e.href === actual ? 'page' : undefined}
             style={`font-size:16px;font-weight:500;color:${e.href === actual ? acento : '#1A1A1A'}`}
           >
-            {e.nombre}
+            <Cms k={`comun.nav.${i + 1}`}>{e.nombre}</Cms>
           </a>
         ))
       }
@@ -59,13 +66,29 @@ const hrefCita = '/contacto/';
 
     <MenuMovil
       client:idle
-      enlaces={[...NAV]}
-      actual={actual}
-      hrefCita={hrefCita}
-      telefono={CONTACTO.telefono}
-      telefonoE164={CONTACTO.telefonoE164}
+      enlaces={NAV.map((e) => ({ ...e, href: loc(e.href) }))}
+      actual={loc(actual)}
+      hrefCita={loc(hrefCita)}
+      hrefContacto={loc('/contacto/')}
       acento={acento}
-    />
+      en={en}
+    >
+      {/* Mismas claves que el menú de escritorio y el botón: un cambio, los dos.
+          Uno a uno: Astro no admite nombres de slot dinámicos dentro de un map. */}
+      <Fragment slot="n0"><Cms k="comun.nav.1">{NAV[0].nombre}</Cms></Fragment>
+      <Fragment slot="n1"><Cms k="comun.nav.2">{NAV[1].nombre}</Cms></Fragment>
+      <Fragment slot="n2"><Cms k="comun.nav.3">{NAV[2].nombre}</Cms></Fragment>
+      <Fragment slot="n3"><Cms k="comun.nav.4">{NAV[3].nombre}</Cms></Fragment>
+      <Fragment slot="n4"><Cms k="comun.nav.5">{NAV[4].nombre}</Cms></Fragment>
+      <Fragment slot="contacto"><Cms k="comun.nav.contacto">Contacto</Cms></Fragment>
+      <Fragment slot="cta"><Cms k="comun.header.boton">Reservar visita</Cms></Fragment>
+      <Fragment slot="idioma"><SelectorIdioma ruta={actual} grande /></Fragment>
+      <a
+        slot="telefono"
+        {...attrs({ href: c('contacto.telefono@tel', `tel:${CONTACTO.telefonoE164}`) })}
+        style="color:#E76B0B;font-weight:500"><Cms k="contacto.telefono">{CONTACTO.telefono}</Cms></a
+      >
+    </MenuMovil>
 
     <!-- El relleno no depende de la variante ni del scroll: es el mismo botón en
          los dos estados del header. Sólo cambia de color con «oscuro». -->
@@ -74,6 +97,11 @@ const hrefCita = '/contacto/';
       data-primary
       href={hrefCita}
       style={`display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:48px;padding:0 26px;border-radius:9999px;background:${acento};color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)`}
-      >Reservar visita</a>
+      ><Cms k="comun.header.boton">Reservar visita</Cms></a>
+
+    <div data-idioma-escritorio style="display:inline-flex;flex:none">
+      <SelectorIdioma ruta={actual} />
+    </div>
+
   </div>
 </header>

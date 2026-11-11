@@ -2,31 +2,45 @@
 import Base from '../../layouts/Base.astro';
 import FormularioCita from '../../islands/FormularioCita';
 import { CONTACTO, REDES_CONTACTO } from '../../data/site';
+import Cms from '../../components/Cms.astro';
+import CmsVideo from '../../components/CmsVideo.astro';
+import EnlaceContacto from '../../components/EnlaceContacto.astro';
+import { c } from '../../lib/cms';
+import { idioma, t } from '../../i18n/idioma';
 
 const ruta = '/contacto/';
 
-const TARJETAS = [
-  { etiqueta: 'Llámanos', valor: CONTACTO.telefono, href: `tel:${CONTACTO.telefonoE164}`, externo: false },
-  { etiqueta: 'WhatsApp', valor: CONTACTO.whatsapp, href: CONTACTO.whatsappUrl, externo: false },
-  { etiqueta: 'Email', valor: CONTACTO.email, href: `mailto:${CONTACTO.email}`, externo: false },
-  {
-    etiqueta: 'Dónde estamos',
-    valor: CONTACTO.calle,
-    href: CONTACTO.mapsUrl,
-    externo: true,
-  },
-];
+// Tres canales editables (el dato y su enlace salen de la misma clave) y la
+// dirección, que no se edita aquí: va ligada a las coordenadas del JSON-LD.
+const CANALES = [
+  { etiqueta: 'Llámanos', tipo: 'telefono' },
+  { etiqueta: 'WhatsApp', tipo: 'whatsapp' },
+  { etiqueta: 'Email', tipo: 'email' },
+] as const;
+const estiloDato = 'position:relative;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:17px;letter-spacing:-0.02em;color:#000000';
 
 ---
 
 <Base
-  titulo="Sonris | Contacto"
-  descripcion="Teléfono 910 459 517, WhatsApp 658 746 117, hola@sonris.es. Avenida Isabel de Valois 55, 28050 Madrid. Lunes a viernes de 12:00 a 20:00 h."
+  titulo="Contacto y cita en Sanchinarro, Madrid | Sonris"
+  descripcion={[
+    t('Teléfono ', 'Phone '),
+    c('contacto.telefono', CONTACTO.telefono),
+    ', WhatsApp ',
+    c('contacto.whatsapp', CONTACTO.whatsapp),
+    ', ',
+    c('contacto.email', CONTACTO.email),
+    t('. Avenida Isabel de Valois 55, 28050 Madrid. Lunes a viernes de 12:00 a 20:00 h.', '. Avenida Isabel de Valois 55, 28050 Madrid. Monday to Friday, 12:00 to 20:00.'),
+  ]}
   {ruta}
-  migas={[{ nombre: 'Contacto', href: ruta }]}
+  migas={[{ nombre: c('comun.nav.contacto', 'Contacto'), href: ruta }]}
   headerVariante="solida"
   hrefCita="#datos"
 >
+  {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
+      las secciones claras no llevan color propio. */}
+  <div data-fondo-pagina data-gris aria-hidden="true"></div>
+
   <section data-sec id="datos" aria-labelledby="datos-t" style="padding:72px 0 96px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:start;margin-bottom:40px">
@@ -36,32 +50,33 @@ const TARJETAS = [
           id="datos-t"
           style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:52px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
         >
-          Hablamos cuando te venga bien
+          <Cms k="contacto.titulo">Hablamos cuando te venga bien</Cms>
         </h1>
         <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:56ch">
-          Estamos en {CONTACTO.barrio}, de lunes a viernes de 12:00 a 20:00. Elige el canal que prefieras: todos llegan al mismo equipo.
+          Estamos en {CONTACTO.barrio}, de lunes a viernes de 12:00 a 20:00. <Cms k="contacto.texto">Elige el canal que prefieras: todos llegan al mismo equipo.</Cms>
         </p>
         </div>
         <!-- Los cuatro canales, dos por fila y sin icono: al lado del
              titular tienen que leerse de un vistazo, no competir con él. -->
         <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
           {
-            TARJETAS.map((c) => (
+            CANALES.map((canal) => (
               <li>
-                <span style="display:block;font-size:14px;color:#6B6B6B;margin-bottom:2px">{c.etiqueta}</span>
-                <a
-                  data-underline
-                  href={c.href}
-                  target={c.externo ? '_blank' : undefined}
-                  rel={c.externo ? 'noopener noreferrer' : undefined}
-                  style="position:relative;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:17px;letter-spacing:-0.02em;color:#000000"
-                >
-                  {c.valor}
-                  {c.externo && <span class="vh"> (se abre en una pestaña nueva)</span>}
-                </a>
+                <span style="display:block;font-size:14px;color:#6B6B6B;margin-bottom:2px">
+                  <Cms k={`contacto.canales.${canal.tipo}`}>{canal.etiqueta}</Cms>
+                </span>
+                <EnlaceContacto tipo={canal.tipo} data-underline style={estiloDato} />
               </li>
             ))
           }
+          <li>
+            <span style="display:block;font-size:14px;color:#6B6B6B;margin-bottom:2px">
+              <Cms k="contacto.canales.direccion">Dónde estamos</Cms>
+            </span>
+            <a data-underline href={CONTACTO.mapsUrl} target="_blank" rel="noopener noreferrer" style={estiloDato}>
+              {CONTACTO.calle}<span class="vh"> (se abre en una pestaña nueva)</span>
+            </a>
+          </li>
         </ul>
       </div>
       {/* El vídeo acompaña mientras se rellena: queda pegado al scroll y entra
@@ -72,19 +87,21 @@ const TARJETAS = [
           client:load
           email={CONTACTO.email}
           telefono={CONTACTO.telefono}
-          origen="la página de contacto"
+          origen={idioma() === 'en' ? 'la página de contacto en inglés' : 'la página de contacto'}
+          en={idioma() === 'en'}
           />
         </div>
         <div data-entra data-visita style="--retardo:140ms">
-          <video
+          <CmsVideo k="contacto.video"><video
             src="/video/primera-visita.mp4"
+            data-cms-min="960x540"
             poster="/img/primera-visita.webp"
             muted
             loop
             playsinline
             preload="none"
             aria-label="Cómo es la primera visita en Sonris"
-          ></video>
+          ></video></CmsVideo>
           <button type="button" data-visita-sonido aria-pressed="false" aria-label="Activar el sonido del vídeo">
             <span aria-hidden="true" data-icono>♪</span>
           </button>
@@ -97,7 +114,7 @@ const TARJETAS = [
     data-sec
     id="como-llegar"
     aria-labelledby="mapa-t"
-    style="background:#F7F7F7;padding:96px 0 112px;border-radius:40px"
+    style="padding:96px 0 112px"
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
         <h2
@@ -105,7 +122,7 @@ const TARJETAS = [
           id="mapa-t"
           style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
         >
-          En Sanchinarro, junto a Isabel de Valois
+          <Cms k="contacto.mapa.titulo">En Sanchinarro, junto a Isabel de Valois</Cms>
         </h2>
         <div
           style="position:relative;aspect-ratio:16/10;border-radius:40px;overflow:hidden;background:#EFEFEF;box-shadow:0 12px 36px rgba(0,0,0,.03)"
@@ -124,7 +141,7 @@ const TARJETAS = [
             href={CONTACTO.mapsUrl}
             style="position:relative;color:#1A1A1A;font-weight:500"
             target="_blank"
-            rel="noopener noreferrer">Abre la ruta en Google Maps<span class="vh"> (se abre en una pestaña nueva)</span></a
+            rel="noopener noreferrer"><Cms k="contacto.mapa.enlace">Abre la ruta en Google Maps</Cms><span class="vh"> (se abre en una pestaña nueva)</span></a
           >
         </p>
     </div>
@@ -139,10 +156,10 @@ const TARJETAS = [
             id="redes-t"
             style="margin:0 0 16px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
-            Aquí publicamos el día a día
+            <Cms k="contacto.redes.titulo">Aquí publicamos el día a día</Cms>
           </h2>
           <p style="margin:0;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:44ch">
-            Casos, novedades y trozos de clínica. Si quieres ver cómo trabajamos antes de venir, empieza por Instagram.
+            <Cms k="contacto.redes.texto">Casos, novedades y trozos de clínica. Si quieres ver cómo trabajamos antes de venir, empieza por Instagram.</Cms>
           </p>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:16px">

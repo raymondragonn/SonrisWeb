@@ -1,24 +1,35 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 type Enlace = { nombre: string; href: string };
 
 /** Isla: el menú de navegación por debajo de 1120px.
- *  El botón nace en el marcado del header, así que la isla lo incluye. */
+ *  El botón nace en el marcado del header, así que la isla lo incluye.
+ *
+ *  Los textos editables (nombres del menú, «Contacto», «Reservar visita» y el
+ *  enlace del teléfono) llegan como slots: HTML ya pintado por Astro, que el modo
+ *  edición reescribe al publicar. Como props serializadas, React volvería a pintar
+ *  el texto viejo al hidratar. Slots: n0…nN (un nombre por enlace), contacto,
+ *  cta y telefono; sin slot se usa el texto de las props. */
 export default function MenuMovil({
   enlaces,
   actual,
   hrefCita,
-  telefono,
-  telefonoE164,
+  hrefContacto = '/contacto/',
   acento,
+  en = false,
+  ...slots
 }: {
   enlaces: Enlace[];
   actual: string;
   hrefCita: string;
-  telefono: string;
-  telefonoE164: string;
+  hrefContacto?: string;
   acento: string;
+  /** Página en inglés: textos propios del menú y enlaces ya traducidos. */
+  en?: boolean;
+  [slot: string]: unknown;
 }) {
+  const slot = (nombre: string) => slots[nombre] as ReactNode | undefined;
+  const t = (es: string, ingles: string) => (en ? ingles : es);
   const [abierto, setAbierto] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
   const boton = useRef<HTMLButtonElement>(null);
@@ -61,7 +72,7 @@ export default function MenuMovil({
         ref={boton}
         type="button"
         data-burger
-        aria-label={abierto ? 'Cerrar el menú' : 'Abrir el menú'}
+        aria-label={abierto ? t('Cerrar el menú', 'Close the menu') : t('Abrir el menú', 'Open the menu')}
         aria-expanded={abierto}
         onClick={() => setAbierto((v) => !v)}
         style={{
@@ -108,13 +119,14 @@ export default function MenuMovil({
             background: 'rgba(0,0,0,0.45)',
             WebkitBackdropFilter: 'blur(4px)',
             backdropFilter: 'blur(4px)',
+            animation: 'sonris-aparece 200ms ease-out',
           }}
         >
           <div
             ref={panel}
             role="dialog"
             aria-modal="true"
-            aria-label="Navegación principal"
+            aria-label={t('Navegación principal', 'Main navigation')}
             style={{
               position: 'absolute',
               top: 12,
@@ -126,6 +138,7 @@ export default function MenuMovil({
               borderRadius: 40,
               padding: '28px 24px',
               boxShadow: '0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)',
+              animation: 'sonris-aviso-entra 280ms cubic-bezier(0.22, 1, 0.36, 1)',
             }}
           >
             {/* El panel arranca en top:12 y tapa el botón del header, que queda
@@ -134,7 +147,7 @@ export default function MenuMovil({
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
               <button
                 type="button"
-                aria-label="Cerrar el menú"
+                aria-label={t('Cerrar el menú', 'Close the menu')}
                 onClick={() => {
                   setAbierto(false);
                   boton.current?.focus();
@@ -159,9 +172,9 @@ export default function MenuMovil({
                 </svg>
               </button>
             </div>
-            <nav aria-label="Menú">
+            <nav aria-label={t('Menú', 'Menu')}>
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 4 }}>
-                {enlaces.map((e) => (
+                {enlaces.map((e, i) => (
                   <li key={e.href}>
                     <a
                       href={e.href}
@@ -180,13 +193,13 @@ export default function MenuMovil({
                         color: e.href === actual ? acento : '#1A1A1A',
                       }}
                     >
-                      {e.nombre}
+                      {slot(`n${i}`) ?? e.nombre}
                     </a>
                   </li>
                 ))}
                 <li>
                   <a
-                    href="/contacto/"
+                    href={hrefContacto}
                     onClick={() => setAbierto(false)}
                     style={{
                       display: 'flex',
@@ -198,10 +211,10 @@ export default function MenuMovil({
                       fontWeight: 600,
                       fontSize: 20,
                       letterSpacing: '-0.02em',
-                      color: actual === '/contacto/' ? acento : '#1A1A1A',
+                      color: actual === hrefContacto ? acento : '#1A1A1A',
                     }}
                   >
-                    Contacto
+                    {slot('contacto') ?? t('Contacto', 'Contact')}
                   </a>
                 </li>
               </ul>
@@ -225,16 +238,14 @@ export default function MenuMovil({
                 fontWeight: 600,
               }}
             >
-              Reservar visita
+              {slot('cta') ?? t('Reservar visita', 'Book a visit')}
               <span data-arrow style={{ display: 'inline-block', transition: 'transform 300ms cubic-bezier(0.22,1,0.36,1)' }}>
                 →
               </span>
             </a>
+            {slot('idioma') && <div style={{ marginTop: 20 }}>{slot('idioma')}</div>}
             <p style={{ margin: '14px 0 0', fontSize: 16, color: '#6B6B6B' }}>
-              o llámanos al{' '}
-              <a href={`tel:${telefonoE164}`} style={{ color: '#E76B0B', fontWeight: 500 }}>
-                {telefono}
-              </a>
+              {t('o llámanos al', 'or call us on')} {slot('telefono')}
             </p>
           </div>
         </div>

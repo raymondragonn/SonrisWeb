@@ -1,0 +1,269 @@
+/* Pantallas del acceso al modo edición (entrar, alta, salir, republicar).
+   Mismos tokens que src/styles/global.css: se sirven desde PHP, fuera de Astro,
+   así que no pueden importar esa hoja. */
+:root {
+  --amber: #e76b0b;
+  --amber-hover: #cf5f09;
+  --peach: #fee1cb;
+  --navy: #16163f;
+  --ink: #000000;
+  --ink-soft: #1a1a1a;
+  --ink-muted: #6b6b6b;
+  --border: rgba(0, 0, 0, 0.12);
+  --error: #b3261e;
+  --e2: 0 4px 12px rgba(0, 0, 0, 0.06), 0 24px 56px rgba(0, 0, 0, 0.1);
+  --glow: 0 12px 28px rgba(235, 107, 10, 0.3);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  color: var(--ink-soft);
+  background: var(--amber);
+  -webkit-font-smoothing: antialiased;
+}
+
+.caja {
+  width: 100%;
+  max-width: 460px;
+  background: #ffffff;
+  border-radius: 40px;
+  padding: 44px 44px 36px;
+  box-shadow: var(--e2);
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+.marca img {
+  display: block;
+  width: 56px;
+  height: 56px;
+}
+
+.etiqueta {
+  display: inline-block;
+  margin: 28px 0 10px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: var(--peach);
+  color: var(--amber);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-family: Poppins, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Título pegado al logo (la pantalla de acceso no lleva etiqueta ni entradilla). */
+.marca + h1 {
+  margin: 28px 0 28px;
+}
+
+.entrada {
+  margin: 0 0 28px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+/* ---- avisos ---- */
+.aviso {
+  margin: 0 0 22px;
+  padding: 14px 18px;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  background: #fcedec;
+  color: var(--error);
+}
+.aviso--guia,
+.aviso--nota {
+  background: var(--peach);
+  color: var(--ink-soft);
+}
+.aviso a {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* ---- formulario: mismas medidas que el formulario de cita ---- */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+input {
+  width: 100%;
+  height: 56px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 17px;
+  color: var(--ink-soft);
+  transition:
+    border-color 200ms var(--ease),
+    box-shadow 200ms var(--ease);
+}
+input:focus {
+  outline: none;
+  border-color: var(--amber);
+  box-shadow: 0 0 0 4px rgba(231, 107, 11, 0.16);
+}
+
+.campo-clave {
+  position: relative;
+}
+.campo-clave input {
+  padding-right: 56px;
+}
+.ver-clave {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.ver-clave:hover {
+  background: #f7f7f7;
+  color: var(--ink-soft);
+}
+.ver-clave:focus-visible {
+  outline: 2px solid var(--amber);
+}
+.ver-clave .tachado {
+  display: none;
+}
+.ver-clave[aria-pressed='true'] .tachado {
+  display: block;
+}
+
+.pista {
+  margin: -12px 0 20px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.pista--corta {
+  color: var(--amber);
+}
+
+/* ---- botones: el primario del sitio (píldora naranja con halo) ---- */
+.primario,
+.secundario {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 32px;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 18.66px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 300ms var(--ease),
+    box-shadow 300ms var(--ease);
+}
+.primario {
+  border: 0;
+  background: var(--amber);
+  color: #ffffff;
+}
+.primario:hover {
+  background: var(--amber-hover);
+  box-shadow: var(--glow);
+}
+.primario span {
+  display: inline-block;
+  transition: transform 300ms var(--ease);
+}
+.primario:hover span {
+  transform: translateX(4px);
+}
+.primario:focus-visible,
+.secundario:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 3px;
+}
+.secundario {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--ink-soft);
+}
+.secundario:hover {
+  border-color: var(--ink-soft);
+}
+
+.volver {
+  display: inline-block;
+  margin-top: 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+.volver:hover {
+  color: var(--ink-soft);
+}
+
+.dato {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .caja {
+    padding: 32px 24px 28px;
+    border-radius: 28px;
+  }
+  h1 {
+    font-size: 28px;
+  }
+}

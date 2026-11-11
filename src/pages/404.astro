@@ -1,15 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
-import { CONTACTO } from '../data/site';
+import Cms from '../components/Cms.astro';
+import EnlaceContacto from '../components/EnlaceContacto.astro';
 ---
 
 <Base
-  titulo="Sonris | Página no encontrada"
+  titulo="Página no encontrada | Sonris"
   descripcion="No encontramos esa página. Te llevamos a ortodoncia invisible, a todos los tratamientos o al inicio."
   ruta="/404/"
   headerVariante="solida"
   noindex
 >
+  {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
+      las secciones claras no llevan color propio. */}
+  <div data-fondo-pagina data-gris aria-hidden="true"></div>
+
   <section data-sec style="padding:72px 0 112px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div
@@ -22,42 +27,41 @@ import { CONTACTO } from '../data/site';
         >
         </div>
         <div style="position:relative">
-          <p style="margin:0 0 20px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B">Error 404</p>
+          <p style="margin:0 0 20px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B"><Cms k="error.etiqueta">Error 404</Cms></p>
           <h1
             data-h1
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:52px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
-            No encontramos esta <span style="color:#E76B0B">página</span>
+            <Cms k="error.titulo">No encontramos esta</Cms> <span style="color:#E76B0B"><Cms k="error.titulo-acento">página</Cms></span>
           </h1>
           <p style="margin:0 0 16px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:60ch">
-            La dirección no existe o se ha escrito de otra forma. Lo que buscabas está casi seguro en una de estas tres páginas.
+            <Cms k="error.texto-1">La dirección no existe o se ha escrito de otra forma. Lo que buscabas está casi seguro en una de estas tres páginas.</Cms>
           </p>
           <p style="margin:0 0 32px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
-            Y si lo que necesitabas era pedir cita, eso se hace en un minuto por teléfono.
+            <Cms k="error.texto-2">Y si lo que necesitabas era pedir cita, eso se hace en un minuto por teléfono.</Cms>
           </p>
           <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:32px">
             <a
               data-primary
               href="/ortodoncia-invisible/"
               style="display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:0 28px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Ortodoncia invisible<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+              ><Cms k="comun.nav.2">Ortodoncia invisible</Cms><span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
             >
             <a
               data-secondary
               href="/tratamientos/"
               style="display:inline-flex;align-items:center;min-height:56px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Todos los tratamientos</a
+              ><Cms k="error.boton-2">Todos los tratamientos</Cms></a
             >
             <a
               data-secondary
               href="/"
               style="display:inline-flex;align-items:center;min-height:56px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Volver al inicio</a
+              ><Cms k="error.boton-3">Volver al inicio</Cms></a
             >
           </div>
           <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A">
-            O llámanos al <a href={`tel:${CONTACTO.telefonoE164}`} data-underline style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a
-            >, de lunes a viernes de 12:00 a 20:00.
+            <Cms k="error.llamada">O llámanos al</Cms> <EnlaceContacto tipo="telefono" data-underline style="color:#1A1A1A;font-weight:500" />, de lunes a viernes de 12:00 a 20:00.
           </p>
         </div>
       </div>

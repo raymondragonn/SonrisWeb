@@ -4,6 +4,10 @@ import Base from '../layouts/Base.astro';
 import CtaFinal from '../components/CtaFinal.astro';
 import Resenas from '../components/Resenas.astro';
 import FocoTratamientos from '../islands/FocoTratamientos';
+import Cms from '../components/Cms.astro';
+import CmsImage from '../components/CmsImage.astro';
+import CmsVideo from '../components/CmsVideo.astro';
+import { attrs, c, fondo } from '../lib/cms';
 import alineadorImg from '../assets/sonris/tratamientos/Ortodoncia-Invisible-Hero.webp';
 import { CONTACTO, DIRECCION_MEDICA } from '../data/site';
 import { TRATAMIENTOS } from '../data/tratamientos';
@@ -18,6 +22,8 @@ import cirugiaOralImg from '../assets/sonris/tratamientos/Cirugia-Oral-Angels.we
 import periodonciaImg from '../assets/sonris/tratamientos/Periodoncia-Ozkan.webp';
 import odontologiaImg from '../assets/sonris/tratamientos/Odontologia-General-Ozkan.webp';
 import fondoTratamientos from '../assets/sonris/iconos/fondo-memphis-tratamientos.png';
+import { idioma } from '../i18n/idioma';
+import { aIngles } from '../i18n/rutas.js';
 
 // Una foto por tratamiento, indexada por slug. El carrusel es una isla de
 // React y recibe URLs, así que aquí se optimizan con getImage.
@@ -31,6 +37,9 @@ const FOTOS: Record<string, ImageMetadata> = {
   'odontologia-general': odontologiaImg,
 };
 
+// Los slots del carrusel van escritos uno a uno (n0…n6, más abajo).
+if (TRATAMIENTOS.length !== 7) throw new Error('index.astro: ya no hay 7 tratamientos; ajusta los slots n0…n6 del carrusel.');
+
 const fondoTrat = await getImage({ src: fondoTratamientos, width: 1672, format: 'webp' });
 
 // Igual que en el bloque de reseñas: 4.9 se escribe 4,9.
@@ -38,19 +47,25 @@ const media = RESUMEN.media.toFixed(1).replace('.', ',');
 
 const foco = await Promise.all(
   TRATAMIENTOS.map(async (t) => ({
-    nombre: t.nombre,
-    href: `/tratamientos/${t.slug}/`,
-    alt: `${t.nombre} en Sonris`,
+    slug: t.slug,
+    // En inglés: nombre traducido y ruta inglesa (la isla los pinta en el navegador).
+    nombre: c(`tratamientos.${t.slug}.nombre`, t.nombre).v,
+    href: idioma() === 'en' ? aIngles(`/tratamientos/${t.slug}/`) : `/tratamientos/${t.slug}/`,
+    alt: idioma() === 'en' ? `${c(`tratamientos.${t.slug}.nombre`, t.nombre).v} at Sonris` : `${t.nombre} en Sonris`,
     img: (await getImage({ src: FOTOS[t.slug], width: 720, format: 'webp' })).src,
   }))
 );
 ---
 
 <Base
-  titulo="Sonris | Inicio"
-  descripcion="Alineadores transparentes con dirección médica de la Dra. Isabel Vélez, con la máxima categoría de proveedor de ortodoncia invisible. Primera visita gratuita en Avenida Isabel de Valois 55, Madrid."
+  titulo="Ortodoncia invisible en Sanchinarro, Madrid | Sonris"
+  descripcion="Ortodoncia invisible en Sanchinarro, Madrid, con la Dra. Isabel Vélez: la máxima categoría de proveedor de alineadores. Primera visita gratuita."
   ruta="/"
 >
+  {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
+      las secciones claras no llevan color propio. */}
+  <div data-fondo-pagina data-gris aria-hidden="true"></div>
+
   <section id="inicio" aria-labelledby="hero-t" style="position:relative;overflow:hidden;background:#EFEDEB">
     <div
       data-herobox
@@ -61,8 +76,9 @@ const foco = await Promise.all(
            eso se encarga ui.ts a través de [data-giro]. El póster evita el
            parpadeo mientras llega el mp4. -->
       <div data-giro style="position:absolute;inset:0;pointer-events:none">
-        <video
+        <CmsVideo k="inicio.hero.video"><video
           src="/video/alineador-completo.mp4"
+          data-cms-min="1920x1080"
           poster="/img/alineador-completo-poster.webp"
           autoplay
           muted
@@ -70,7 +86,7 @@ const foco = await Promise.all(
           playsinline
           preload="auto"
           aria-label="Simulación del movimiento dental de un tratamiento de ortodoncia"
-          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"></video>
+          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"></video></CmsVideo>
       </div>
       <div
         aria-hidden="true"
@@ -87,22 +103,22 @@ const foco = await Promise.all(
             id="hero-t"
             style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:68px;line-height:1.05;letter-spacing:-0.02em;color:#000000;max-width:14ch"
           >
-            Sonríe sin <span style="color:#E76B0B">notarlo</span>
+            <Cms k="inicio.hero.titulo">Sonríe sin</Cms> <span style="color:#E76B0B"><Cms k="inicio.hero.titulo-acento">notarlo</Cms></span>
           </h1>
           <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:#1A1A1A;max-width:40ch">
-            Ortodoncia invisible en Sanchinarro. Primera visita GRATUITA.
+            <Cms k="inicio.hero.texto">Ortodoncia invisible en Sanchinarro. Primera visita GRATUITA.</Cms>
           </p>
           <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
             <a
               data-primary
               href="/contacto/"
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Reserva tu primera visita</a
+              ><Cms k="inicio.hero.boton">Reserva tu primera visita</Cms></a
             >
             <a
-              href={CONTACTO.whatsappUrl}
+              {...attrs({ href: c('contacto.whatsapp@wa', CONTACTO.whatsappUrl) })}
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 28px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:17px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1)"
-              >WhatsApp</a
+              ><Cms k="inicio.hero.boton-2">WhatsApp</Cms></a
             >
           </div>
         </div>
@@ -120,28 +136,28 @@ const foco = await Promise.all(
     >
       <div style="padding:0 28px">
         <p
-          data-count-to="25"
+          {...attrs({ 'data-count-to': c('inicio.cifras.anos.numero', '25') })}
           data-count-prefix="+"
           style="margin:0 0 6px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#E76B0B"
         >
-          +25
+          +<Cms k="inicio.cifras.anos.numero">25</Cms>
         </p>
-        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">años en ortodoncia</p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B"><Cms k="inicio.cifras.anos.texto">años en ortodoncia</Cms></p>
       </div>
       <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
         <p
           style="margin:0 0 6px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:24px;line-height:1.2;letter-spacing:-0.02em;color:#000000"
         >
-          Solo alineadores
+          <Cms k="inicio.cifras.exclusiva.titulo">Solo alineadores</Cms>
         </p>
-        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">dedicación exclusiva</p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B"><Cms k="inicio.cifras.exclusiva.texto">dedicación exclusiva</Cms></p>
       </div>
       <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
         <span
           style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px"
-          >Diamond provider</span
+          ><Cms k="comun.diamond">Diamond provider</Cms></span
         >
-        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">máxima categoría de proveedor</p>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B"><Cms k="inicio.cifras.diamond.texto">máxima categoría de proveedor</Cms></p>
       </div>
       <div style="padding:0 28px;border-left:1px solid rgba(0,0,0,0.08)">
         <a href="#resenas" style="display:block;color:inherit">
@@ -155,7 +171,7 @@ const foco = await Promise.all(
             >
           </p>
           <p style="margin:0;font-size:15px;line-height:1.6;color:#6B6B6B">
-            <span data-count-to={RESUMEN.total}>{RESUMEN.total}</span> reseñas en Google
+            <span data-count-to={RESUMEN.total}>{RESUMEN.total}</span> <Cms k="inicio.cifras.resenas.texto">reseñas en Google</Cms>
             <span aria-hidden="true">→</span>
           </p>
           <span class="vh">{media} de 5 sobre {RESUMEN.total} reseñas. Ir a la sección de reseñas</span>
@@ -173,20 +189,20 @@ const foco = await Promise.all(
             id="orto-t"
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
-            Alineadores que te puedes quitar
+            <Cms k="inicio.ortodoncia.titulo">Alineadores que te puedes quitar</Cms>
           </h2>
           <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:60ch">
-            Son férulas transparentes hechas a medida que vas cambiando según tu plan. Te las quitas para comer y para lavarte los dientes,
-            así que tu rutina apenas cambia.
+            <Cms k="inicio.ortodoncia.texto-1">Son férulas transparentes hechas a medida que vas cambiando según tu plan. Te las quitas para comer y para lavarte los dientes,
+            así que tu rutina apenas cambia.</Cms>
           </p>
           <p style="margin:0 0 36px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
-            En la página del tratamiento te contamos las opciones, cómo se planifica tu caso y qué marcas de alineador trabajamos.
+            <Cms k="inicio.ortodoncia.texto-2">En la página del tratamiento te contamos las opciones, cómo se planifica tu caso y qué marcas de alineador trabajamos.</Cms>
           </p>
           <a
             data-primary
             href="/ortodoncia-invisible/"
             style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:48px;padding:0 28px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >Ver el tratamiento completo<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
+            ><Cms k="inicio.ortodoncia.boton">Ver el tratamiento completo</Cms><span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
               >→</span
             ></a
           >
@@ -196,7 +212,8 @@ const foco = await Promise.all(
             data-circulo-movil
             style="position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
           >
-            <Image
+            <CmsImage
+              k="inicio.ortodoncia.foto"
               data-cardimg
               src={alineadorImg}
               widths={[520, 1040]}
@@ -218,6 +235,7 @@ const foco = await Promise.all(
     data-peach
     aria-labelledby="trat-t"
     style={`background-color:#CCE1E4;background-image:url(${fondoTrat.src});background-size:cover;background-position:center;padding:104px 0 112px;border-radius:40px`}
+    {...fondo('inicio.tratamientos.fondo', fondoTrat)}
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <h2
@@ -225,18 +243,28 @@ const foco = await Promise.all(
         id="trat-t"
         style="margin:0 auto 48px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch;text-align:center"
       >
-        Lo demás que tu boca puede necesitar
+        <Cms k="inicio.tratamientos.titulo">Lo demás que tu boca puede necesitar</Cms>
       </h2>
     </div>
 
-    <FocoTratamientos client:visible items={foco} />
+    <FocoTratamientos client:visible items={foco} en={idioma() === 'en'}>
+      {/* Los nombres, como slots: misma clave que en el hub y en cada tratamiento.
+          Uno a uno: Astro no admite nombres de slot dinámicos dentro de un map. */}
+      <Fragment slot="n0"><Cms k={`tratamientos.${foco[0].slug}.nombre`}>{foco[0].nombre}</Cms></Fragment>
+      <Fragment slot="n1"><Cms k={`tratamientos.${foco[1].slug}.nombre`}>{foco[1].nombre}</Cms></Fragment>
+      <Fragment slot="n2"><Cms k={`tratamientos.${foco[2].slug}.nombre`}>{foco[2].nombre}</Cms></Fragment>
+      <Fragment slot="n3"><Cms k={`tratamientos.${foco[3].slug}.nombre`}>{foco[3].nombre}</Cms></Fragment>
+      <Fragment slot="n4"><Cms k={`tratamientos.${foco[4].slug}.nombre`}>{foco[4].nombre}</Cms></Fragment>
+      <Fragment slot="n5"><Cms k={`tratamientos.${foco[5].slug}.nombre`}>{foco[5].nombre}</Cms></Fragment>
+      <Fragment slot="n6"><Cms k={`tratamientos.${foco[6].slug}.nombre`}>{foco[6].nombre}</Cms></Fragment>
+    </FocoTratamientos>
 
     <div style="display:flex;justify-content:center">
       <a
         data-secondary
         href="/tratamientos/"
         style="display:inline-flex;white-space:nowrap;align-items:center;gap:10px;min-height:48px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
-        >Ver todos los tratamientos<span>→</span></a
+        ><Cms k="inicio.tratamientos.boton">Ver todos los tratamientos</Cms><span>→</span></a
       >
     </div>
   </section>
@@ -248,7 +276,8 @@ const foco = await Promise.all(
           <div
             style="position:relative;aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
           >
-            <Image
+            <CmsImage
+              k="inicio.doctora.foto"
               data-portrait
               src={doctoraImg}
               widths={[500, 1000]}
@@ -268,7 +297,7 @@ const foco = await Promise.all(
               >
                 {DIRECCION_MEDICA.nombre}
               </p>
-              <p style="margin:0 0 8px;font-size:15px;line-height:1.5;color:#1A1A1A">Directora médica · Ortodoncia invisible</p>
+              <p style="margin:0 0 8px;font-size:15px;line-height:1.5;color:#1A1A1A"><Cms k="inicio.doctora.lamina">Directora médica · Ortodoncia invisible</Cms></p>
             </div>
           </div>
         </figure>
@@ -281,16 +310,16 @@ const foco = await Promise.all(
             {DIRECCION_MEDICA.nombre}
           </h2>
           <p style="margin:0 0 28px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:56ch">
-            Directora médica · Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.
+            <Cms k="inicio.doctora.texto-1">Directora médica · Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.</Cms>
           </p>
           <p style="margin:0 0 36px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
-            Ella valora tu caso en la primera visita y firma tu plan de tratamiento.
+            <Cms k="inicio.doctora.texto-2">Ella valora tu caso en la primera visita y firma tu plan de tratamiento.</Cms>
           </p>
           <a
             data-underline
             href="/dra-isabel-velez/"
             style="display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:500;color:#1A1A1A"
-            >Conoce su trayectoria <span>→</span></a
+            ><Cms k="inicio.doctora.enlace">Conoce su trayectoria</Cms> <span>→</span></a
           >
         </div>
       </div>

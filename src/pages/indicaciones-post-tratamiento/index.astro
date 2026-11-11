@@ -5,43 +5,50 @@
 // PENDIENTES.md. Hasta entonces, noindex.
 import Base from '../../layouts/Base.astro';
 import { SITE, CONTACTO, DIRECCION_MEDICA } from '../../data/site';
+import Cms from '../../components/Cms.astro';
+import EnlaceContacto from '../../components/EnlaceContacto.astro';
+import { c } from '../../lib/cms';
 
 const ruta = '/indicaciones-post-tratamiento/';
 ---
 
 <Base
-  titulo={`${SITE.nombre} | Indicaciones post-tratamiento`}
+  titulo={[c('indicaciones.titulo', 'Indicaciones post-tratamiento'), ` | ${SITE.nombre}`]}
   descripcion="Lo que conviene hacer en casa después de cada intervención, por escrito y por tratamiento."
   {ruta}
   migas={[
-    { nombre: 'Tratamientos', href: '/tratamientos/' },
-    { nombre: 'Indicaciones post-tratamiento', href: ruta },
+    { nombre: c('comun.nav.3', 'Tratamientos'), href: '/tratamientos/' },
+    { nombre: c('indicaciones.titulo', 'Indicaciones post-tratamiento'), href: ruta },
   ]}
   headerVariante="solida"
   noindex
 >
+  {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
+      las secciones claras no llevan color propio. */}
+  <div data-fondo-pagina data-gris aria-hidden="true"></div>
+
   <section data-sec aria-labelledby="t" style="padding:64px 0 48px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <nav aria-label="Ruta" style="margin-bottom:28px;font-size:15px;color:#6B6B6B">
-        <a data-underline href="/" style="color:#6B6B6B">Inicio</a> ·
-        <a data-underline href="/tratamientos/" style="color:#6B6B6B">Tratamientos</a> ·
-        <span style="color:#1A1A1A">Indicaciones post-tratamiento</span>
+        <a data-underline href="/" style="color:#6B6B6B"><Cms k="comun.nav.1">Inicio</Cms></a> ·
+        <a data-underline href="/tratamientos/" style="color:#6B6B6B"><Cms k="comun.nav.3">Tratamientos</Cms></a> ·
+        <span style="color:#1A1A1A"><Cms k="indicaciones.titulo">Indicaciones post-tratamiento</Cms></span>
       </nav>
-      <p style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B">Después de la consulta</p>
+      <p style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B"><Cms k="indicaciones.eyebrow">Después de la consulta</Cms></p>
       <h1
         data-h1
         id="t"
         style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:48px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch"
       >
-        Indicaciones post-tratamiento
+        <Cms k="indicaciones.titulo">Indicaciones post-tratamiento</Cms>
       </h1>
       <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
-        Lo que conviene hacer en casa después de cada intervención, por escrito y por tratamiento.
+        <Cms k="indicaciones.entradilla">Lo que conviene hacer en casa después de cada intervención, por escrito y por tratamiento.</Cms>
       </p>
     </div>
   </section>
 
-  <section data-sec aria-labelledby="cuerpo-t" style="background:#F7F7F7;padding:72px 0 96px">
+  <section data-sec aria-labelledby="cuerpo-t" style="padding:72px 0 96px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:56px;align-items:start">
         <div>
@@ -49,44 +56,44 @@ const ruta = '/indicaciones-post-tratamiento/';
             id="cuerpo-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:30px;line-height:1.2;letter-spacing:-0.02em;color:#000000"
           >
-            Instrucciones por tipo de intervención
+            <Cms k="indicaciones.cuerpo.titulo">Instrucciones por tipo de intervención</Cms>
           </h2>
           <p style="margin:0 0 16px;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">
-            Cada intervención tiene sus propios cuidados. Al terminar la consulta te entregamos la hoja que corresponde a
-            tu caso, firmada por {DIRECCION_MEDICA.nombre} y fechada, con las pautas de higiene, alimentación y medicación
-            que debes seguir en los días siguientes.
+            <Cms k="indicaciones.cuerpo.texto-1a">Cada intervención tiene sus propios cuidados. Al terminar la consulta te entregamos la hoja que corresponde a
+            tu caso, firmada por</Cms> {DIRECCION_MEDICA.nombre} <Cms k="indicaciones.cuerpo.texto-1b">y fechada, con las pautas de higiene, alimentación y medicación
+            que debes seguir en los días siguientes.</Cms>
           </p>
           <p style="margin:0 0 16px;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">
-            Estas indicaciones son individuales: dependen de la intervención, de tu estado de salud y de la medicación que
-            tomes. Por eso no sustituyen a las que te hayamos dado en consulta. Si has perdido tu hoja, pídenos otra copia.
+            <Cms k="indicaciones.cuerpo.texto-2">Estas indicaciones son individuales: dependen de la intervención, de tu estado de salud y de la medicación que
+            tomes. Por eso no sustituyen a las que te hayamos dado en consulta. Si has perdido tu hoja, pídenos otra copia.</Cms>
           </p>
           <p style="margin:0;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">
-            Si notas dolor que no cede con la pauta indicada, sangrado que no se detiene, fiebre o hinchazón que va a más,
-            llámanos al <a data-underline href={`tel:${CONTACTO.telefonoE164}`} style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a>
-            en horario de clínica.
+            <Cms k="indicaciones.cuerpo.texto-3a">Si notas dolor que no cede con la pauta indicada, sangrado que no se detiene, fiebre o hinchazón que va a más,
+            llámanos al</Cms> <EnlaceContacto tipo="telefono" data-underline style="color:#1A1A1A;font-weight:500" />
+            <Cms k="indicaciones.cuerpo.texto-3b">en horario de clínica.</Cms>
           </p>
         </div>
 
         <aside style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 12px 36px rgba(0,0,0,.03)">
           <p style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
-            ¿Una duda después del tratamiento?
+            <Cms k="indicaciones.lateral.titulo">¿Una duda después del tratamiento?</Cms>
           </p>
           <p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#6B6B6B">
-            {CONTACTO.horario}. Escríbenos por WhatsApp y te contestamos con tu historia delante.
+            {CONTACTO.horario}. <Cms k="indicaciones.lateral.texto">Escríbenos por WhatsApp y te contestamos con tu historia delante.</Cms>
           </p>
-          <a
+          <EnlaceContacto
+            tipo="whatsapp"
             data-primary
-            href={CONTACTO.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             style="display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >Escríbenos<span class="vh"> por WhatsApp (se abre en una pestaña nueva)</span><span
+            ><Cms k="indicaciones.lateral.boton">Escríbenos</Cms><span class="vh"> por WhatsApp (se abre en una pestaña nueva)</span><span
               data-arrow
               style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span
-            ></a
+            ></EnlaceContacto
           >
           <div style="height:1px;background:rgba(0,0,0,0.08);margin:24px 0"></div>
-          <a data-underline href="/tratamientos/" style="font-size:17px;font-weight:500;color:#1A1A1A">Ver todos los tratamientos</a>
+          <a data-underline href="/tratamientos/" style="font-size:17px;font-weight:500;color:#1A1A1A"><Cms k="indicaciones.lateral.enlace">Ver todos los tratamientos</Cms></a>
         </aside>
       </div>
     </div>

@@ -1,11 +1,20 @@
 ---
 import { SITE, CONTACTO, DIRECCION_MEDICA, REDES } from '../data/site';
+import { attrs, c, idPagina, ld, ldTexto, resolverLd, textoMarcado, type Ref, type Segmento } from '../lib/cms';
+import { getImage } from 'astro:assets';
+import { idioma } from '../i18n/idioma';
+import { aIngles, RUTAS_EN } from '../i18n/rutas.js';
+import logoSrc from '../assets/sonris/logos/logo-sonris-solido.png';
+import fachadaSrc from '../assets/sonris/clinica/fachada-equipo.jpg';
 
-export type Miga = { nombre: string; href: string };
+/** Un texto suelto (editable con su propia clave meta.*) o segmentos ya marcados,
+ *  cuando se forma con otros datos: «Sonris | » + el nombre del tratamiento. */
+export type Texto = string | Segmento[];
+export type Miga = { nombre: string | Ref; href: string };
 
 interface Props {
-  titulo: string;
-  descripcion: string;
+  titulo: Texto;
+  descripcion: Texto;
   /** Ruta canónica con barra final, p. ej. "/contacto/" */
   ruta: string;
   migas?: Miga[];
@@ -18,8 +27,30 @@ interface Props {
 const { titulo, descripcion, ruta, migas = [], jsonLd = [], noindex = false, tipoOg = 'website' } =
   Astro.props;
 
-const canonical = new URL(ruta, SITE.url).href;
+// Las páginas en inglés reciben la ruta española de la plantilla: aquí se
+// convierte a la suya. Cada versión es canónica de sí misma y enlaza a la otra.
+const en = idioma() === 'en';
+const urlEs = new URL(ruta, SITE.url).href;
+const urlEn = ruta in RUTAS_EN ? new URL(aIngles(ruta), SITE.url).href : null;
+const canonical = en && urlEn ? urlEn : urlEs;
+const lang = en ? 'en' : SITE.lang;
+
+// Título y descripción editables. Van en <head>, en Open Graph, en Twitter y en el
+// WebPage del JSON-LD: una sola clave para los cuatro sitios, o Google y las redes
+// verían versiones distintas de la misma página.
+const paginaId = idPagina(ruta);
+// Compuestos (el título de un tratamiento lleva su nombre) no tienen clave propia:
+// cambian solos cuando cambia el dato del que salen, y así nunca se desfasan.
+const segTitulo = typeof titulo === 'string' ? [c(`meta.${paginaId}.titulo`, titulo)] : titulo;
+const segDescripcion = typeof descripcion === 'string' ? [c(`meta.${paginaId}.descripcion`, descripcion)] : descripcion;
+const tituloMarcado = textoMarcado(segTitulo);
 const ogImagen = new URL('/og/sonris-og.png', SITE.url).href;
+
+// Logo e imagen de la clínica para su ficha en Google: los pide para el
+// resultado local. Logo cuadrado ≥112 px; la foto, la fachada con el equipo.
+const absoluta = (src: string) => new URL(src, SITE.url).href;
+const logo = absoluta((await getImage({ src: logoSrc, width: 512, format: 'png' })).src);
+const fachada = absoluta((await getImage({ src: fachadaSrc, width: 1600, format: 'webp' })).src);
 
 const direccion = {
   '@type': 'PostalAddress',
@@ -39,9 +70,11 @@ const clinica = {
   legalName: SITE.razonSocial,
   vatID: SITE.cif,
   url: `${SITE.url}/`,
+  logo,
+  image: fachada,
   description: SITE.descripcion,
-  telephone: CONTACTO.telefonoE164,
-  email: CONTACTO.email,
+  telephone: ld('contacto.telefono@e164', CONTACTO.telefonoE164),
+  email: ld('contacto.email', CONTACTO.email),
   address: direccion,
   geo: { '@type': 'GeoCoordinates', latitude: CONTACTO.lat, longitude: CONTACTO.lng },
   hasMap: CONTACTO.mapsUrl,
@@ -96,7 +129,7 @@ const web = {
   '@id': `${SITE.url}/#web`,
   url: `${SITE.url}/`,
   name: SITE.nombre,
-  inLanguage: SITE.lang,
+  inLanguage: lang,
   publisher: { '@id': `${SITE.url}/#clinica` },
 };
 
@@ -104,20 +137,21 @@ const pagina = {
   '@type': 'WebPage',
   '@id': `${canonical}#pagina`,
   url: canonical,
-  name: titulo,
-  description: descripcion,
+  name: ldTexto(...segTitulo),
+  description: ldTexto(...segDescripcion),
   isPartOf: { '@id': `${SITE.url}/#web` },
   about: { '@id': `${SITE.url}/#clinica` },
-  inLanguage: SITE.lang,
+  inLanguage: lang,
   ...(migas.length
     ? {
         breadcrumb: {
           '@type': 'BreadcrumbList',
-          itemListElement: [{ nombre: 'Inicio', href: '/' }, ...migas].map((m, i) => ({
+          itemListElement: [{ nombre: c('comun.nav.1', 'Inicio'), href: '/' }, ...migas].map((m, i) => ({
             '@type': 'ListItem',
             position: i + 1,
-            name: m.nombre,
-            item: new URL(m.href, SITE.url).href,
+            // Una miga con clave sigue al dato visible (nombre del tratamiento, del menú).
+            name: typeof m.nombre === 'string' ? m.nombre : ld(m.nombre.k, m.nombre.v),
+            item: new URL(en ? aIngles(m.href) : m.href, SITE.url).href,
           })),
         },
       }
@@ -125,31 +159,38 @@ const pagina = {
 };
 
 const grafo = { '@context': 'https://schema.org', '@graph': [clinica, doctora, web, pagina, ...jsonLd] };
+const ldResuelto = resolverLd(grafo);
 ---
 
-<title>{titulo}</title>
-<meta name="description" content={descripcion} />
+<title data-cms-texto={tituloMarcado.marca}>{tituloMarcado.texto}</title>
+<meta name="description" {...attrs({ content: segDescripcion })} />
 <link rel="canonical" href={canonical} />
-<link rel="alternate" hreflang="es-ES" href={canonical} />
-<link rel="alternate" hreflang="x-default" href={canonical} />
+<link rel="alternate" hreflang="es-ES" href={urlEs} />
+{urlEn && <link rel="alternate" hreflang="en" href={urlEn} />}
+<link rel="alternate" hreflang="x-default" href={urlEs} />
 {noindex && <meta name="robots" content="noindex, follow" />}
 {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
 
 <meta property="og:type" content={tipoOg} />
 <meta property="og:site_name" content={SITE.nombre} />
-<meta property="og:locale" content="es_ES" />
-<meta property="og:title" content={titulo} />
-<meta property="og:description" content={descripcion} />
+<meta property="og:locale" content={en ? 'en_GB' : 'es_ES'} />
+{urlEn && <meta property="og:locale:alternate" content={en ? 'es_ES' : 'en_GB'} />}
+<meta property="og:title" {...attrs({ content: segTitulo })} />
+<meta property="og:description" {...attrs({ content: segDescripcion })} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogImagen} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Sonríe sin notarlo: ortodoncia invisible con la Dra. Isabel Vélez en Sanchinarro, Madrid" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={titulo} />
-<meta name="twitter:description" content={descripcion} />
+<meta name="twitter:title" {...attrs({ content: segTitulo })} />
+<meta name="twitter:description" {...attrs({ content: segDescripcion })} />
 <meta name="twitter:image" content={ogImagen} />
+<meta name="twitter:image:alt" content="Sonríe sin notarlo: ortodoncia invisible con la Dra. Isabel Vélez en Sanchinarro, Madrid" />
 
 <meta name="geo.region" content="ES-MD" />
 <meta name="geo.placename" content={`${CONTACTO.barrio}, ${CONTACTO.ciudad}`} />
 <meta name="geo.position" content={`${CONTACTO.lat};${CONTACTO.lng}`} />
 <meta name="ICBM" content={`${CONTACTO.lat}, ${CONTACTO.lng}`} />
 
-<script type="application/ld+json" is:inline set:html={JSON.stringify(grafo)} />
+<script type="application/ld+json" is:inline data-cms-ld={ldResuelto.mapa} set:html={ldResuelto.json} />

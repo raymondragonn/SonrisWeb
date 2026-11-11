@@ -4,7 +4,7 @@
 // de API, ni llamadas desde el navegador, ni cookies de terceros, así que las
 // ve todo el mundo, también quien rechace las cookies.
 //
-// Se publican 50 de las 223 que tiene la ficha. El contador de la
+// Se publican 49 de las 223 que tiene la ficha. El contador de la
 // cabecera muestra el total real y el botón lleva a Google, donde están todas.
 
 export type Resena = {
@@ -217,14 +217,6 @@ export const RESENAS: Resena[] = [
     estrellas: 5,
     fecha: 'hace 11 meses',
     url: 'https://www.google.com/maps/contrib/110375667289639434800/reviews?hl=es',
-  },
-  {
-    autor: 'Melian',
-    texto:
-      'Cambiaron al recepcionista y nunca mas me atendieron, es una pena porque el trato era bueno',
-    estrellas: 1,
-    fecha: 'fecha de edición: hace 11 meses',
-    url: 'https://www.google.com/maps/contrib/105642290532229884475/reviews?hl=es',
   },
   {
     autor: 'Patricia Zeballos',

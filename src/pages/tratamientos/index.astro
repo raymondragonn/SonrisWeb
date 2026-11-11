@@ -1,11 +1,16 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import Acordeon from '../../islands/Acordeon';
+import Faq from '../../components/Faq.astro';
 import { SITE } from '../../data/site';
-import { TRATAMIENTOS, FAQ } from '../../data/tratamientos';
+import { TRATAMIENTOS, FAQ, VIDEOS } from '../../data/tratamientos';
+import CmsVideo from '../../components/CmsVideo.astro';
+import { t as tr } from '../../i18n/idioma';
 import { TESTIMONIOS } from '../../data/testimonios';
 import CtaFinal from '../../components/CtaFinal.astro';
+import Cms from '../../components/Cms.astro';
+import CmsImage from '../../components/CmsImage.astro';
+import { attrs, c, ld } from '../../lib/cms';
 
 import esteticaImg from '../../assets/sonris/tratamientos/Estetica-Dental-Ozkan.webp';
 import implantesImg from '../../assets/sonris/tratamientos/Implantes-Dentales-1.webp';
@@ -38,20 +43,14 @@ const FOTOS: Record<string, ImageMetadata> = {
 
 const ruta = '/tratamientos/';
 
-// Los vídeos llegan como enlace de YouTube en cualquiera de sus dos formatos
-// (youtu.be/ID o watch?v=ID); el ID es el último trozo en ambos.
-const VIDEOS = TESTIMONIOS.map((t) => ({
-  titulo: t.titulo,
-  src: `https://www.youtube-nocookie.com/embed/${t.url.split(/[/=]/).pop()?.split('?')[0]}?autoplay=1&rel=0`,
-}));
-
+// Mismas claves que el FAQ visible (<Faq clave="tratamientos.faq">).
 const faqLd = {
   '@type': 'FAQPage',
   '@id': `${SITE.url}${ruta}#faq`,
-  mainEntity: FAQ.map((f) => ({
+  mainEntity: FAQ.map((f, i) => ({
     '@type': 'Question',
-    name: f.pregunta,
-    acceptedAnswer: { '@type': 'Answer', text: f.respuesta },
+    name: ld(`tratamientos.faq.${i + 1}.pregunta`, f.pregunta),
+    acceptedAnswer: { '@type': 'Answer', text: ld(`tratamientos.faq.${i + 1}.respuesta`, f.respuesta) },
   })),
 };
 
@@ -63,24 +62,28 @@ const listaLd = {
   itemListElement: TRATAMIENTOS.map((t, i) => ({
     '@type': 'ListItem',
     position: i + 1,
-    name: t.nombre,
+    name: ld(`tratamientos.${t.slug}.nombre`, t.nombre),
     url: `${SITE.url}/tratamientos/${t.slug}/`,
   })),
 };
 ---
 
 <Base
-  titulo="Sonris | Tratamientos"
-  descripcion="Estética dental, implantes, cirugía ortognática, endodoncia, cirugía oral, periodoncia y odontología general, alrededor de la ortodoncia invisible. Sanchinarro, Madrid."
+  titulo="Tratamientos dentales en Sanchinarro, Madrid | Sonris"
+  descripcion="Estética dental, implantes, cirugía ortognática, endodoncia, cirugía oral, periodoncia y odontología general en Sanchinarro, Madrid."
   {ruta}
-  migas={[{ nombre: 'Tratamientos', href: ruta }]}
+  migas={[{ nombre: c('comun.nav.3', 'Tratamientos'), href: ruta }]}
   jsonLd={[listaLd, faqLd]}
 >
+  {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
+      las secciones claras no llevan color propio. */}
+  <div data-fondo-pagina data-gris aria-hidden="true"></div>
+
   <section
     data-sec
     id="tratamientos"
     aria-labelledby="hero-t"
-    style="position:relative;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%,rgba(254,225,203,0.45) 100%);padding:56px 0 96px"
+    style="position:relative;overflow:hidden;padding:56px 0 96px"
   >
     <div
       aria-hidden="true"
@@ -95,17 +98,21 @@ const listaLd = {
             id="hero-h1"
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:60px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
-            Todo lo que tu boca puede <span style="color:#E76B0B">necesitar</span>
+            <Cms k="tratamientos.hero.titulo">Todo lo que tu boca puede</Cms> <span style="color:#E76B0B"><Cms k="tratamientos.hero.titulo-acento">necesitar</Cms></span>
           </h1>
+          {/* Titular alterno: se muestra en la mitad de las visitas. Va en un
+              <template> (inerte: los buscadores no lo leen como contenido, igual
+              que antes dentro del script) para que el modo edición lo pueda
+              editar; en modo edición no se alterna. */}
+          <template data-titular-alterno data-cms-bloque="Titular alternativo (se muestra en la mitad de las visitas)"><Cms k="tratamientos.hero.alterno">Siete tratamientos, una sola</Cms> <span style="color:#E76B0B"><Cms k="tratamientos.hero.alterno-acento">clínica</Cms></span></template>
           <script is:inline>
             // Alterna el titular en cada visita.
-            if (Math.random() < 0.5)
-              document.getElementById('hero-h1').innerHTML =
-                'Siete tratamientos, una sola <span style="color:#E76B0B">clínica</span>';
+            if (!document.cookie.includes('sonris_edit=1') && Math.random() < 0.5)
+              document.getElementById('hero-h1').innerHTML = document.querySelector('[data-titular-alterno]').innerHTML;
           </script>
           <p id="hero-t" style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:60ch">
-            Nuestra especialidad es la ortodoncia invisible, y a su alrededor tratamos lo que hace falta para que el tratamiento salga bien.
-            Entra en cada uno para ver cómo trabajamos.
+            <Cms k="tratamientos.hero.texto">Nuestra especialidad es la ortodoncia invisible, y a su alrededor tratamos lo que hace falta para que el tratamiento salga bien.
+            Entra en cada uno para ver cómo trabajamos.</Cms>
           </p>
         </div>
         <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
@@ -113,21 +120,21 @@ const listaLd = {
             data-primary
             href="/contacto/"
             style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 30px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >Reserva tu primera visita</a
+            ><Cms k="tratamientos.hero.boton">Reserva tu primera visita</Cms></a
           >
           {
-            VIDEOS.length > 0 && (
+            TESTIMONIOS.length > 0 && (
               <button
                 type="button"
                 data-secondary
                 data-abre-testimonios
                 style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 26px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
               >
-                Ver testimonios
+                <Cms k="tratamientos.testimonios.boton">Ver testimonios</Cms>
               </button>
             )
           }
-          <p style="flex:1 1 100%;margin:0;font-size:16px;color:#6B6B6B">Gratuita y sin compromiso.</p>
+          <p style="flex:1 1 100%;margin:0;font-size:16px;color:#6B6B6B"><Cms k="tratamientos.hero.nota">Gratuita y sin compromiso.</Cms></p>
         </div>
       </div>
     </div>
@@ -139,7 +146,7 @@ const listaLd = {
         {TRATAMIENTOS.map((t) => (
           <li style="flex:1 1 auto">
             <a href={`#${t.slug}`} style="width:100%;justify-content:center;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:15px;font-weight:500">
-              {t.nombre}
+              <Cms k={`tratamientos.${t.slug}.nombre`}>{t.nombre}</Cms>
             </a>
           </li>
         ))}
@@ -151,29 +158,48 @@ const listaLd = {
     data-sec
     data-overlap-pull
     aria-label="Nuestros tratamientos"
-    style="background:#F7F7F7;padding:176px 0 112px;margin-top:-64px"
+    style="padding:176px 0 112px;margin-top:-64px"
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       {
         TRATAMIENTOS.map((t, i) => {
           const textoIzquierda = i % 2 === 0;
+          const video = VIDEOS[t.slug]?.[0];
           const figura = (
             <figure style={`margin:0;grid-column:${textoIzquierda ? 2 : 1};grid-row:1`}>
               {/* Mismo destino que el enlace de texto: fuera del orden de foco y
                   del lector de pantalla para no anunciar dos veces lo mismo. */}
               <a href={`/tratamientos/${t.slug}/`} tabindex="-1" aria-hidden="true" style="display:block">
+              {/* data-entra: el vídeo arranca al asomar y se para al salir (ui.ts),
+                  así no se descargan todos al abrir la página. */}
               <div
+                data-entra
                 style={`position:relative;aspect-ratio:4/3;border-radius:40px;overflow:hidden;border:12px solid transparent;background-image:url(${TEXTURAS[i % TEXTURAS.length].src}),repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);background-size:48px 48px,auto;background-origin:border-box,padding-box;background-clip:border-box,padding-box;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)`}
               >
-                <Image
-                  src={FOTOS[t.slug]}
-                  widths={[600, 1000]}
-                  sizes="(max-width:900px) 100vw, 50vw"
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
-                  alt={`${t.nombre} en Sonris`}
-                  style="width:100%;height:100%;object-fit:cover;display:block"
-                />
+                {video ? (
+                  <CmsVideo k={`tratamientos.${t.slug}.video.1`}><video
+                    src={`/video/${video[0]}.mp4`}
+                    poster={`/img/${video[0]}-poster.webp`}
+                    data-cms-min="1920x1080"
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    aria-label={tr(video[1], video[2])}
+                    style="width:100%;height:100%;object-fit:cover;display:block"
+                  ></video></CmsVideo>
+                ) : (
+                  <CmsImage
+                    k={`tratamientos.${t.slug}.foto-hub`}
+                    src={FOTOS[t.slug]}
+                    widths={[600, 1000]}
+                    sizes="(max-width:900px) 100vw, 50vw"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    alt={`${t.nombre} en Sonris`}
+                    style="width:100%;height:100%;object-fit:cover;display:block"
+                  />
+                )}
               </div>
               </a>
             </figure>
@@ -181,16 +207,16 @@ const listaLd = {
           const texto = (
             <div style={`grid-column:${textoIzquierda ? 1 : 2};grid-row:1`}>
               <h3 data-h2-grande style="margin:0 0 18px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:16ch">
-                {t.nombre}
+                <Cms k={`tratamientos.${t.slug}.nombre`}>{t.nombre}</Cms>
               </h3>
-              <p style="margin:0 0 14px;font-size:20px;line-height:1.4;color:#1A1A1A;max-width:34ch">{t.claim}</p>
-              <p style="margin:0 0 32px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:52ch">{t.resumenHub}</p>
+              <p style="margin:0 0 14px;font-size:20px;line-height:1.4;color:#1A1A1A;max-width:34ch"><Cms k={`tratamientos.${t.slug}.claim`}>{t.claim}</Cms></p>
+              <p style="margin:0 0 32px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:52ch"><Cms k={`tratamientos.${t.slug}.resumen-hub`}>{t.resumenHub}</Cms></p>
               <a
                 data-underline
                 href={`/tratamientos/${t.slug}/`}
                 style="display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:500;color:#1A1A1A"
               >
-                Ver {t.nombre.toLowerCase()} <span>→</span>
+                <Cms k={`tratamientos.${t.slug}.enlace-hub`}>{`Ver ${t.nombre.toLowerCase()}`}</Cms> <span>→</span>
               </a>
             </div>
           );
@@ -210,7 +236,23 @@ const listaLd = {
   </section>
 
   {
-    VIDEOS.length > 0 && (
+    TESTIMONIOS.length > 0 && (
+      <template data-testimonios data-cms-bloque="Testimonios en vídeo (botón «Ver testimonios»)">
+        <ol>
+          {TESTIMONIOS.map((t, i) => (
+            <li>
+              <a {...attrs({ href: c(`tratamientos.testimonios.${i + 1}.youtube`, t.url) })}>
+                <Cms k={`tratamientos.testimonios.${i + 1}.titulo`}>{t.titulo}</Cms>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </template>
+    )
+  }
+
+  {
+    TESTIMONIOS.length > 0 && (
       <dialog data-dlg-video data-dlg-testimonios aria-label="Testimonios de pacientes">
         <button type="button" data-dlg-cerrar aria-label="Cerrar los testimonios">
           ✕
@@ -231,11 +273,17 @@ const listaLd = {
   }
 
   {
-    VIDEOS.length > 0 && (
-      <script define:vars={{ VIDEOS }}>
+    TESTIMONIOS.length > 0 && (
+      <script is:inline>
         // El <dialog> nativo ya trae Esc, el foco atrapado y el velo. Aquí solo
         // se cambia de vídeo y se vacía el hueco al cerrar: si no, el vídeo se
         // queda sonando de fondo.
+        // Los vídeos salen del <template> (editable): título y enlace de YouTube en
+        // cualquiera de sus formatos.
+        const VIDEOS = [...document.querySelector('[data-testimonios]').content.querySelectorAll('a')].map((a) => {
+          const id = (a.getAttribute('href').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/) || [])[1];
+          return { titulo: a.textContent.trim(), src: 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0' };
+        });
         const dlg = document.querySelector('[data-dlg-testimonios]');
         const slot = dlg.querySelector('[data-dlg-slot]');
         const info = dlg.querySelector('[data-testi-info]');
@@ -243,9 +291,12 @@ const listaLd = {
 
         const pintar = () => {
           const v = VIDEOS[i];
-          slot.innerHTML =
-            '<iframe src="' + v.src + '" title="' + v.titulo + '" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>';
-          info.textContent = v.titulo + ' · ' + (i + 1) + ' de ' + VIDEOS.length;
+          // Con el DOM y no con innerHTML: el título lo escribe el administrador y unas
+          // comillas romperían el atributo.
+          const marco = Object.assign(document.createElement('iframe'), { src: v.src, title: v.titulo, allowFullscreen: true });
+          marco.allow = 'autoplay; encrypted-media; fullscreen';
+          slot.replaceChildren(marco);
+          info.textContent = v.titulo + ' · ' + (i + 1) + (document.documentElement.lang === 'en' ? ' of ' : ' de ') + VIDEOS.length;
         };
 
         document.querySelectorAll('[data-abre-testimonios]').forEach((b) =>
@@ -268,17 +319,9 @@ const listaLd = {
     )
   }
 
-  <CtaFinal>
-    <p style="margin:32px 0 0;font-size:17px;line-height:1.7;color:#6B6B6B">
-      ¿Ya te has tratado con nosotros? Consulta las{' '}
-      <a data-underline href="/indicaciones-post-tratamiento/" style="color:#1A1A1A;font-weight:500">
-        indicaciones post-tratamiento
-      </a>{' '}
-      para los días siguientes a la intervención.
-    </p>
-  </CtaFinal>
-
-  <section data-sec id="faq" aria-labelledby="faq-t" style="background:#F7F7F7;padding:112px 0">
+  {/* Abajo casi sin aire: el formulario que sigue ya trae su relleno arriba.
+      !important en línea: gana también al [data-sec] de móvil. */}
+  <section data-sec id="faq" aria-labelledby="faq-t" style="padding:112px 0 0;padding-bottom:24px !important">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:64px;align-items:start">
         <div>
@@ -287,11 +330,21 @@ const listaLd = {
             id="faq-t"
             style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
-            Las dudas que más preguntan
+            <Cms k="tratamientos.faq.titulo">Las dudas que más preguntan</Cms>
           </h2>
         </div>
-        <Acordeon client:visible filas={FAQ} />
+        <Faq filas={FAQ} clave="tratamientos.faq" />
       </div>
     </div>
   </section>
+
+  <CtaFinal>
+    <p style="margin:32px 0 0;font-size:17px;line-height:1.7;color:#6B6B6B">
+      <Cms k="tratamientos.indicaciones.texto-1">¿Ya te has tratado con nosotros? Consulta las</Cms>{' '}
+      <a data-underline href="/indicaciones-post-tratamiento/" style="color:#1A1A1A;font-weight:500">
+        <Cms k="tratamientos.indicaciones.enlace">indicaciones post-tratamiento</Cms>
+      </a>{' '}
+      <Cms k="tratamientos.indicaciones.texto-2">para los días siguientes a la intervención.</Cms>
+    </p>
+  </CtaFinal>
 </Base>

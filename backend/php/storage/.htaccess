@@ -1,0 +1,3 @@
+# Segunda barrera, por si la regla de la raíz no se aplicara: aquí viven el
+# administrador y todo el contenido editado, y son archivos servibles tal cual.
+Require all denied

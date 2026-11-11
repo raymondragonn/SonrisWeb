@@ -52,6 +52,8 @@ function iniciarHeader() {
 
 /** Contadores de la barra de confianza. */
 function iniciarContadores() {
+  // En modo edición el contador reescribiría el texto que se está editando.
+  if (document.cookie.includes('sonris_edit=1')) return;
   const nodos = Array.from(document.querySelectorAll<HTMLElement>('[data-count-to]'));
   if (!nodos.length || reducido) return;
 
@@ -194,6 +196,29 @@ function iniciarEntradas() {
   nodos.forEach((n) => io.observe(n));
 }
 
+/** Las secciones entran enteras, una vez, cuando asoman por abajo. Las que ya
+ *  se ven al cargar aparecen al momento, sin esperar al scroll. */
+function iniciarSecciones() {
+  // En modo edición se ocultarían textos que se están editando.
+  if (reducido || document.cookie.includes('sonris_edit=1')) return;
+  const nodos = Array.from(document.querySelectorAll<HTMLElement>('main [data-sec]'));
+  const io = new IntersectionObserver(
+    (entradas) =>
+      entradas.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.setAttribute('data-visible', '');
+        io.unobserve(e.target);
+      }),
+    { rootMargin: '0px 0px -12% 0px' }
+  );
+  // Turnan el lado por el que entran: izquierda, derecha, abajo.
+  const lados = ['izq', 'der', ''];
+  nodos.forEach((n, i) => {
+    n.setAttribute('data-sube', lados[i % 3]);
+    io.observe(n);
+  });
+}
+
 /** Botón de sonido del vídeo que acompaña al formulario. */
 function iniciarSonidoVisita() {
   document.querySelectorAll<HTMLElement>('[data-visita-sonido]').forEach((boton) => {
@@ -202,7 +227,8 @@ function iniciarSonidoVisita() {
     boton.addEventListener('click', () => {
       video.muted = !video.muted;
       boton.setAttribute('aria-pressed', String(!video.muted));
-      boton.setAttribute('aria-label', video.muted ? 'Activar el sonido del vídeo' : 'Silenciar el vídeo');
+      const en = document.documentElement.lang === 'en';
+      boton.setAttribute('aria-label', video.muted ? (en ? 'Turn the video sound on' : 'Activar el sonido del vídeo') : en ? 'Mute the video' : 'Silenciar el vídeo');
       const icono = boton.querySelector('[data-icono]');
       if (icono) icono.textContent = video.muted ? '♪' : '♫';
       if (video.paused) video.play().catch(() => {});
@@ -251,5 +277,6 @@ iniciarHeader();
 iniciarContadores();
 iniciarCarruseles();
 iniciarEntradas();
+iniciarSecciones();
 iniciarSonidoVisita();
 iniciarAlineador();

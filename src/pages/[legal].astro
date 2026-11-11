@@ -5,6 +5,9 @@
 import Base from '../layouts/Base.astro';
 import { LEGAL, type PaginaLegal } from '../data/legal';
 import { SITE, CONTACTO, DIRECCION_MEDICA } from '../data/site';
+import Cms from '../components/Cms.astro';
+import EnlaceContacto from '../components/EnlaceContacto.astro';
+import { c } from '../lib/cms';
 
 export function getStaticPaths() {
   return LEGAL.map((p) => ({ params: { legal: p.slug }, props: { p } }));
@@ -12,6 +15,9 @@ export function getStaticPaths() {
 
 const { p } = Astro.props as { p: PaginaLegal };
 const ruta = `/${p.slug}/`;
+// Bloques completos, no frase a frase. El nombre de cada página es la misma clave
+// en el título, las migas, el menú lateral y el pie.
+const k = (campo: string) => `legal.${p.slug}.${campo}`;
 
 // Identificación del titular (art. 10 LSSI): las líneas sin dato confirmado
 // no se imprimen. Ver PENDIENTES.md.
@@ -25,32 +31,36 @@ const TITULAR = [
 ---
 
 <Base
-  titulo={`${SITE.nombre} | ${p.titulo}`}
-  descripcion={p.entradilla}
+  titulo={[c(k('titulo'), p.titulo), ` | ${SITE.nombre}`]}
+  descripcion={[c(k('entradilla'), p.entradilla)]}
   {ruta}
-  migas={[{ nombre: p.titulo, href: ruta }]}
+  migas={[{ nombre: c(k('titulo'), p.titulo), href: ruta }]}
   headerVariante="solida"
   noindex
 >
+  {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
+      las secciones claras no llevan color propio. */}
+  <div data-fondo-pagina data-gris aria-hidden="true"></div>
+
   <section data-sec aria-labelledby="t" style="padding:64px 0 48px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <nav aria-label="Ruta" style="margin-bottom:28px;font-size:15px;color:#6B6B6B">
-        <a data-underline href="/" style="color:#6B6B6B">Inicio</a> · <span style="color:#1A1A1A">{p.titulo}</span>
+        <a data-underline href="/" style="color:#6B6B6B"><Cms k="comun.nav.1">Inicio</Cms></a> · <span style="color:#1A1A1A"><Cms k={k('titulo')}>{p.titulo}</Cms></span>
       </nav>
-      <p style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B">{p.eyebrow}</p>
+      <p style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B"><Cms k={k('eyebrow')}>{p.eyebrow}</Cms></p>
       <h1
         data-h1
         id="t"
         style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:48px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch"
       >
-        {p.titulo}
+        <Cms k={k('titulo')}>{p.titulo}</Cms>
       </h1>
-      <p style="margin:0 0 12px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">{p.entradilla}</p>
-      <p style="margin:0;font-size:15px;color:#6B6B6B">Última actualización: {p.actualizado}</p>
+      <p style="margin:0 0 12px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch"><Cms k={k('entradilla')}>{p.entradilla}</Cms></p>
+      <p style="margin:0;font-size:15px;color:#6B6B6B">Última actualización: <Cms k={k('actualizado')}>{p.actualizado}</Cms></p>
     </div>
   </section>
 
-  <section data-sec aria-labelledby="cuerpo-t" style="background:#F7F7F7;padding:72px 0 96px">
+  <section data-sec aria-labelledby="cuerpo-t" style="padding:72px 0 96px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:56px;align-items:start">
         <div>
@@ -58,11 +68,11 @@ const TITULAR = [
             id="cuerpo-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:30px;line-height:1.2;letter-spacing:-0.02em;color:#000000"
           >
-            {p.subtitulo}
+            <Cms k={k('subtitulo')}>{p.subtitulo}</Cms>
           </h2>
 
           <h3 style="margin:0 0 16px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;letter-spacing:-0.02em;color:#000000">
-            Titular del sitio y responsable del tratamiento
+            <Cms k="legal.titular.titulo">Titular del sitio y responsable del tratamiento</Cms>
           </h3>
           <ul style="margin:0 0 40px;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
             {
@@ -86,22 +96,26 @@ const TITULAR = [
                 ·
               </span>
               <span>
-                <a data-underline href={`mailto:${CONTACTO.email}`} style="color:#1A1A1A;font-weight:500">{CONTACTO.email}</a> ·{' '}
-                <a data-underline href={`tel:${CONTACTO.telefonoE164}`} style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a>
+                <EnlaceContacto tipo="email" data-underline style="color:#1A1A1A;font-weight:500" /> ·{' '}
+                <EnlaceContacto tipo="telefono" data-underline style="color:#1A1A1A;font-weight:500" />
               </span>
             </li>
           </ul>
 
           {
-            p.bloques.map((b) => (
+            p.bloques.map((b, i) => (
               <section style="margin:0 0 36px">
                 <h3 style="margin:0 0 14px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;line-height:1.3;letter-spacing:-0.02em;color:#000000">
-                  {b.h}
+                  <Cms k={k(`${b.id ?? i + 1}.titulo`)}>{b.h}</Cms>
                 </h3>
-                {b.p?.map((t) => <p style="margin:0 0 14px;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">{t}</p>)}
+                {b.p?.map((t, j) => (
+                  <p style="margin:0 0 14px;font-size:17px;line-height:1.75;color:#1A1A1A;max-width:70ch">
+                    <Cms k={k(`${b.id ?? i + 1}.parrafo-${j + 1}`)}>{t}</Cms>
+                  </p>
+                ))}
                 {b.ul && (
                   <ul style="margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
-                    {b.ul.map((t) => (
+                    {b.ul.map((t, j) => (
                       <li style="display:flex;gap:12px;font-size:17px;line-height:1.7;color:#1A1A1A;max-width:70ch">
                         <span
                           aria-hidden="true"
@@ -109,7 +123,7 @@ const TITULAR = [
                         >
                           ·
                         </span>
-                        {t}
+                        <Cms k={k(`${b.id ?? i + 1}.punto-${j + 1}`)}>{t}</Cms>
                       </li>
                     ))}
                   </ul>
@@ -121,7 +135,7 @@ const TITULAR = [
 
         <aside style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 12px 36px rgba(0,0,0,.03);position:sticky;top:120px">
           <p style="margin:0 0 18px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
-            Información legal
+            <Cms k="legal.lateral.titulo">Información legal</Cms>
           </p>
           <ul style="margin:0 0 24px;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px">
             {
@@ -133,19 +147,19 @@ const TITULAR = [
                     aria-current={o.slug === p.slug ? 'page' : undefined}
                     style={`font-size:17px;font-weight:500;color:${o.slug === p.slug ? '#E76B0B' : '#1A1A1A'}`}
                   >
-                    {o.nombre}
+                    <Cms k={`legal.${o.slug}.nombre`}>{o.nombre}</Cms>
                   </a>
                 </li>
               ))
             }
           </ul>
           <div style="height:1px;background:rgba(0,0,0,0.08);margin-bottom:24px"></div>
-          <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#6B6B6B">¿Dudas sobre tu tratamiento? La consulta es lo más rápido.</p>
+          <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#6B6B6B"><Cms k="legal.lateral.texto">¿Dudas sobre tu tratamiento? La consulta es lo más rápido.</Cms></p>
           <a
             data-primary
             href="/contacto/"
             style="display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >Hablar con la clínica</a
+            ><Cms k="legal.lateral.boton">Hablar con la clínica</Cms></a
           >
         </aside>
       </div>

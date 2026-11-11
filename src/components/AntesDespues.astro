@@ -1,0 +1,360 @@
+---
+/**
+ * Comparador antes/después con casos reales. Sustituye a la isla AntesDespues: los
+ * cinco casos (textos e imágenes) se pintan aquí, en HTML, y solo se ve el activo.
+ * Así el modo edición puede cambiarlos y quien no ejecuta JS (buscadores
+ * generativos) lee los cinco. El script solo arrastra el corte y cambia de caso.
+ *
+ * Claves: dra.casos.<n>.etiqueta (chip y título de la tarjeta, la misma),
+ * .descripcion, .antes y .despues (imágenes).
+ */
+import Cms from './Cms.astro';
+import CmsImage from './CmsImage.astro';
+import { CASOS } from '../data/casos';
+
+const k = (i: number, campo: string) => `dra.casos.${i + 1}.${campo}`;
+---
+
+<div data-ad>
+  {/* Titular en su propia fila y centrado; el selector queda debajo, también
+      centrado, y se ve antes de llegar al comparador. */}
+  <div data-ad-cabecera>
+    <h2 data-h2-grande id="casos-t"><Cms k="dra.casos.titulo">Sonrisas que he cambiado</Cms></h2>
+    <div data-ad-selector>
+      <button type="button" data-ad-paso="-1" aria-label="Caso anterior">‹</button>
+      <div data-caso-chips>
+        {
+          CASOS.map((c, i) => (
+            <button type="button" data-ad-ir={i} aria-current={i === 0 ? 'true' : undefined}>
+              <Cms k={k(i, 'etiqueta')}>{c.etiqueta}</Cms>
+            </button>
+          ))
+        }
+      </div>
+      <button type="button" data-ad-paso="1" aria-label="Caso siguiente">›</button>
+    </div>
+  </div>
+
+  <div data-2col data-ad-cuerpo>
+    <div>
+      <div data-ad-caja style="--corte:50%">
+        {
+          CASOS.map((c, i) => (
+            <div data-ad-fotos hidden={i !== 0}>
+              <CmsImage
+                k={k(i, 'despues')}
+                src={c.despues}
+                widths={[640, 960]}
+                sizes="(max-width:900px) 100vw, 58vw"
+                loading="lazy"
+                decoding="async"
+                alt={c.altDespues}
+              />
+              {/* clip-path revela el "antes" sin reescalar la foto */}
+              <CmsImage
+                k={k(i, 'antes')}
+                data-antes
+                src={c.antes}
+                widths={[640, 960]}
+                sizes="(max-width:900px) 100vw, 58vw"
+                loading="lazy"
+                decoding="async"
+                alt={c.altAntes}
+              />
+            </div>
+          ))
+        }
+        <span aria-hidden="true" data-ad-etiqueta style="left:20px"><Cms k="dra.casos.antes">Antes</Cms></span>
+        <span aria-hidden="true" data-ad-etiqueta style="right:20px"><Cms k="dra.casos.despues">Después</Cms></span>
+        <div data-ad-linea></div>
+        <button
+          type="button"
+          role="slider"
+          data-ad-slider
+          aria-label={`Comparar antes y después: ${CASOS[0].etiqueta}`}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="50"
+          aria-valuetext="50 % antes">↔</button
+        >
+      </div>
+    </div>
+
+    <aside data-ad-tarjeta>
+      {/* aria-live: quien navega con lector de pantalla oye el caso al cambiarlo. */}
+      <div aria-live="polite">
+        {
+          CASOS.map((c, i) => (
+            <div data-ad-texto hidden={i !== 0}>
+              <h3><Cms k={k(i, 'etiqueta')}>{c.etiqueta}</Cms></h3>
+              <p><Cms k={k(i, 'descripcion')}>{c.descripcion}</Cms></p>
+            </div>
+          ))
+        }
+      </div>
+      <div data-ad-separador></div>
+      <p data-ad-nota><Cms k="dra.casos.nota">Casos publicados con el consentimiento firmado de cada paciente.</Cms></p>
+    </aside>
+  </div>
+</div>
+
+<style>
+  [data-ad-cabecera] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  h2 {
+    margin: 0;
+    font-family: Poppins, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #000000;
+    text-align: center;
+  }
+  [data-ad-selector] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  [data-caso-chips] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  [data-ad-paso] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 22px;
+    line-height: 1;
+    color: #1a1a1a;
+    cursor: pointer;
+  }
+  [data-ad-ir] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 9999px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: #6b6b6b;
+    cursor: pointer;
+  }
+  [data-ad-ir][aria-current='true'] {
+    border: 2px solid #e76b0b;
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+
+  [data-ad-cuerpo] {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 40px;
+    align-items: start;
+  }
+  [data-ad-caja] {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 40px;
+    overflow: hidden;
+    background: #efefef;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 24px 56px rgba(0, 0, 0, 0.1);
+    touch-action: none;
+    cursor: ew-resize;
+  }
+  [data-ad-fotos] :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  [data-ad-fotos] :global(img[data-antes]) {
+    clip-path: inset(0 calc(100% - var(--corte)) 0 0);
+  }
+  [data-ad-etiqueta] {
+    position: absolute;
+    top: 20px;
+    background: #ffffff;
+    border-radius: 9999px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
+  [data-ad-linea] {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--corte);
+    width: 2px;
+    background: #ffffff;
+    pointer-events: none;
+  }
+  [data-ad-slider] {
+    position: absolute;
+    top: 50%;
+    left: var(--corte);
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 9999px;
+    background: #e76b0b;
+    border: 2px solid #ffffff;
+    color: #000000;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: ew-resize;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 24px 56px rgba(0, 0, 0, 0.1);
+  }
+
+  [data-ad-tarjeta] {
+    background: #ffffff;
+    border-radius: 40px;
+    padding: 32px;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 12px 32px rgba(0, 0, 0, 0.06);
+  }
+  h3 {
+    margin: 0 0 12px;
+    font-family: Poppins, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    color: #000000;
+  }
+  [data-ad-texto] p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #6b6b6b;
+  }
+  [data-ad-separador] {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+    margin: 20px 0;
+  }
+  [data-ad-nota] {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #6b6b6b;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ad]').forEach((raiz) => {
+    const caja = raiz.querySelector<HTMLElement>('[data-ad-caja]')!;
+    const slider = raiz.querySelector<HTMLElement>('[data-ad-slider]')!;
+    const fotos = [...raiz.querySelectorAll<HTMLElement>('[data-ad-fotos]')];
+    const textos = [...raiz.querySelectorAll<HTMLElement>('[data-ad-texto]')];
+    const chips = [...raiz.querySelectorAll<HTMLElement>('[data-ad-ir]')];
+    const n = fotos.length;
+    // En modo edición no pasa solo: el caso cambiaría mientras se escribe.
+    const quietoSiempre =
+      matchMedia('(prefers-reduced-motion: reduce)').matches || document.cookie.includes('sonris_edit=1');
+
+    let caso = 0;
+    let corte = 50;
+    let quieto = false;
+    let arrastrando = false;
+    let reloj = 0;
+
+    const pintarCorte = () => {
+      caja.style.setProperty('--corte', `${corte}%`);
+      slider.setAttribute('aria-valuenow', String(Math.round(corte)));
+      slider.setAttribute('aria-valuetext', `${Math.round(corte)} % antes`);
+    };
+
+    // Pasa solo de caso en caso. Se para mientras el puntero está encima o el foco
+    // dentro, que es cuando alguien lo está mirando; cualquier cambio manual
+    // reinicia la cuenta en vez de sumarse a ella.
+    const programar = () => {
+      clearTimeout(reloj);
+      if (!quieto && !quietoSiempre) reloj = window.setTimeout(() => ir(caso + 1), 6000);
+    };
+
+    const ir = (i: number) => {
+      caso = (i + n) % n;
+      fotos.forEach((f, j) => (f.hidden = j !== caso));
+      textos.forEach((t, j) => (t.hidden = j !== caso));
+      chips.forEach((c, j) => (j === caso ? c.setAttribute('aria-current', 'true') : c.removeAttribute('aria-current')));
+      slider.setAttribute('aria-label', `${document.documentElement.lang === 'en' ? 'Compare before and after' : 'Comparar antes y después'}: ${chips[caso]?.textContent?.trim() ?? ''}`);
+      corte = 50;
+      pintarCorte();
+      programar();
+    };
+
+    const desdeEvento = (e: PointerEvent) => {
+      const r = caja.getBoundingClientRect();
+      corte = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
+      pintarCorte();
+    };
+
+    caja.addEventListener('pointerdown', (e) => {
+      // Los botones del modo edición viven dentro de la caja: capturar el puntero
+      // les robaría el clic.
+      if ((e.target as HTMLElement).closest('.cms-accion')) return;
+      arrastrando = true;
+      caja.setPointerCapture(e.pointerId);
+      desdeEvento(e);
+    });
+    caja.addEventListener('pointermove', (e) => arrastrando && desdeEvento(e));
+    caja.addEventListener('pointerup', () => (arrastrando = false));
+
+    slider.addEventListener('keydown', (e) => {
+      const paso = e.shiftKey ? 10 : 4;
+      const mover = (valor: number) => {
+        e.preventDefault();
+        corte = Math.max(0, Math.min(100, valor));
+        pintarCorte();
+      };
+      if (e.key === 'ArrowLeft') mover(corte - paso);
+      if (e.key === 'ArrowRight') mover(corte + paso);
+      if (e.key === 'Home') mover(0);
+      if (e.key === 'End') mover(100);
+    });
+
+    chips.forEach((c, j) => c.addEventListener('click', () => ir(j)));
+    raiz.querySelectorAll<HTMLElement>('[data-ad-paso]').forEach((b) =>
+      b.addEventListener('click', () => ir(caso + Number(b.dataset.adPaso))),
+    );
+
+    const pausa = (v: boolean) => () => {
+      quieto = v;
+      programar();
+    };
+    raiz.addEventListener('pointerenter', pausa(true));
+    raiz.addEventListener('pointerleave', pausa(false));
+    raiz.addEventListener('focusin', pausa(true));
+    raiz.addEventListener('focusout', pausa(false));
+
+    programar();
+  });
+</script>

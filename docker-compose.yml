@@ -1,32 +1,34 @@
 name: sonris
-# Desarrollo: el servidor de Astro corre dentro del contenedor con el código montado,
-# así que los cambios en src/ se ven en http://localhost:8080 sin reconstruir la imagen.
-#   docker compose up dev
+# Local: un solo contenedor en http://localhost:8080 con el sitio y el modo edición.
+#   docker compose up --build dev
+#
+# Sirve el sitio COMPILADO con Apache + PHP, como Hostinger, porque el modo edición
+# reescribe ese HTML al publicar. No hay recarga en caliente: al guardar un cambio de
+# código, el contenedor recompila solo (unos segundos) y basta con recargar la página.
+# Lo editado desde el navegador se vuelve a aplicar tras cada compilación.
+#   docker compose logs -f dev     → ver cuándo termina de compilar
 #
 # Producción: la imagen nginx del Dockerfile, con dist/ compilado dentro. Es lo que
 # se despliega, y sí hay que reconstruirla en cada cambio.
 #   docker compose --profile prod up --build web
 services:
   dev:
-    image: node:22-alpine
-    working_dir: /app
+    build: docker/apache
     ports:
-      - "8080:8080"
+      - "8080:80"
     volumes:
       - .:/app
-      # node_modules propio del contenedor: sus binarios nativos son de Linux y
-      # pisarían los de macOS que usa `npm run dev` en el equipo.
-      - node_modules:/app/node_modules
-      # .astro/ fuera del bind mount para no ensuciar el árbol de macOS. Ojo: ahí
-      # Astro guarda el PID del dev server, y los PID se reciclan en cada
-      # contenedor, así que uno viejo apunta a un proceso vivo del contenedor
-      # nuevo. Por eso el command borra dev.json antes de arrancar.
-      - astro_cache:/app/.astro
-    environment:
-      # Activa el polling de Vite (ver astro.config.mjs): los eventos de inotify
-      # no cruzan de forma fiable el bind mount de macOS.
-      DOCKER_DEV: "1"
-    command: sh -c "rm -f .astro/dev.json; [ -d node_modules/astro ] || npm ci; npm run dev -- --force --host 0.0.0.0 --port 8080"
+      # node_modules propio del contenedor: sus binarios nativos son de Linux
+      # (Debian) y pisarían los de macOS que usa `npm run dev` en el equipo.
+      - modulos:/app/node_modules
+      # .astro/, la salida compilada y la caché de imágenes en un mismo volumen, fuera
+      # del árbol de macOS: Astro mueve archivos entre ellos con rename(), que no
+      # cruza sistemas de archivos.
+      - compilado:/app/.astro
+      # Datos del modo edición (administrador, textos e imágenes editados). Fuera de
+      # la salida: Astro la vacía en cada compilación.
+      - cms_storage:/var/www/almacen
+      - cms_subidas:/var/www/subidas
 
   web:
     profiles: [prod]
@@ -35,5 +37,7 @@ services:
       - "8080:80"
 
 volumes:
-  node_modules:
-  astro_cache:
+  modulos:
+  compilado:
+  cms_storage:
+  cms_subidas:

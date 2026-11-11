@@ -1,0 +1,10 @@
+# Solo imágenes: nada de ejecutar código desde esta carpeta.
+# Sin php_flag: es de mod_php y LiteSpeed responde con error 500.
+<FilesMatch "\.(php|phtml|php[0-9]|phar|cgi|pl|py|sh)$">
+  Require all denied
+</FilesMatch>
+RemoveHandler .php .phtml .php3 .php4 .php5 .php6 .php7 .php8
+RemoveType .php .phtml
+AddType image/webp .webp
+AddType video/mp4 .mp4
+AddType video/webm .webm

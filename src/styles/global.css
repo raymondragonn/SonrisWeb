@@ -59,6 +59,13 @@ a:hover {
 p {
   text-wrap: pretty;
 }
+/* Titulares repartidos en renglones parejos: nunca una palabra suelta en la
+   última línea (p. ej. «Un centro que / solo hace esto», no «… solo hace / esto»). */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
 
 :focus-visible {
   outline: 2px solid #E76B0B;
@@ -144,14 +151,17 @@ article[id] {
 [data-member]:hover [data-portrait][data-circulo] {
   transform: scale(1.62);
 }
-/* Retrato de cuerpo entero en un marco 4/5: sin acercar, la cara queda pequeña
-   y perdida en el fondo. */
-[data-portrait][data-acerca] {
-  transform: scale(1.34);
-  transform-origin: center 24%;
+/* Retratos con la cara pequeña o descentrada (sobre nosotros: Dra. Vélez y
+   Johana): cada foto dice en su style dónde tiene la cara (--cara-x/--cara-y,
+   en % del marco) y cuánto acercar (--zoom). Se amplía sobre la cara y se
+   lleva al centro, al 40% del alto. Prueba y error: tocar esos tres valores
+   en la página. */
+[data-portrait][data-ajustado] {
+  transform-origin: var(--cara-x) var(--cara-y);
+  transform: translate(calc(50% - var(--cara-x)), calc(40% - var(--cara-y))) scale(var(--zoom));
 }
-[data-member]:hover [data-portrait][data-acerca] {
-  transform: scale(1.4);
+[data-member]:hover [data-portrait][data-ajustado] {
+  transform: translate(calc(50% - var(--cara-x)), calc(40% - var(--cara-y))) scale(calc(var(--zoom) + 0.06));
 }
 [data-feat]:hover [data-featimg],
 [data-feat]:hover [data-featveil] {
@@ -159,6 +169,97 @@ article[id] {
 }
 [data-feat]:hover [data-feattxt] {
   color: #ffffff;
+}
+/* Tecnología (ortodoncia invisible): al pulsar «Ver el vídeo» la fila de tres
+   tarjetas pasa a una columna de selectores (izquierda) y el vídeo ocupa la
+   columna ancha. !important: gana al grid en línea y al [data-3col] de móvil. */
+[data-tec][data-abierto] {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: 28px;
+  align-items: start;
+}
+[data-tec][data-abierto] [data-tec-lista] {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 16px !important;
+}
+/* Como selectores van algo más compactos. */
+[data-tec][data-abierto] [data-feat] {
+  padding: 24px !important;
+  border-radius: 28px !important;
+}
+[data-tec][data-abierto] [data-feat] h3 {
+  margin-bottom: 16px !important;
+}
+/* La tarjeta elegida se queda como en hover: imagen, velo y texto blanco. */
+[data-feat]:has([aria-current='true']) [data-featimg],
+[data-feat]:has([aria-current='true']) [data-featveil] {
+  opacity: 1;
+}
+[data-feat]:has([aria-current='true']) [data-feattxt] {
+  color: #ffffff;
+}
+[data-tec-visor] {
+  position: sticky;
+  top: 112px;
+  aspect-ratio: 16 / 9;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #000000;
+  box-shadow: var(--e2);
+}
+[data-tec-visor][hidden] {
+  display: none;
+}
+[data-tec-slot],
+[data-tec-slot] > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+[data-tec-cerrar] {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1a1a;
+  font-size: 16px;
+  cursor: pointer;
+}
+@media (max-width: 900px) {
+  [data-tec][data-abierto] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-tec-visor] {
+    position: relative;
+    top: 0;
+    order: -1;
+  }
+}
+
+/* Botón «Ver el vídeo»: el secundario del sitio ([data-secondary], estilos en
+   línea). Va pegado abajo con margin-top:auto para que los tres queden
+   alineados aunque los textos midan distinto. Sobre la tarjeta oscura (hover
+   o elegida) toma el mismo estado que su hover: melocotón y borde naranja. */
+[data-featboton] {
+  position: relative;
+  align-self: flex-start;
+  margin-top: auto;
+}
+[data-feat]:hover [data-featboton],
+[data-feat]:has([aria-current='true']) [data-featboton] {
+  background: #fee1cb !important;
+  border-color: #e76b0b !important;
+}
+[data-feat]:hover [data-featboton] [data-arrow] {
+  transform: translateX(4px);
 }
 
 /* Subrayado animado */
@@ -214,31 +315,49 @@ article[id] {
   background: #fee1cb;
   border-color: #E76B0B;
 }
+[data-secondary]:hover [data-arrow] {
+  transform: translateX(4px);
+}
 [data-input]:focus {
   border-color: #E76B0B;
   box-shadow: 0 0 0 4px #fee1cb;
   outline: none;
 }
 
-/* Header transparente que se rellena al pasar el hero. El estado vive aquí y
-   el script solo marca [data-fijo] al primer píxel de scroll. */
-#sonris-header[data-variante='transparente'] {
-  background-color: rgba(255, 255, 255, 0);
-  -webkit-backdrop-filter: blur(0px);
-  backdrop-filter: blur(0px);
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-  /* Sin fade en el relleno: interpolar de rgba(255,255,255,0) a 0.88 deja el
-     navbar medio traslúcido durante 300ms y el texto flota sobre el contenido
-     que pasa detrás. El fondo entra en un fotograma; solo la sombra se funde. */
-  transition: box-shadow 200ms var(--ease);
-}
-#sonris-header[data-fijo] {
-  background-color: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+/* Header en «liquid glass»: su contenido es siempre una píldora de vidrio
+   claro que flota separada del borde, arriba del todo y al hacer scroll, en
+   todas las variantes. La barra exterior queda transparente.
+   - translateY baja la píldora sin cambiar la altura del header: el contenido
+     de debajo no se mueve.
+   - El texto sigue oscuro: el blur fuerte y el blanco al 62 % mantienen el
+     contraste sobre cualquier foto que pase por detrás. */
+#sonris-header > div {
+  max-width: min(1240px, calc(100% - 32px)) !important;
+  transform: translateY(10px);
+  border-radius: 40px;
+  background-color: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
     0 2px 8px rgba(0, 0, 0, 0.04),
-    0 12px 32px rgba(0, 0, 0, 0.06);
+    0 16px 40px rgba(0, 0, 0, 0.1);
+}
+@media (max-width: 900px) {
+  #sonris-header > div {
+    max-width: calc(100% - 16px) !important;
+    transform: translateY(8px);
+    border-radius: 28px;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  #sonris-header > div {
+    background-color: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 [data-accrow]:hover [data-q] {
   color: #E76B0B;
@@ -266,8 +385,14 @@ article[id] {
 
 /* ---- Responsive: mismas reglas que la maqueta ---- */
 
+[data-idioma-otro]:hover,
+[data-idioma-otro]:focus-visible {
+  background: rgba(0, 0, 0, 0.06);
+}
+
 @media (max-width: 1120px) {
-  [data-desknav] {
+  [data-desknav],
+  [data-idioma-escritorio] {
     display: none !important;
   }
   [data-burger] {
@@ -336,10 +461,6 @@ article[id] {
   }
   [data-3col] {
     grid-template-columns: minmax(0, 1fr) !important;
-  }
-  /* El zigzag de los tratamientos solo tiene sentido con sitio para el aire. */
-  [data-cascada] > article {
-    width: 100% !important;
   }
   [data-zig] {
     grid-template-columns: 1fr !important;
@@ -427,10 +548,6 @@ article[id] {
 }
 
 @media (max-width: 560px) {
-  /* Nunca dos superficies tintadas seguidas al apilarse */
-  [data-band-gray] {
-    background: #ffffff !important;
-  }
   /* Dos credenciales a la vez, rotando (ui.ts las pasa cada 4,5s y también se
      pasan con el dedo). Las cuatro en fila dejaban el texto en 10px; apiladas,
      cuatro pantallazos de altura muerta antes del primer contenido. */
@@ -817,6 +934,12 @@ article[id] {
     bottom: 96px;
   }
 }
+/* Velo del menú móvil: solo funde, el panel ya entra con sonris-aviso-entra. */
+@keyframes sonris-aparece {
+  from {
+    opacity: 0;
+  }
+}
 @keyframes sonris-aviso-entra {
   from {
     opacity: 0;
@@ -840,6 +963,34 @@ article[id] {
   transition:
     opacity 700ms var(--ease) var(--retardo, 0ms),
     transform 700ms var(--ease) var(--retardo, 0ms);
+}
+
+/* Cada sección [data-sec] entra entera una sola vez al asomar: sube un poco y
+   aparece, sin ir soltando sus piezas por separado. Van turnándose: desde la
+   izquierda, desde la derecha y desde abajo. Lo activa ui.ts poniendo
+   [data-sube]; sin JS, con menos movimiento o en modo edición no lo pone y
+   todo se ve desde el principio. */
+[data-sube] {
+  opacity: 0;
+  transform: translateY(48px);
+}
+[data-sube='izq'] {
+  transform: translateX(-64px);
+}
+[data-sube='der'] {
+  transform: translateX(64px);
+}
+/* Las que entran de lado sobresalen mientras se deslizan: clip (no hidden)
+   las recorta sin crear un contenedor de scroll que rompa los sticky. */
+main {
+  overflow-x: clip;
+}
+[data-sube][data-visible] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 900ms var(--ease),
+    transform 900ms var(--ease);
 }
 
 /* Vídeo que acompaña al formulario: se queda pegado al scroll mientras se
@@ -991,8 +1142,289 @@ article[id] {
 [data-textura-palitos] {
   --textura: url('../assets/sonris/iconos/fondo-palitos-dark.webp');
 }
-[data-textura-palitos] {
-  --textura: url('../assets/sonris/iconos/fondo-palitos-dark.webp');
+
+/* Fundido entre secciones [data-fundido]: la sección entra y sale
+   fundiéndose con lo que tiene arriba y abajo, sin línea divisoria.
+   - El fondo (--fondo) va en un ::before detrás del contenido, con una
+     máscara que lo lleva de 0 a pleno siguiendo una curva lenta (ease-in-out
+     de seno elevado a 1.35, 17 puntos: a = ((1 - cos(pi*t)) / 2) ** 1.35).
+   - Cada borde se configura aparte: --f-arriba / --f-abajo es el largo del
+     fundido (0px = ese borde no se funde, p. ej. cuando el vecino es una
+     sección oscura que ya se funde sobre esta) y --x-arriba / --x-abajo lo
+     que sobresale sobre el relleno de la vecina, para que el fundido empiece
+     ANTES de la sección. Siempre por debajo del relleno de la vecina (48px
+     en móvil) para no pasar sobre su texto.
+   - El fondo propio de la sección es --antes (mitad de arriba) y --despues
+     (mitad de abajo): el color de cada vecina, que asoma bajo el tramo del
+     fundido que cae dentro. Sin border-radius: dejaba puntas de otro color.
+   - z-index: va por encima de las vecinas. Mientras una vecina hace su
+     entrada ([data-sube], con transform) es un contexto de apilamiento y,
+     si va después en el DOM, tapaba el tramo que sobresale. Las oscuras
+     (z 2) van sobre las claras (z 1): su fundido se pinta sobre el gris.
+     Cabecera, barras y modales están en 60 o más.
+   !important: gana a los style en línea y al [data-sec] de móvil. */
+[data-fundido] {
+  --f-arriba: clamp(56px, 7vw, 100px);
+  --f-abajo: clamp(56px, 7vw, 100px);
+  --x-arriba: clamp(24px, 4vw, 64px);
+  --x-abajo: clamp(24px, 4vw, 64px);
+  background-color: transparent !important;
+  background-image: linear-gradient(var(--antes, #fff) 50%, var(--despues, #fff) 50%) !important;
+  border-radius: 0 !important;
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
+}
+[data-fundido]::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--x-arriba) * -1);
+  bottom: calc(var(--x-abajo) * -1);
+  left: -16px;
+  right: -16px;
+  z-index: -1;
+  background-color: var(--fondo);
+  /* Brillos opcionales de la sección (radial-gradient en su style, como
+     --brillo): se funden con la misma máscara que el color. */
+  background-image: var(--brillo, none);
+  --curva-arriba:
+    rgba(0, 0, 0, 0.000) 0,
+    rgba(0, 0, 0, 0.002) calc(var(--f-arriba) * 0.0625),
+    rgba(0, 0, 0, 0.012) calc(var(--f-arriba) * 0.125),
+    rgba(0, 0, 0, 0.035) calc(var(--f-arriba) * 0.1875),
+    rgba(0, 0, 0, 0.075) calc(var(--f-arriba) * 0.25),
+    rgba(0, 0, 0, 0.131) calc(var(--f-arriba) * 0.3125),
+    rgba(0, 0, 0, 0.205) calc(var(--f-arriba) * 0.375),
+    rgba(0, 0, 0, 0.293) calc(var(--f-arriba) * 0.4375),
+    rgba(0, 0, 0, 0.392) calc(var(--f-arriba) * 0.5),
+    rgba(0, 0, 0, 0.499) calc(var(--f-arriba) * 0.5625),
+    rgba(0, 0, 0, 0.608) calc(var(--f-arriba) * 0.625),
+    rgba(0, 0, 0, 0.712) calc(var(--f-arriba) * 0.6875),
+    rgba(0, 0, 0, 0.808) calc(var(--f-arriba) * 0.75),
+    rgba(0, 0, 0, 0.888) calc(var(--f-arriba) * 0.8125),
+    rgba(0, 0, 0, 0.949) calc(var(--f-arriba) * 0.875),
+    rgba(0, 0, 0, 0.987) calc(var(--f-arriba) * 0.9375),
+    #000 var(--f-arriba);
+  --curva-abajo:
+    rgba(0, 0, 0, 0.000) 0,
+    rgba(0, 0, 0, 0.002) calc(var(--f-abajo) * 0.0625),
+    rgba(0, 0, 0, 0.012) calc(var(--f-abajo) * 0.125),
+    rgba(0, 0, 0, 0.035) calc(var(--f-abajo) * 0.1875),
+    rgba(0, 0, 0, 0.075) calc(var(--f-abajo) * 0.25),
+    rgba(0, 0, 0, 0.131) calc(var(--f-abajo) * 0.3125),
+    rgba(0, 0, 0, 0.205) calc(var(--f-abajo) * 0.375),
+    rgba(0, 0, 0, 0.293) calc(var(--f-abajo) * 0.4375),
+    rgba(0, 0, 0, 0.392) calc(var(--f-abajo) * 0.5),
+    rgba(0, 0, 0, 0.499) calc(var(--f-abajo) * 0.5625),
+    rgba(0, 0, 0, 0.608) calc(var(--f-abajo) * 0.625),
+    rgba(0, 0, 0, 0.712) calc(var(--f-abajo) * 0.6875),
+    rgba(0, 0, 0, 0.808) calc(var(--f-abajo) * 0.75),
+    rgba(0, 0, 0, 0.888) calc(var(--f-abajo) * 0.8125),
+    rgba(0, 0, 0, 0.949) calc(var(--f-abajo) * 0.875),
+    rgba(0, 0, 0, 0.987) calc(var(--f-abajo) * 0.9375),
+    #000 var(--f-abajo);
+  -webkit-mask-image: linear-gradient(to bottom, var(--curva-arriba)), linear-gradient(to top, var(--curva-abajo));
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, var(--curva-arriba)), linear-gradient(to top, var(--curva-abajo));
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+/* Secciones oscuras con textura (Dra. Isabel Vélez: marcas y libro): fundido
+   más largo y la textura en el ::before, para que la máscara la funda junto
+   con el color. Mosaico de 300px: el archivo mide 1200px, así que cada
+   repetición lleva 4 píxeles por punto (2 en pantallas Retina) y se ve
+   nítida, sin desenfoque; a 600px iba 1:1 en Retina y se notaba la
+   compresión. El texto blanco empieza cuando el fundido ya terminó. */
+[data-fundido][data-textura-ondas],
+[data-fundido][data-textura-palitos] {
+  --fondo: #0a0a0a;
+  --f-arriba: clamp(140px, 18vw, 280px);
+  --f-abajo: clamp(140px, 18vw, 280px);
+  --x-arriba: clamp(40px, 5vw, 80px);
+  --x-abajo: clamp(40px, 5vw, 80px);
+  padding-top: calc(var(--f-arriba) - var(--x-arriba) + 48px) !important;
+  padding-bottom: calc(var(--f-abajo) - var(--x-abajo) + 56px) !important;
+  z-index: 2;
+}
+[data-fundido][data-textura-ondas]::before,
+[data-fundido][data-textura-palitos]::before {
+  background-image: linear-gradient(var(--velo), var(--velo)), var(--textura);
+  background-size: auto, 300px auto;
+  background-position: center;
+  background-repeat: repeat;
+}
+/* Liquid glass en la transición: una capa de vidrio esmerilado sobre el
+   fundido. backdrop-filter difumina lo que tiene detrás (el negro con
+   textura y el color de la vecina), así la textura se derrite hacia el borde
+   en vez de cortarse, y un brillo blanco muy tenue le da el reflejo del
+   vidrio. La máscara la deja solo en las dos franjas del fundido: plena en
+   el borde, desaparece hacia el centro, donde la textura queda nítida.
+   Va detrás del contenido (z-index -1, después del ::before). */
+[data-fundido][data-textura-ondas]::after,
+[data-fundido][data-textura-palitos]::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--x-arriba) * -1);
+  bottom: calc(var(--x-abajo) * -1);
+  left: 0;
+  right: 0;
+  z-index: -1;
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  background-image:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) var(--f-arriba)),
+    linear-gradient(to top, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) var(--f-abajo));
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    rgba(0, 0, 0, 0.85) calc(var(--f-arriba) * 0.35),
+    rgba(0, 0, 0, 0.35) calc(var(--f-arriba) * 0.7),
+    transparent var(--f-arriba),
+    transparent calc(100% - var(--f-abajo)),
+    rgba(0, 0, 0, 0.35) calc(100% - var(--f-abajo) * 0.7),
+    rgba(0, 0, 0, 0.85) calc(100% - var(--f-abajo) * 0.35),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    rgba(0, 0, 0, 0.85) calc(var(--f-arriba) * 0.35),
+    rgba(0, 0, 0, 0.35) calc(var(--f-arriba) * 0.7),
+    transparent var(--f-arriba),
+    transparent calc(100% - var(--f-abajo)),
+    rgba(0, 0, 0, 0.35) calc(100% - var(--f-abajo) * 0.7),
+    rgba(0, 0, 0, 0.85) calc(100% - var(--f-abajo) * 0.35),
+    #000 100%
+  );
+  pointer-events: none;
+}
+
+/* Un solo fondo para toda la página (como la landing de Selo): las secciones
+   no llevan color propio y detrás de todo va esta capa. Un tono crema que
+   cambia muy despacio (sin escalones: entre colores tan cercanos el
+   degradado lineal no se nota) y brillos melocotón y naranja que se
+   alternan de lado mientras se baja. Posiciones en % del alto de la página,
+   así se reparten igual en escritorio y en móvil. Termina antes del footer.
+   isolation en <main>: el z-index -1 queda dentro de main, sobre el blanco
+   del body. */
+/* Footer en «liquid glass»: panel flotante redondeado. Detrás del footer solo
+   está el blanco del body, así que el cristal no tiene nada que difuminar: el
+   efecto lo dan la luz y los cantos, no manchas de color (teñían el azul y se
+   veían como círculos). Azul marino uniforme (::before) y encima, en ::after,
+   el brillo del vidrio: una franja de luz arriba que se apaga hacia abajo y un
+   reflejo diagonal. Los cantos se iluminan con sombras interiores. Con
+   transparencia reducida, marino sólido sin brillos. */
+footer[data-cristal] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0 16px 16px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #16163f;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 28px 56px -28px rgba(255, 255, 255, 0.16),
+    inset 0 -28px 56px -28px rgba(255, 255, 255, 0.08),
+    0 24px 64px rgba(22, 22, 63, 0.28);
+}
+footer[data-cristal]::before,
+footer[data-cristal]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+footer[data-cristal]::before {
+  background: #16163f;
+}
+footer[data-cristal]::after {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 22%, transparent 45%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 22%, transparent 38%);
+}
+@media (max-width: 560px) {
+  footer[data-cristal] {
+    margin: 0 8px 8px;
+    border-radius: 28px;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  footer[data-cristal] {
+    background: #16163f;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  footer[data-cristal]::before,
+  footer[data-cristal]::after {
+    display: none;
+  }
+}
+
+main:has(> [data-fondo-pagina]) {
+  position: relative;
+  isolation: isolate;
+}
+[data-fondo-pagina] {
+  position: absolute;
+  inset: 0;
+  /* Sube por detrás del navbar (110px en escritorio, 62px en móvil), que va
+     justo antes de <main> y es transparente fuera de su píldora. Lo que sobra
+     queda por encima del principio de la página y no se ve. */
+  top: -128px;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(70rem 44rem at 0% 0%, rgba(254, 225, 203, 0.75), transparent 70%),
+    radial-gradient(56rem 40rem at 100% 11%, rgba(255, 188, 125, 0.22), transparent 70%),
+    radial-gradient(60rem 44rem at 0% 30%, rgba(255, 188, 125, 0.2), transparent 70%),
+    radial-gradient(64rem 46rem at 100% 46%, rgba(231, 107, 11, 0.09), transparent 70%),
+    radial-gradient(60rem 44rem at 0% 61%, rgba(254, 225, 203, 0.55), transparent 70%),
+    radial-gradient(64rem 46rem at 100% 76%, rgba(255, 188, 125, 0.24), transparent 70%),
+    radial-gradient(64rem 46rem at 0% 89%, rgba(231, 107, 11, 0.1), transparent 70%),
+    linear-gradient(
+      to bottom,
+      #ffffff 0%,
+      #ffffff 12%,
+      #fff9f4 24%,
+      #fff3e9 34%,
+      #fee9d7 45%,
+      #fff3e9 56%,
+      #fff9f4 64%,
+      #ffffff 71%,
+      #fff4ea 79%,
+      #ffe5cd 87%,
+      #ffefe1 94%,
+      #fff8f2 100%
+    );
+}
+/* Variante del resto de páginas, en grises y blanco. Tramos de blanco puro sin
+   manchas encima alternan con bandas grises marcadas, para que el cambio se
+   note al bajar y no se lea todo gris. Las manchas, solo sobre las bandas y
+   alternando de lado. La Dra. Isabel Vélez se queda con la naranja. */
+[data-fondo-pagina][data-gris] {
+  background-image:
+    radial-gradient(48rem 26rem at 0% 21%, rgba(0, 0, 0, 0.05), transparent 70%),
+    radial-gradient(48rem 26rem at 100% 51%, rgba(0, 0, 0, 0.05), transparent 70%),
+    radial-gradient(48rem 26rem at 0% 81%, rgba(0, 0, 0, 0.05), transparent 70%),
+    linear-gradient(
+      to bottom,
+      #ffffff 0%,
+      #ffffff 9%,
+      #e6e6e6 21%,
+      #ffffff 33%,
+      #ffffff 39%,
+      #e2e2e2 51%,
+      #ffffff 63%,
+      #ffffff 69%,
+      #e6e6e6 81%,
+      #ffffff 93%,
+      #ffffff 100%
+    );
 }
 
 /* Intercambia visualmente las dos columnas de una rejilla dejando el marcado
@@ -1007,22 +1439,50 @@ article[id] {
   }
 }
 
-/* Paneles de tipos de tratamiento: al pasar por encima se agitan y se despegan
-   del fondo. Dos vaivenes que van perdiendo amplitud, para que frene solo en
-   vez de cortarse; el bloque global de prefers-reduced-motion ya lo apaga. */
-[data-cascada] > article {
-  transition: box-shadow 300ms var(--ease);
+/* Tipos de tratamiento (plantilla de tratamiento): lista editorial. Número
+   grande en naranja (decorativo, aria-hidden; a 64px basta 3:1), nombre y
+   texto, filas separadas por una línea fina sobre el fondo de la página. */
+[data-tipos-fila] {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 4fr) minmax(0, 6fr);
+  gap: 32px;
+  align-items: center;
+  padding: 36px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  scroll-margin-top: 120px;
 }
-[data-cascada] > article:hover {
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 24px 56px rgba(0, 0, 0, 0.1);
+[data-tipos-fila]:last-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
-/* El mismo meneo en las demás superficies del sistema: carrusel de tratamientos
-   de la home, planes, tecnología y la caja de cierre. Sin sombra añadida en
+[data-tipos-num] {
+  font-family: Poppins, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #e76b0b;
+}
+@media (max-width: 900px) {
+  [data-tipos-fila] {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 8px 20px;
+    padding: 28px 0;
+  }
+  [data-tipos-num] {
+    font-size: 40px;
+  }
+  [data-tipos-fila] > p {
+    grid-column: 2;
+  }
+  [data-tipos-fila] h3 {
+    font-size: 26px !important;
+  }
+}
+
+/* Meneo al pasar por encima en las superficies del sistema: carrusel de
+   tratamientos de la home, planes, tecnología y la caja de cierre. Sin sombra añadida en
    ellas: su transición va en línea y no incluye box-shadow, así que entraría de
    golpe. */
-[data-cascada] > article:hover,
 [data-foco]:hover,
 [data-plan]:hover,
 [data-feat]:hover,

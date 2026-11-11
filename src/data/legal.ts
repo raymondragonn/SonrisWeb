@@ -7,7 +7,13 @@
 // Lo que falte por confirmar va en SITE (registro mercantil, nº de registro
 // sanitario, DPD): si está vacío, la línea no se imprime. Ver PENDIENTES.md.
 
-export type Bloque = { h: string; p?: string[]; ul?: string[] };
+// Con PUBLIC_GA_ID el sitio mide visitas con Google Analytics (solo tras
+// aceptar): las políticas lo cuentan; sin él, dicen que no hay analítica.
+const GA = Boolean(import.meta.env.PUBLIC_GA_ID);
+
+/** id: fija el tramo de la clave editable en vez del número de bloque. Lo usan
+ *  las variantes con analítica, para no compartir clave con el texto sin ella. */
+export type Bloque = { h: string; p?: string[]; ul?: string[]; id?: string };
 
 export type PaginaLegal = {
   slug: string;
@@ -119,6 +125,12 @@ export const LEGAL: PaginaLegal[] = [
           'No vendemos ni cedemos tus datos. Acceden a ellos solo los proveedores que necesitamos para trabajar —alojamiento y correo, software de gestión clínica, laboratorio protésico y asesoría—, todos con contrato de confidencialidad firmado.',
           'Además, comunicamos lo imprescindible a otros profesionales que intervengan en tu caso, a tu aseguradora si tienes póliza, y a la Administración o los tribunales cuando la ley lo exige.',
           'Los contenidos de Google y Matterport que muestra el sitio pueden implicar el envío de datos a Estados Unidos, amparado en la decisión de adecuación de la Comisión Europea de julio de 2023 o en cláusulas contractuales tipo.',
+          // Al final, para no mover las claves editables de los párrafos de arriba.
+          ...(GA
+            ? [
+                'Si aceptas las cookies de medición, Google Analytics recibe datos de tu navegación (páginas vistas, clics, dispositivo y ubicación aproximada, con la IP truncada). Los usamos solo para mejorar la web, en informes agregados, y se conservan 14 meses.',
+              ]
+            : []),
         ],
       },
       {
@@ -148,10 +160,24 @@ export const LEGAL: PaginaLegal[] = [
     actualizado: ACTUALIZADO,
     bloques: [
       {
-        h: 'Este sitio no usa cookies propias',
-        p: [
-          'Una cookie es un pequeño archivo que una web guarda en tu dispositivo al visitarla. Este sitio es estático: no instala cookies propias, no mide tu navegación y no usa analítica ni píxeles de redes sociales.',
-        ],
+        ...(GA ? { id: '1-ga' } : {}),
+        h: GA ? 'Cookies de medición, solo si las aceptas' : 'Este sitio no usa cookies propias',
+        p: GA
+          ? [
+              'Una cookie es un pequeño archivo que una web guarda en tu dispositivo al visitarla. Si aceptas, usamos Google Analytics 4 para contar visitas y saber qué páginas y botones se usan. No usamos píxeles de redes sociales ni hacemos publicidad.',
+            ]
+          : [
+              'Una cookie es un pequeño archivo que una web guarda en tu dispositivo al visitarla. Este sitio es estático: no instala cookies propias, no mide tu navegación y no usa analítica ni píxeles de redes sociales.',
+            ],
+        ...(GA
+          ? {
+              ul: [
+                '_ga: distingue a un visitante de otro, de forma anónima. Dura 2 años.',
+                '_ga_<id>: mantiene el estado de la sesión. Dura 2 años.',
+                'Las pone Google Ireland Ltd. Si rechazas o retiras el consentimiento desde el pie, no se cargan y las que hubiera se borran.',
+              ],
+            }
+          : {}),
       },
       {
         h: 'Lo que sí cargan los contenidos de terceros',

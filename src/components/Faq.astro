@@ -1,0 +1,115 @@
+---
+/**
+ * Preguntas frecuentes con <details> nativo. Sustituye a la isla Acordeon:
+ *
+ * - Sin JavaScript: la respuesta está en el HTML servido y la leen también los
+ *   rastreadores que no ejecutan JS (los de los buscadores generativos).
+ * - El modo edición puede reescribir el texto al publicar. En la isla viajaba en
+ *   las props serializadas y React lo habría vuelto a pintar con el texto viejo.
+ * - `name` compartido: abrir una cierra la anterior, como hacía la isla.
+ *
+ * Con `clave`, cada pregunta y respuesta es editable como <clave>.<n>.pregunta y
+ * <clave>.<n>.respuesta: las mismas claves que debe usar el FAQPage de la página.
+ */
+import Cms from './Cms.astro';
+
+export type Fila = { pregunta: string; respuesta: string };
+
+interface Props {
+  filas: Fila[];
+  /** Prefijo de las claves editables (ej. "ortodoncia.faq"). Sin él, no se marca. */
+  clave?: string;
+}
+
+const { filas, clave } = Astro.props;
+const grupo = `faq-${clave ?? 'pagina'}`;
+---
+
+<div data-faq style="background:#FFFFFF;border-radius:40px;padding:16px 36px;box-shadow:var(--e1)">
+  {
+    filas.map((f, i) => (
+      <details name={grupo} data-accrow style={i < filas.length - 1 ? 'border-bottom:1px solid rgba(0,0,0,0.08)' : undefined}>
+        <summary>
+          <span data-q>{clave ? <Cms k={`${clave}.${i + 1}.pregunta`}>{f.pregunta}</Cms> : f.pregunta}</span>
+          <span data-chev aria-hidden="true">⌄</span>
+        </summary>
+        <p>{clave ? <Cms k={`${clave}.${i + 1}.respuesta`}>{f.respuesta}</Cms> : f.respuesta}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 0;
+    cursor: pointer;
+    list-style: none;
+    font-family: Poppins, system-ui, sans-serif;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  [data-q] {
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+    color: #000000;
+    transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-chev] {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    background: #fee1cb;
+    color: #e76b0b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      background 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  details[open] [data-q] {
+    color: #e76b0b;
+  }
+  details[open] [data-chev] {
+    background: #e76b0b;
+    color: #ffffff;
+    transform: rotate(180deg);
+  }
+  p {
+    margin: 0 0 24px;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #1a1a1a;
+    max-width: 65ch;
+  }
+
+  /* Apertura animada donde el navegador lo permite (::details-content); en el
+     resto se abre al instante, que es el comportamiento nativo. */
+  @supports selector(::details-content) {
+    [data-faq] {
+      interpolate-size: allow-keywords;
+    }
+    details::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition:
+        block-size 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        content-visibility 300ms allow-discrete;
+    }
+    details[open]::details-content {
+      block-size: auto;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    details::details-content {
+      transition: none;
+    }
+  }
+</style>

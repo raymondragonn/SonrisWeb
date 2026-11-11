@@ -1,0 +1,12 @@
+---
+// Versión en inglés de cada tratamiento: misma plantilla, slug inglés.
+import Pagina from '../../tratamientos/[slug].astro';
+import { TRATAMIENTOS } from '../../../data/tratamientos';
+import { aIngles, slugDe } from '../../../i18n/rutas.js';
+
+export function getStaticPaths() {
+  return TRATAMIENTOS.map((t) => ({ params: { slug: slugDe(aIngles(`/tratamientos/${t.slug}/`)) }, props: { t } }));
+}
+---
+
+<Pagina {...Astro.props} />

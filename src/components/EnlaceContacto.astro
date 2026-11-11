@@ -1,0 +1,29 @@
+---
+/**
+ * Enlace a un dato de contacto editable: el texto visible y el href (tel:, wa.me,
+ * mailto:) salen de la misma clave, así que cambiar el número en el modo edición
+ * cambia los dos. El resto de atributos (style, data-*, target) pasan tal cual.
+ *
+ *   <EnlaceContacto tipo="telefono" style="…" />
+ *   <EnlaceContacto tipo="whatsapp">Escríbenos</EnlaceContacto>   ← texto propio
+ */
+import Cms from './Cms.astro';
+import { CONTACTO } from '../data/site';
+import { attrs, c } from '../lib/cms';
+
+interface Props {
+  tipo: 'telefono' | 'whatsapp' | 'email';
+  [atributo: string]: unknown;
+}
+
+const { tipo, ...resto } = Astro.props;
+
+const DATOS = {
+  telefono: { clave: 'contacto.telefono', texto: CONTACTO.telefono, href: c('contacto.telefono@tel', `tel:${CONTACTO.telefonoE164}`) },
+  whatsapp: { clave: 'contacto.whatsapp', texto: CONTACTO.whatsapp, href: c('contacto.whatsapp@wa', CONTACTO.whatsappUrl) },
+  email: { clave: 'contacto.email', texto: CONTACTO.email, href: c('contacto.email@mailto', `mailto:${CONTACTO.email}`) },
+} as const;
+const d = DATOS[tipo];
+const propio = Astro.slots.has('default');
+---
+<a {...resto} {...attrs({ href: d.href })}>{propio ? <slot /> : <Cms k={d.clave}>{d.texto}</Cms>}</a>

@@ -2,9 +2,13 @@
 import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import CtaFinal from '../../components/CtaFinal.astro';
+import Cms from '../../components/Cms.astro';
+import CmsImage from '../../components/CmsImage.astro';
+import CmsVideo from '../../components/CmsVideo.astro';
+import { c, fondo as marcaFondo, ld } from '../../lib/cms';
 import { SITE } from '../../data/site';
 import fondoBeneficios from '../../assets/sonris/iconos/fondo-memphis-tratamientos.png';
-import { TRATAMIENTOS, type Tratamiento } from '../../data/tratamientos';
+import { TRATAMIENTOS, VIDEOS, type Tratamiento } from '../../data/tratamientos';
 import odontologiaHero from '../../assets/sonris/tratamientos/Odontologia-General-Ozkan.webp';
 import periodonciaHero from '../../assets/sonris/tratamientos/Periodoncia-Ozkan.webp';
 import cirugiaOralHero from '../../assets/sonris/tratamientos/Cirugia-Oral-Angels.webp';
@@ -12,6 +16,7 @@ import esteticaHero from '../../assets/sonris/tratamientos/Estetica-Dental-Ozkan
 import ortognaticaHero from '../../assets/sonris/tratamientos/Cirugia-Ortognatica-Render.webp';
 import endodonciaHero from '../../assets/sonris/tratamientos/Endodoncia-Render.webp';
 import implantesHero from '../../assets/sonris/tratamientos/Implantes-Dentales-1.webp';
+import { t as tr } from '../../i18n/idioma';
 
 // Foto de cabecera por tratamiento, la misma que su tarjeta en la home y en el
 // hub.
@@ -32,37 +37,68 @@ export function getStaticPaths() {
 const { t } = Astro.props as { t: Tratamiento };
 const ruta = `/tratamientos/${t.slug}/`;
 const hero = HEROS[t.slug];
+const [heroVideo, ...videos] = VIDEOS[t.slug] ?? [];
 const fondo = await getImage({ src: fondoBeneficios, width: 1672, format: 'webp' });
 
 // Pestañas y variantes se pintan igual, uno debajo de otro. Ningún tratamiento
 // llena las dos listas; concatenar evita tener que elegir.
 const bloques = [...t.pestanas, ...t.variantes];
 
+// Un dato del tratamiento, una clave: la misma en esta página, en el hub, en la
+// home y en el JSON-LD.
+const k = (campo: string) => `tratamientos.${t.slug}.${campo}`;
+
 const procedimientoLd = {
   '@type': 'MedicalProcedure',
   '@id': `${SITE.url}${ruta}#procedimiento`,
-  name: t.nombre,
-  description: t.queEs1,
-  howPerformed: t.queEs2,
+  name: ld(k('nombre'), t.nombre),
+  description: ld(k('que-es-1'), t.queEs1),
+  howPerformed: ld(k('que-es-2'), t.queEs2),
   provider: { '@id': `${SITE.url}/#clinica` },
 };
 ---
 
 <Base
-  titulo={`Sonris | ${t.nombre}`}
-  descripcion={`${t.entradilla} ${t.nombre} en Sonris, Avenida Isabel de Valois 55, Madrid. Primera visita gratuita.`}
+  titulo={[c(k('nombre'), t.nombre), tr(' en Sanchinarro, Madrid | Sonris', ' in Sanchinarro, Madrid | Sonris')]}
+  descripcion={[
+    c(k('entradilla'), t.entradilla),
+    ' ',
+    c(k('nombre'), t.nombre),
+    tr(' en Sanchinarro, Madrid. Primera visita gratuita.', ' in Sanchinarro, Madrid. Free first visit.'),
+  ]}
   {ruta}
   migas={[
-    { nombre: 'Tratamientos', href: '/tratamientos/' },
-    { nombre: t.nombre, href: ruta },
+    { nombre: c('comun.nav.3', 'Tratamientos'), href: '/tratamientos/' },
+    { nombre: c(k('nombre'), t.nombre), href: ruta },
   ]}
   jsonLd={[procedimientoLd]}
 >
+  {/* Fondo único de página en grises (global.css, [data-fondo-pagina][data-gris]):
+      las secciones claras no llevan color propio. */}
+  <div data-fondo-pagina data-gris aria-hidden="true"></div>
+
   <section id="inicio" aria-labelledby="hero-t" style="position:relative;overflow:hidden;background:#000000">
     <div data-herobox data-hero-corto style="position:relative;width:100%;aspect-ratio:21/9;max-height:68vh;overflow:hidden">
       {
-        hero ? (
-          <Image
+        heroVideo ? (
+          // data-giro: con movimiento reducido ui.ts lo pausa y queda el póster.
+          <div data-giro style="position:absolute;inset:0">
+            <CmsVideo k={k('video.1')}><video
+              src={`/video/${heroVideo[0]}.mp4`}
+              poster={`/img/${heroVideo[0]}-poster.webp`}
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="auto"
+              data-cms-min="1920x1080"
+              aria-label={tr(heroVideo[1], heroVideo[2])}
+              style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"
+            ></video></CmsVideo>
+          </div>
+        ) : hero ? (
+          <CmsImage
+            k={k('foto')}
             src={hero}
             alt={`${t.nombre} en la clínica Sonris`}
             widths={[640, 1080, 1600]}
@@ -100,15 +136,15 @@ const procedimientoLd = {
             id="hero-t"
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:60px;line-height:1.05;letter-spacing:-0.02em;color:#FFFFFF;max-width:16ch"
           >
-            {t.nombre}
+            <Cms k={k('nombre')}>{t.nombre}</Cms>
           </h1>
-          <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:rgba(255,255,255,0.88);max-width:46ch">{t.entradilla}</p>
+          <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:rgba(255,255,255,0.88);max-width:46ch"><Cms k={k('entradilla')}>{t.entradilla}</Cms></p>
           <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
             <a
               data-primary
               href="/contacto/"
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;min-height:56px;padding:0 32px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >{t.cta}</a
+              ><Cms k={k('cta')}>{t.cta}</Cms></a
             >
           </div>
         </div>
@@ -128,7 +164,7 @@ const procedimientoLd = {
                   aria-current={o.slug === t.slug ? 'page' : undefined}
                   style={`display:inline-flex;align-items:center;width:100%;justify-content:center;white-space:nowrap;min-height:44px;padding:0 18px;border-radius:9999px;background:${o.slug === t.slug ? '#FEE1CB' : '#FFFFFF'};border:${o.slug === t.slug ? '2px solid #E76B0B' : '1px solid rgba(0,0,0,0.08)'};color:#1A1A1A;font-size:15px;font-weight:500`}
                 >
-                  {o.nombre}
+                  <Cms k={`tratamientos.${o.slug}.nombre`}>{o.nombre}</Cms>
                 </a>
               </li>
             ))
@@ -140,11 +176,10 @@ const procedimientoLd = {
 
   <section
     data-sec
-    data-band-gray
     data-overlap-pull
     id="que-es"
     aria-labelledby="que-t"
-    style="background:#F7F7F7;padding:176px 0 128px;margin-top:-64px"
+    style="padding:176px 0 0;padding-bottom:24px !important;margin-top:-64px"
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start">
@@ -154,12 +189,29 @@ const procedimientoLd = {
             id="que-t"
             style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
-            {t.queEsTitulo}
+            <Cms k={k('que-es-titulo')}>{t.queEsTitulo}</Cms>
           </h2>
         </div>
         <div>
-          <p style="margin:0 0 18px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">{t.queEs1}</p>
-          <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">{t.queEs2}</p>
+          <p style="margin:0 0 18px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch"><Cms k={k('que-es-1')}>{t.queEs1}</Cms></p>
+          <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch"><Cms k={k('que-es-2')}>{t.queEs2}</Cms></p>
+          {/* data-entra lo pone en marcha al asomar y lo para al salir (ui.ts);
+              con movimiento reducido se queda en el póster. */}
+          {videos.map(([n, es, en], i) => (
+            <div data-entra style={`--retardo:${i * 140}ms;margin-top:32px;aspect-ratio:16/9;border-radius:40px;overflow:hidden;background:#E9E9E9`}>
+              <CmsVideo k={k(`video.${i + 2}`)}><video
+                src={`/video/${n}.mp4`}
+                poster={`/img/${n}-poster.webp`}
+                data-cms-min="1280x720"
+                muted
+                loop
+                playsinline
+                preload="none"
+                aria-label={tr(es, en)}
+                style="width:100%;height:100%;object-fit:cover;display:block"
+              ></video></CmsVideo>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -167,39 +219,43 @@ const procedimientoLd = {
 
   <section
     data-sec
-    data-textura
     id="tipos"
     aria-labelledby="tipos-t"
-    style="background-color:#FFFFFF;--velo:rgba(255,255,255,0.88);padding:128px 0"
+    style="padding:128px 0"
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <h2
-        data-h2-grande
-        id="tipos-t"
-        style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch"
-      >
-        {t.tiposTitulo}
-      </h2>
-      {t.tiposEntradilla && <p style="margin:0 0 48px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">{t.tiposEntradilla}</p>}
+      {/* Lista editorial: número, nombre y texto por fila, separadas por una
+          línea fina, sobre el fondo de la página. Estilos en global.css
+          ([data-tipos-fila]); en móvil el texto baja bajo el nombre. */}
+      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:56px;align-items:end;margin-bottom:56px">
+        <div>
+          <span style="display:inline-flex;align-items:center;padding:6px 14px;border-radius:9999px;background:#FEE1CB;color:#1A1A1A;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:16px">
+            <Cms k={k('tipos-eyebrow')}>{t.tiposEyebrow}</Cms>
+          </span>
+          <h2
+            data-h2-grande
+            id="tipos-t"
+            style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:48px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:24ch"
+          >
+            <Cms k={k('tipos-titulo')}>{t.tiposTitulo}</Cms>
+          </h2>
+        </div>
+        {t.tiposEntradilla && <p style="margin:0;font-size:18px;line-height:1.7;color:#4A4A4A"><Cms k={k('tipos-entradilla')}>{t.tiposEntradilla}</Cms></p>}
+      </div>
 
-      {/* Zigzag: cada panel deja aire a un lado, alternando. En móvil el ancho
-          vuelve al 100% desde global.css. */}
-      <div data-cascada style="display:flex;flex-direction:column;gap:24px">
+      <ol style="margin:0;padding:0;list-style:none">
         {
           bloques.map((v, i) => (
-            <article
-              data-caja
-              id={v.id}
-              style={`background:#F7F7F7;border-radius:40px;padding:44px;scroll-margin-top:120px;width:88%;align-self:${i % 2 === 0 ? 'flex-start' : 'flex-end'}`}
-            >
-              <h3 style="margin:0 0 16px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:28px;line-height:1.2;letter-spacing:-0.02em;color:#000000">
-                {v.nombre}
+            <li data-tipos-fila id={v.id}>
+              <span aria-hidden="true" data-tipos-num>{String(i + 1).padStart(2, '0')}</span>
+              <h3 style="margin:0;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:32px;line-height:1.2;letter-spacing:-0.02em;color:#000000">
+                <Cms k={k(`tipos.${v.id}.nombre`)}>{v.nombre}</Cms>
               </h3>
-              <p style="margin:0;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">{v.texto}</p>
-            </article>
+              <p style="margin:0;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch"><Cms k={k(`tipos.${v.id}.texto`)}>{v.texto}</Cms></p>
+            </li>
           ))
         }
-      </div>
+      </ol>
     </div>
   </section>
 
@@ -208,6 +264,7 @@ const procedimientoLd = {
     id="beneficios"
     aria-labelledby="ben-t"
     style={`background-color:#CCE1E4;background-image:url(${fondo.src});background-size:cover;background-position:center;padding:104px 0 128px;border-radius:40px`}
+    {...marcaFondo('comun.tratamiento.beneficios.fondo', fondo)}
   >
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <h2
@@ -215,25 +272,23 @@ const procedimientoLd = {
         id="ben-t"
         style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
       >
-        Qué ganas viniendo aquí
+        <Cms k="comun.tratamiento.beneficios.titulo">Qué ganas viniendo aquí</Cms>
       </h2>
       <p style="margin:0 0 48px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">
-        Tres cosas que valen para cualquier tratamiento que hagas con nosotros.
+        <Cms k="comun.tratamiento.beneficios.texto">Tres cosas que valen para cualquier tratamiento que hagas con nosotros.</Cms>
       </p>
       <div data-3col data-apretado style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px">
         {
-          /* Sin icono: los 76px extra de padding superior (56 del cuadro + 20 de
-             su margen) mantienen la card a la altura y el texto en el sitio de antes. */
           [
             ['Primera visita GRATUITA', 'Valoramos tu caso sin compromiso, y decides después.'],
             ['Plan y presupuesto por escrito', 'Sabes qué se va a hacer y qué cuesta antes de empezar.'],
             ['Todo en la misma clínica', 'En Avenida Isabel de Valois 55, con el mismo equipo de siempre.'],
-          ].map(([titulo, texto]) => (
-            <article style="background:#FFFFFF;border-radius:40px;padding:108px 32px 32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
+          ].map(([titulo, texto], i) => (
+            <article style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
               <h3 style="margin:0 0 12px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
-                {titulo}
+                <Cms k={`comun.tratamiento.beneficios.${i + 1}.titulo`}>{titulo}</Cms>
               </h3>
-              <p style="margin:0;font-size:16px;line-height:1.7;color:#6B6B6B">{texto}</p>
+              <p style="margin:0;font-size:16px;line-height:1.7;color:#6B6B6B"><Cms k={`comun.tratamiento.beneficios.${i + 1}.texto`}>{texto}</Cms></p>
             </article>
           ))
         }
@@ -243,26 +298,28 @@ const procedimientoLd = {
 
   <section data-sec id="cruce" aria-labelledby="cruce-t" style="padding:112px 0 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
-      <div data-2col style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:start">
+      {/* data-invertir: en escritorio la tarjeta va a la izquierda (columna
+          estrecha) y el texto a la derecha; en móvil, el titular primero. */}
+      <div data-2col data-invertir style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center">
         <div>
           <h2
             data-h2-grande
             id="cruce-t"
             style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:46px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:20ch"
           >
-            {t.cruce.titulo}
+            <Cms k={k('cruce.titulo')}>{t.cruce.titulo}</Cms>
           </h2>
-          <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:52ch">{t.cruce.texto}</p>
+          <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:52ch"><Cms k={k('cruce.texto')}>{t.cruce.texto}</Cms></p>
         </div>
         <aside style="background:#F7F7F7;border-radius:40px;padding:36px">
           <h3 style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:22px;letter-spacing:-0.02em;color:#000000">
-            {t.cruce.etiqueta}
+            <Cms k={k('cruce.etiqueta')}>{t.cruce.etiqueta}</Cms>
           </h3>
           <a
-            data-primary
+            data-secondary
             href={t.cruce.href}
-            style="display:inline-flex;white-space:nowrap;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:9999px;background:#E76B0B;color:#FFFFFF;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-            >Conocer los alineadores<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
+            style="display:inline-flex;white-space:nowrap;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:9999px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);color:#1A1A1A;font-size:16px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),border-color 300ms cubic-bezier(0.22,1,0.36,1)"
+            ><Cms k="comun.tratamiento.cruce-boton">Conocer los alineadores</Cms><span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)">→</span></a
           >
         </aside>
       </div>

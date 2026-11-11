@@ -1,14 +1,15 @@
 ---
 import '../styles/global.css';
-import Seo, { type Miga } from '../components/Seo.astro';
+import Seo, { type Miga, type Texto } from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BarrasFijas from '../components/BarrasFijas.astro';
 import AvisoCookies from '../components/AvisoCookies.astro';
+import { idioma } from '../i18n/idioma';
 
 interface Props {
-  titulo: string;
-  descripcion: string;
+  titulo: Texto;
+  descripcion: Texto;
   ruta: string;
   migas?: Miga[];
   jsonLd?: Record<string, unknown>[];
@@ -37,7 +38,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="es-ES">
+<html lang={idioma() === 'en' ? 'en' : 'es-ES'}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -71,6 +72,18 @@ const {
 
     <script>
       import '../scripts/ui';
+      import '../scripts/analitica';
+    </script>
+
+    <!-- Modo edición: el editor solo se descarga si el login dejó la cookie
+         sonris_edit. Un visitante normal no pide nada. La cookie no autoriza: la
+         sesión la comprueba PHP en cada guardado. ?v= evita una copia vieja en
+         caché; solo lo carga quien administra, así que no cuesta nada al sitio. -->
+    <script is:inline>
+      document.cookie.includes('sonris_edit=1') &&
+        document.head.appendChild(
+          Object.assign(document.createElement('script'), { src: '/editor.js?v=' + Date.now(), defer: true })
+        );
     </script>
   </body>
 </html>

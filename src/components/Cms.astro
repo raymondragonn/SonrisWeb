@@ -1,0 +1,30 @@
+---
+/**
+ * Marca un texto como editable desde el modo edición.
+ *
+ * Emite comentarios HTML alrededor del contenido. Sobreviven intactos a la compilación
+ * de Astro, así que PHP puede sustituir lo que hay entre ellos con una operación de
+ * texto simple, sin analizar el HTML.
+ *
+ * No envuelve en ningún elemento: un <span> alrededor rompería estilos existentes.
+ *
+ * Los marcadores NO pueden anidarse: el motor PHP busca el cierre más cercano y
+ * tomaría el equivocado. Un <Cms> nunca debe contener otro <Cms>.
+ */
+interface Props {
+  /** Clave estable: pagina.seccion.campo. Un dato repetido usa la misma clave en todos lados. */
+  k: string;
+}
+
+import { traducir } from '../i18n/idioma';
+
+const { k } = Astro.props;
+
+if (!/^[a-z0-9][a-z0-9.-]*$/.test(k)) {
+  throw new Error(`Clave CMS inválida: "${k}". Usa minúsculas, números, punto y guion (ej. inicio.hero.titulo).`);
+}
+// En inglés, la clave traducida («en.…») y su texto; sin traducción, el español.
+const trad = traducir(k, '');
+const traducido = trad.k !== k;
+---
+<Fragment set:html={`<!--cms:${trad.k}-->`} />{traducido ? trad.v : <slot />}<Fragment set:html="<!--/cms-->" />

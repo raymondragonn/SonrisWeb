@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import doctoraImg from '../../assets/sonris/equipo/Isabel-Velez.webp';
+import doctoraImg from '../../assets/sonris/equipo/Isabel-Velez-alineadores.jpg';
 import bioImg from '../../assets/sonris/equipo/Isabel-Velez-alineador.jpg';
 import libroImg from '../../assets/sonris/blog/libro-ortodoncia-con-alineadores-recorte.png';
 import qrLibroImg from '../../assets/sonris/blog/qr-pre-orden-libro.png';
@@ -11,8 +11,12 @@ import confTaller from '../../assets/sonris/conferencias/taller-con-doctores.web
 import confSmartee from '../../assets/sonris/conferencias/ponencia-smartee.webp';
 import confEscenario from '../../assets/sonris/conferencias/conferencia-sonris-escenario.webp';
 import CtaFinal from '../../components/CtaFinal.astro';
-import AntesDespues from '../../islands/AntesDespues';
-import { CONTACTO, DIRECCION_MEDICA } from '../../data/site';
+import AntesDespues from '../../components/AntesDespues.astro';
+import Cms from '../../components/Cms.astro';
+import CmsImage from '../../components/CmsImage.astro';
+import EnlaceContacto from '../../components/EnlaceContacto.astro';
+import { c } from '../../lib/cms';
+import { DIRECCION_MEDICA } from '../../data/site';
 
 const ruta = '/dra-isabel-velez/';
 
@@ -37,44 +41,39 @@ const CONFERENCIAS = [
 ---
 
 <Base
-  titulo="Sonris | Dra. Isabel Vélez"
-  descripcion="La Dra. Isabel Vélez, directora médica de Sonris, lleva más de 25 años dedicada en exclusiva a la ortodoncia y tiene la máxima categoría de proveedor de ortodoncia invisible. Reserva tu valoración en Sanchinarro, Madrid."
+  titulo="Dra. Isabel Vélez, ortodoncista en Madrid | Sonris"
+  descripcion="La Dra. Isabel Vélez, directora médica de Sonris, lleva más de 25 años dedicada en exclusiva a la ortodoncia invisible. Valoración en Sanchinarro, Madrid."
   {ruta}
   migas={[{ nombre: DIRECCION_MEDICA.nombre, href: ruta }]}
   tipoOg="profile"
   headerOscuro
   conDireccionMedicaEnFooter
 >
+  {/* Un solo fondo para toda la página (global.css, [data-fondo-pagina]):
+      las secciones no llevan color propio, así no se leen como bloques. */}
+  <div data-fondo-pagina aria-hidden="true"></div>
+
   <section
     id="inicio"
     aria-labelledby="hero-t"
-    style="position:relative;overflow:hidden;background:#FFFFFF;padding:56px 0 112px"
+    style="position:relative;overflow:hidden;padding:56px 0 112px"
   >
-    <div
-      aria-hidden="true"
-      style="position:absolute;top:-180px;left:-160px;width:620px;height:500px;border-radius:9999px;background:#EDEDED;filter:blur(80px);opacity:0.6;animation:sonris-float 22s ease-in-out infinite"
-    >
-    </div>
-    <div
-      aria-hidden="true"
-      style="position:absolute;bottom:-220px;right:-140px;width:560px;height:460px;border-radius:9999px;background:#D6D6D6;filter:blur(90px);opacity:0.35;animation:sonris-float 28s ease-in-out infinite"
-    >
-    </div>
     <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-hero data-invertir style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:center">
         <figure style="margin:0">
           <div
             style="position:relative;aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 14px,#EFEFEF 14px 28px);box-shadow:0 4px 12px rgba(0,0,0,.06),0 24px 56px rgba(0,0,0,.10)"
           >
-            <Image
+            <CmsImage
+              k="dra.hero.foto"
               src={doctoraImg}
-              widths={[400, 669]}
+              widths={[500, 1000]}
               sizes="(max-width:900px) 100vw, 50vw"
               loading="eager"
               fetchpriority="high"
               decoding="async"
               alt="Dra. Isabel Vélez, directora médica de Sonris"
-              style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.28);transform-origin:center 30%"
+              style="width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block"
             />
             <div
               data-lamina
@@ -84,13 +83,13 @@ const CONFERENCIAS = [
               <p
                 style="margin:0 0 4px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:18px;line-height:1.3;letter-spacing:-0.02em;color:#000000"
               >
-                Especialista en ortodoncia invisible
+                <Cms k="dra.hero.lamina">Especialista en ortodoncia invisible</Cms>
               </p>
               <p style="margin:0 0 8px;font-size:15px;line-height:1.5;color:#1A1A1A">Nº de colegiado {DIRECCION_MEDICA.colegiado}</p>
             </div>
           </div>
         </figure>
-        <div>
+        <div data-hero-texto>
           <h1
             data-h1
             id="hero-t"
@@ -112,10 +111,10 @@ const CONFERENCIAS = [
             >
           </h1>
           <p style="margin:0 0 28px;font-size:19px;line-height:1.6;color:#1A1A1A;max-width:52ch">
-            Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.
+            <Cms k="dra.hero.texto-1">Máxima categoría en ortodoncia invisible · más de 25 años dedicados en exclusiva a la ortodoncia.</Cms>
           </p>
           <p style="margin:0 0 36px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:56ch">
-            Diagnostico y planifico tu plan de tratamiento, además formo a otros ortodoncistas en los casos que se salen de lo sencillo.
+            <Cms k="dra.hero.texto-2">Diagnostico y planifico tu plan de tratamiento, además formo a otros ortodoncistas en los casos que se salen de lo sencillo.</Cms>
           </p>
           <div data-botonera style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
             <a
@@ -123,14 +122,14 @@ const CONFERENCIAS = [
               data-cta-largo
               href="/contacto/"
               style="display:inline-flex;flex:0 1 auto;max-width:100%;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;background:#000000;color:#FFFFFF;font-size:18.66px;font-weight:600;transition:background 300ms cubic-bezier(0.22,1,0.36,1),box-shadow 300ms cubic-bezier(0.22,1,0.36,1)"
-              >Reservar mi valoración<span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
+              ><Cms k="dra.hero.boton">Reservar mi valoración</Cms><span data-arrow style="display:inline-block;transition:transform 300ms cubic-bezier(0.22,1,0.36,1)"
                 >→</span
               ></a
             >
           </div>
           <p style="margin:20px 0 0;font-size:16px;color:#6B6B6B">
-            Primera visita GRATUITA. O llámanos al{' '}
-            <a href={`tel:${CONTACTO.telefonoE164}`} data-underline style="color:#1A1A1A;font-weight:500">{CONTACTO.telefono}</a>.
+            <Cms k="dra.hero.llamada">Primera visita GRATUITA. O llámanos al</Cms>{' '}
+            <EnlaceContacto tipo="telefono" data-underline style="color:#1A1A1A;font-weight:500" />.
           </p>
         </div>
       </div>
@@ -144,7 +143,8 @@ const CONFERENCIAS = [
           <div
             style="aspect-ratio:4/5;border-radius:40px;overflow:hidden;background:repeating-linear-gradient(135deg,#F7F7F7 0 12px,#EFEFEF 12px 24px);box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)"
           >
-            <Image
+            <CmsImage
+              k="dra.bio.foto"
               src={bioImg}
               widths={[420, 840]}
               sizes="(max-width:900px) 92vw, 420px"
@@ -161,25 +161,25 @@ const CONFERENCIAS = [
             id="bio-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
-            Mi carrera entera en una sola especialidad
+            <Cms k="dra.bio.titulo">Mi carrera entera en una sola especialidad</Cms>
           </h2>
           <p style="margin:0 0 20px;font-size:19px;line-height:1.7;color:#1A1A1A;max-width:65ch">
-            Soy licenciada en Odontología y especializada en ortodoncia, y llevo más de 25 años dedicada a la práctica exclusiva de la
-            ortodoncia.
+            <Cms k="dra.bio.texto-1">Soy licenciada en Odontología y especializada en ortodoncia, y llevo más de 25 años dedicada a la práctica exclusiva de la
+            ortodoncia.</Cms>
           </p>
           <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
-            Tengo la máxima categoría de proveedor de ortodoncia invisible por la cantidad de casos terminados con éxito. Es un reconocimiento al volumen
-            de tratamientos completados; cada caso se valora individualmente y ningún resultado clínico se puede garantizar por adelantado.
+            <Cms k="dra.bio.texto-2">Tengo la máxima categoría de proveedor de ortodoncia invisible por la cantidad de casos terminados con éxito. Es un reconocimiento al volumen
+            de tratamientos completados; cada caso se valora individualmente y ningún resultado clínico se puede garantizar por adelantado.</Cms>
           </p>
           <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
-            Dirijo Sonris, en Sanchinarro, donde solo hacemos ortodoncia invisible.
+            <Cms k="dra.bio.texto-3">Dirijo Sonris, en Sanchinarro, donde solo hacemos ortodoncia invisible.</Cms>
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <section data-sec aria-labelledby="form-t" style="background:#F7F7F7;padding:128px 0">
+  <section data-sec aria-labelledby="form-t" style="padding:128px 0">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       <div data-2col style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:64px;align-items:start">
         <div>
@@ -188,7 +188,7 @@ const CONFERENCIAS = [
             id="form-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:40px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:18ch"
           >
-            De México a Boston, y de Italia a Madrid
+            <Cms k="dra.formacion.titulo">De México a Boston, y de Italia a Madrid</Cms>
           </h2>
           <p style="margin:0;font-size:16px;line-height:1.7;color:#6B6B6B;max-width:40ch">
             Nº de colegiado {DIRECCION_MEDICA.colegiado}.
@@ -208,9 +208,9 @@ const CONFERENCIAS = [
                   </span>
                   <div style={ultimo ? '' : 'padding-bottom:32px'}>
                     <h3 style="margin:0 0 6px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#000000">
-                      {titulo}
+                      <Cms k={`dra.formacion.${i + 1}.titulo`}>{titulo}</Cms>
                     </h3>
-                    <p style="margin:0;font-size:17px;line-height:1.7;color:#6B6B6B">{texto}</p>
+                    <p style="margin:0;font-size:17px;line-height:1.7;color:#6B6B6B"><Cms k={`dra.formacion.${i + 1}.texto`}>{texto}</Cms></p>
                   </div>
                 </li>
               );
@@ -230,47 +230,47 @@ const CONFERENCIAS = [
             id="rec-t"
             style="margin:0 0 28px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-0.02em;color:#FFFFFF;max-width:18ch"
           >
-            Certificada en las mejores marcas de alineadores
+            <Cms k="dra.marcas.titulo">Certificada en las mejores marcas de alineadores</Cms>
           </h2>
           <div style="background:#FFFFFF;border-radius:40px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)">
             <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
               <span
                 style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase"
-                >Diamond provider</span
+                ><Cms k="comun.diamond">Diamond provider</Cms></span
               >
               <span
                 style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase"
-                >Key Opinion Leader</span
+                ><Cms k="dra.marcas.sello-2">Key Opinion Leader</Cms></span
               >
               <span
                 style="display:inline-flex;align-items:center;gap:8px;background:#FFBC7D;color:#000000;border-radius:9999px;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase"
-                >Ortodoncia integral</span
+                ><Cms k="dra.marcas.sello-3">Ortodoncia integral</Cms></span
               >
             </div>
             <p style="margin:0 0 12px;font-size:17px;line-height:1.7;color:#1A1A1A">
-              Máxima categoría de proveedor de ortodoncia invisible, otorgada por el número de casos completados.
+              <Cms k="dra.marcas.texto-1">Máxima categoría de proveedor de ortodoncia invisible, otorgada por el número de casos completados.</Cms>
             </p>
             <p style="margin:0;font-size:17px;line-height:1.7;color:#1A1A1A">
-              Key opinion leader de Smartee y Dental Monitoring.
+              <Cms k="dra.marcas.texto-2">Key opinion leader de Smartee y Dental Monitoring.</Cms>
             </p>
           </div>
         </div>
         <div>
           <h3 style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#FFFFFF">
-            Especialista en alineadores en exclusiva
+            <Cms k="dra.marcas.exclusiva-titulo">Especialista en alineadores en exclusiva</Cms>
           </h3>
           <p style="margin:0 0 24px;font-size:17px;line-height:1.7;color:#E4E4E4;max-width:44ch">
-            Trabaja únicamente con alineadores transparentes, y elige para cada caso el sistema que mejor se ajusta a lo que necesita esa
-            boca.
+            <Cms k="dra.marcas.exclusiva-texto">Trabaja únicamente con alineadores transparentes, y elige para cada caso el sistema que mejor se ajusta a lo que necesita esa
+            boca.</Cms>
           </p>
           <h3 style="margin:0 0 20px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:20px;letter-spacing:-0.02em;color:#FFFFFF">
-            Membresías
+            <Cms k="dra.membresias.titulo">Membresías</Cms>
           </h3>
           <div style="display:flex;flex-wrap:wrap;gap:12px">
             {
-              MEMBRESIAS.map((m) => (
+              MEMBRESIAS.map((m, i) => (
                 <span style="display:inline-flex;align-items:center;height:56px;padding:0 22px;border-radius:12px;background:#FFFFFF;border:1px solid #E0E0E0;font-size:16px;font-weight:500;color:#1A1A1A">
-                  {m}
+                  <Cms k={`dra.membresias.${i + 1}`}>{m}</Cms>
                 </span>
               ))
             }
@@ -279,12 +279,12 @@ const CONFERENCIAS = [
     </div>
   </section>
 
-  <section data-sec aria-labelledby="casos-t" style="background:#F7F7F7;padding:96px 0 128px">
+  <section data-sec aria-labelledby="casos-t" style="padding:96px 0 128px">
     <div style="max-width:1240px;margin:0 auto;padding:0 40px">
       {/* Título y tarjeta lateral viven dentro de la isla: el selector de casos
           va junto al título y la tarjeta cuenta el caso visible, así que ambos
           necesitan el mismo estado que el comparador. */}
-      <AntesDespues client:visible />
+      <AntesDespues />
     </div>
   </section>
 
@@ -295,21 +295,21 @@ const CONFERENCIAS = [
           <p
             style="margin:0 0 16px;font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#E76B0B"
           >
-            Key Opinion Leader en ortodoncia
+            <Cms k="dra.docencia.etiqueta">Key Opinion Leader en ortodoncia</Cms>
           </p>
           <h2
             data-h2-grande
             id="doc-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#000000;max-width:22ch"
           >
-            Mi público no son solo pacientes: son doctores
+            <Cms k="dra.docencia.titulo">Mi público no son solo pacientes: son doctores</Cms>
           </h2>
           <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#1A1A1A;max-width:65ch">
-            Imparto conferencias nacionales e internacionales a doctores de todo el mundo. Cuando otros ortodoncistas quieren aprender a
-            llevar con alineadores los casos difíciles, me escuchan a mí.
+            <Cms k="dra.docencia.texto-1">Imparto conferencias nacionales e internacionales a doctores de todo el mundo. Cuando otros ortodoncistas quieren aprender a
+            llevar con alineadores los casos difíciles, me escuchan a mí.</Cms>
           </p>
           <p style="margin:0;font-size:18px;line-height:1.7;color:#6B6B6B;max-width:65ch">
-            Para ti eso significa una cosa práctica: el criterio con el que valoro tu caso es el mismo que enseño en esas salas.
+            <Cms k="dra.docencia.texto-2">Para ti eso significa una cosa práctica: el criterio con el que valoro tu caso es el mismo que enseño en esas salas.</Cms>
           </p>
         </div>
         {/* Muro de fotos en escritorio (columnas CSS, cada una con su
@@ -319,9 +319,10 @@ const CONFERENCIAS = [
         <div data-conf>
           <div data-conf-pista data-auto-carrusel="4500" aria-label="Conferencias de la Dra. Vélez">
             {
-              CONFERENCIAS.map(([foto, descripcion]) => (
+              CONFERENCIAS.map(([foto, descripcion], i) => (
                 <figure>
-                  <Image
+                  <CmsImage
+                    k={`dra.conferencias.${i + 1}`}
                     src={foto}
                     widths={[320, 640]}
                     sizes="(max-width:560px) 300px, 240px"
@@ -376,7 +377,8 @@ const CONFERENCIAS = [
             rel="noopener noreferrer"
             style="position:relative;display:block"
           >
-            <Image
+            <CmsImage
+              k="dra.libro.foto"
               src={libroImg}
               widths={[620, 1240]}
               sizes="(max-width:900px) 100vw, 50vw"
@@ -403,15 +405,15 @@ const CONFERENCIAS = [
             id="libro-t"
             style="margin:0 0 24px;font-family:Poppins,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#FFFFFF;max-width:20ch"
           >
-            He escrito el libro que me habría gustado tener
+            <Cms k="dra.libro.titulo">He escrito el libro que me habría gustado tener</Cms>
           </h2>
           <p style="margin:0 0 20px;font-size:18px;line-height:1.7;color:#E4E4E4;max-width:60ch">
-            <em>Ortodoncia con alineadores</em> recoge más de veinticinco años de consulta en una guía práctica: biomecánica,
-            protocolos clínicos y las soluciones S1 a S20, con códigos QR para ver la planificación digital de cada caso.
+            <em><Cms k="dra.libro.nombre">Ortodoncia con alineadores</Cms></em> <Cms k="dra.libro.texto-1">recoge más de veinticinco años de consulta en una guía práctica: biomecánica,
+            protocolos clínicos y las soluciones S1 a S20, con códigos QR para ver la planificación digital de cada caso.</Cms>
           </p>
           <p style="margin:0 0 28px;font-size:18px;line-height:1.7;color:#B4B4B4;max-width:60ch">
-            No es un manual teórico. Es lo que hago cada día, escrito para que otro ortodoncista pueda repetirlo, porque la
-            predictibilidad no es casualidad: es biomecánica aplicada con criterio clínico.
+            <Cms k="dra.libro.texto-2">No es un manual teórico. Es lo que hago cada día, escrito para que otro ortodoncista pueda repetirlo, porque la
+            predictibilidad no es casualidad: es biomecánica aplicada con criterio clínico.</Cms>
           </p>
           <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
             <a
@@ -421,11 +423,11 @@ const CONFERENCIAS = [
               target="_blank"
               rel="noopener noreferrer"
               style="display:inline-flex;flex:none;white-space:nowrap;align-items:center;gap:12px;min-height:56px;padding:0 32px;border-radius:9999px;font-size:18.66px;font-weight:600;transition:background 300ms var(--ease),box-shadow 300ms var(--ease)"
-              >Pre-ordenar el libro<span data-arrow style="display:inline-block;transition:transform 300ms var(--ease)">→</span
+              ><Cms k="dra.libro.boton">Pre-ordenar el libro</Cms><span data-arrow style="display:inline-block;transition:transform 300ms var(--ease)">→</span
               ><span class="vh"> (se abre en una pestaña nueva)</span></a
             >
             <p style="margin:0;font-size:15px;line-height:1.6;color:#B4B4B4;max-width:34ch">
-              Con el Prof. Gang Shen y el Dr. Xingxing Wang. Editado por Smartee.
+              <Cms k="dra.libro.autores">Con el Prof. Gang Shen y el Dr. Xingxing Wang. Editado por Smartee.</Cms>
             </p>
           </div>
         </div>
@@ -437,6 +439,36 @@ const CONFERENCIAS = [
 </Base>
 
 <style>
+  /* Sin fondos propios ya no hay bloque que enmarque cada sección: con
+     proporciones distintas (7/5, 5/7, 4/8…) fotos y tarjetas cambiaban de
+     ancho y todo parecía cargado a la izquierda. Mismas dos columnas en todas,
+     simétricas respecto al centro; el texto sigue alineado a la izquierda.
+     !important: gana al grid-template-columns en línea. */
+  /* «Dra. Isabel Vélez» y el icono de Instagram en una sola línea: miden
+     8,6em (Poppins Bold con su tracking), así que la letra se ajusta al ancho
+     de la columna (cqi) con 64px de tope, 42px en móvil como el resto de h1. */
+  [data-hero-texto] {
+    container-type: inline-size;
+  }
+  [data-hero-texto] [data-h1] {
+    white-space: nowrap;
+    max-width: none !important;
+    font-size: min(64px, 11.4cqi) !important;
+  }
+  @media (max-width: 900px) {
+    [data-hero-texto] [data-h1] {
+      font-size: min(42px, 11.4cqi) !important;
+    }
+  }
+
+  @media (min-width: 901px) {
+    [data-hero],
+    [data-2col] {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 64px !important;
+    }
+  }
+
   /* Escritorio: el muro de siempre. `columns` con ancho decide solo cuántas
      caben y cada foto conserva su proporción. */
   [data-conf] {
